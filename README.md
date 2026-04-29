@@ -1,0 +1,114 @@
+# Reka
+
+Reka is a Solana-powered asset passport for second-hand student devices. It helps buyers verify a used laptop, phone, or camera before purchase by checking its identity hash, condition, service history, current ownership, and transfer trail.
+
+## Problem
+
+Second-hand device markets around Indonesian campuses are active, but trust is still fragile. Buyers often rely on chat screenshots, verbal claims, or one-time store notes. After a device is resold, important context can disappear:
+
+- The serial number or IMEI is not consistently verifiable.
+- Battery, display, SSD, camera, and port repair history is scattered.
+- Ownership transfer is not recorded in a portable way.
+- Service warranty depends on a single seller or shop database.
+
+## Solution
+
+Reka gives each physical device a public asset passport. A verifier such as a service shop, campus community, cooperative, or trusted seller can create and update the passport. Buyers can scan a QR link before buying and inspect the device history.
+
+The product is designed for the RWA and Consumer Apps tracks:
+
+- **RWA:** each passport represents a real physical device.
+- **Consumer Apps:** the user experience is built around simple verification for everyday buyers.
+- **Solana:** important lifecycle events can be recorded as low-cost public audit trails.
+
+## MVP Features
+
+- Landing page for the product story, problem, solution, and demo entry point.
+- Dashboard for device passports.
+- Create a passport for a laptop, phone, or camera.
+- Hash serial number or IMEI locally before storing it.
+- Add inspection, repair, warranty, and condition history.
+- Transfer passport ownership after resale.
+- Generate a public QR verification link.
+- Write create, update, and transfer audit events to Solana Testnet using the Memo program.
+
+## Smart Contract
+
+The Anchor/Rust program source is included in:
+
+```text
+programs/reka/src/lib.rs
+```
+
+Core instructions:
+
+- `create_passport`: creates a `DevicePassport` PDA for a physical device.
+- `add_history`: creates a `HistoryEntry` PDA for inspection, repair, warranty, or ownership history.
+- `transfer_passport`: lets the current owner transfer the passport to a new owner wallet.
+
+Current implementation status:
+
+- Frontend MVP is functional.
+- Solana Testnet Memo integration is functional from the browser when a wallet is connected.
+- Custom Anchor program source is included, but it still needs Rust, Solana CLI, and Anchor installed before it can be built and deployed.
+
+After installing the Solana toolchain:
+
+```bash
+anchor build
+anchor deploy --provider.cluster testnet
+```
+
+## Tech Stack
+
+- React
+- TypeScript
+- Vite
+- Solana Web3.js
+- Anchor / Rust program source
+- QR verification with `qrcode.react`
+
+## Demo Flow
+
+1. Open the landing page and explain the trust problem in second-hand campus markets.
+2. Click **Coba Dashboard** or **Buka MVP**.
+3. Connect a Phantom wallet configured for Solana Testnet.
+4. Create a passport for a laptop, phone, or camera.
+5. Confirm the Solana Memo transaction.
+6. Add a service or inspection history entry.
+7. Transfer the passport to a new owner.
+8. Scan or share the QR verification link.
+
+## Local Development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the app:
+
+```bash
+npm run dev
+```
+
+Build and lint:
+
+```bash
+npm run build
+npm run lint
+```
+
+## Production Roadmap
+
+- Deploy the Anchor program to Solana Testnet.
+- Replace Memo-only writes with direct calls to the Reka program.
+- Add persistent off-chain metadata storage for public passport pages.
+- Add verifier roles and review workflow.
+- Add better fraud prevention around serial hash duplication.
+- Prepare security review before mainnet release.
+
+## Project Status
+
+Reka is currently a hackathon-ready MVP moving toward beta production. The app is useful for demo, validation, and early testing, but a real production launch should include a deployed program, security review, monitoring, and a clearer verifier onboarding process.
