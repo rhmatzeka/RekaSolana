@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowRight,
   BadgeCheck,
@@ -42,6 +42,7 @@ import './App.css'
 type DeviceCategory = 'Laptop' | 'Phone' | 'Camera'
 type HistoryKind = 'Inspection' | 'Repair' | 'Ownership' | 'Warranty'
 type ViewMode = 'home' | 'app'
+type RailSection = 'passport' | 'devices' | 'history' | 'verifier' | 'settings'
 
 type PassportHistory = {
   id: string
@@ -295,6 +296,9 @@ function App() {
   const [isWritingChain, setIsWritingChain] = useState(false)
   const [chainMessage, setChainMessage] = useState('')
   const [programStatus, setProgramStatus] = useState<ProgramStatus>('checking')
+  const [activeRail, setActiveRail] = useState<RailSection>('passport')
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const verifierNameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(passports))
@@ -597,6 +601,36 @@ function App() {
     setChainMessage('Link verifikasi publik disalin.')
   }
 
+  function handleRailAction(section: RailSection) {
+    setActiveRail(section)
+
+    if (section === 'settings') {
+      window.open(getRekaProgramExplorerUrl(), '_blank', 'noopener,noreferrer')
+      setChainMessage('Membuka smart contract Reka di Solana Explorer.')
+      return
+    }
+
+    const sectionTargets: Record<Exclude<RailSection, 'settings'>, string> = {
+      passport: 'passport-card',
+      devices: 'devices-section',
+      history: 'lifecycle-panel',
+      verifier: 'verifier-registry',
+    }
+
+    document.getElementById(sectionTargets[section])?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+
+    if (section === 'devices') {
+      window.setTimeout(() => searchInputRef.current?.focus(), 420)
+    }
+
+    if (section === 'verifier') {
+      window.setTimeout(() => verifierNameInputRef.current?.focus(), 420)
+    }
+  }
+
   if (!selectedPassport) {
     return null
   }
@@ -619,19 +653,49 @@ function App() {
           R
         </button>
         <nav className="rail-nav" aria-label="Dashboard navigation">
-          <button className="rail-button active" type="button" aria-label="Passport">
+          <button
+            className={`rail-button ${activeRail === 'passport' ? 'active' : ''}`}
+            type="button"
+            aria-label="Passport"
+            aria-current={activeRail === 'passport' ? 'page' : undefined}
+            onClick={() => handleRailAction('passport')}
+          >
             <Wallet size={22} />
           </button>
-          <button className="rail-button" type="button" aria-label="Devices">
+          <button
+            className={`rail-button ${activeRail === 'devices' ? 'active' : ''}`}
+            type="button"
+            aria-label="Devices"
+            aria-current={activeRail === 'devices' ? 'page' : undefined}
+            onClick={() => handleRailAction('devices')}
+          >
             <Laptop size={22} />
           </button>
-          <button className="rail-button" type="button" aria-label="History">
+          <button
+            className={`rail-button ${activeRail === 'history' ? 'active' : ''}`}
+            type="button"
+            aria-label="History"
+            aria-current={activeRail === 'history' ? 'page' : undefined}
+            onClick={() => handleRailAction('history')}
+          >
             <FileClock size={22} />
           </button>
-          <button className="rail-button" type="button" aria-label="Verifier">
+          <button
+            className={`rail-button ${activeRail === 'verifier' ? 'active' : ''}`}
+            type="button"
+            aria-label="Verifier"
+            aria-current={activeRail === 'verifier' ? 'page' : undefined}
+            onClick={() => handleRailAction('verifier')}
+          >
             <ShieldCheck size={22} />
           </button>
-          <button className="rail-button" type="button" aria-label="Settings">
+          <button
+            className={`rail-button ${activeRail === 'settings' ? 'active' : ''}`}
+            type="button"
+            aria-label="Settings"
+            aria-current={activeRail === 'settings' ? 'page' : undefined}
+            onClick={() => handleRailAction('settings')}
+          >
             <Settings size={22} />
           </button>
         </nav>
@@ -687,10 +751,11 @@ function App() {
           </div>
         </header>
 
-        <section className="device-tray">
+        <section className="device-tray" id="devices-section">
           <label className="search-box">
             <Search size={18} />
             <input
+              ref={searchInputRef}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Cari device, owner, kota"
@@ -723,7 +788,7 @@ function App() {
           </div>
         </section>
 
-        <section className="passport-hero">
+        <section className="passport-hero" id="passport-card">
           <div className="device-visual">
             {selectedPassport.category === 'Laptop' ? (
               <div className="laptop-render" aria-hidden="true">
@@ -915,7 +980,7 @@ function App() {
             </form>
           </div>
 
-          <div className="panel stack lifecycle-panel">
+          <div className="panel stack lifecycle-panel" id="lifecycle-panel">
             <div className="panel-heading">
               <div>
                 <p className="eyebrow">Lifecycle log</p>
@@ -924,12 +989,13 @@ function App() {
               <Wrench size={20} />
             </div>
 
-            <form className="verifier-form" onSubmit={setupVerifier}>
+            <form className="verifier-form" id="verifier-registry" onSubmit={setupVerifier}>
               <div>
                 <strong>Verifier registry</strong>
                 <span>Aktifkan wallet ini sebagai teknisi/toko terverifikasi.</span>
               </div>
               <input
+                ref={verifierNameInputRef}
                 required
                 value={verifierForm.name}
                 onChange={(event) =>
