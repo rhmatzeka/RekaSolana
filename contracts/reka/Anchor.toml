@@ -6,10 +6,10 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-reka = "3CLJYRpGhR5ZKmaC3Asvtww7BECvbFsa5L81454NZWjX"
+reka = "AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg"
 
 [programs.localnet]
-reka = "3CLJYRpGhR5ZKmaC3Asvtww7BECvbFsa5L81454NZWjX"
+reka = "AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg"
 
 [registry]
 url = "https://api.apr.dev"

@@ -51,7 +51,7 @@ Current implementation status:
 - Frontend MVP is functional.
 - Solana Devnet smart contract calls are wired from the browser when a wallet is connected.
 - Custom Anchor program source is included and the frontend is configured to call it.
-- Program address: `3CLJYRpGhR5ZKmaC3Asvtww7BECvbFsa5L81454NZWjX`.
+- Program address: `AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg`.
 
 Check whether the Devnet program is actually deployed and executable:
 

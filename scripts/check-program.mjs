@@ -1,6 +1,6 @@
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js'
 
-const programId = new PublicKey('3CLJYRpGhR5ZKmaC3Asvtww7BECvbFsa5L81454NZWjX')
+const programId = new PublicKey('AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg')
 const connection = new Connection(clusterApiUrl('devnet'), 'confirmed')
 const account = await connection.getAccountInfo(programId)
 

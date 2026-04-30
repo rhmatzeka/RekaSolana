@@ -13,7 +13,7 @@ import {
 import { Buffer } from 'buffer'
 
 export const REKA_PROGRAM_ID = new PublicKey(
-  '3CLJYRpGhR5ZKmaC3Asvtww7BECvbFsa5L81454NZWjX',
+  'AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg',
 )
 
 export type BrowserWallet = {
