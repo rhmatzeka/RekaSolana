@@ -414,6 +414,45 @@ h3 {
   font-size: 0.88rem;
 }
 
+.program-card {
+  display: grid;
+  gap: 4px;
+  padding: 13px 14px;
+  margin-bottom: 18px;
+  color: var(--ink);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.program-card span,
+.program-card small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.program-card strong {
+  overflow-wrap: anywhere;
+  font-size: 0.92rem;
+}
+
+.program-card.ready {
+  border-color: #b9ddcd;
+  background: #eef9f2;
+}
+
+.program-card.ready small {
+  color: #14684d;
+}
+
+.program-card.missing,
+.program-card.offline {
+  border-color: #ead5a6;
+  background: #fff7e6;
+}
+
 .icon-button,
 .primary-button,
 .secondary-button {

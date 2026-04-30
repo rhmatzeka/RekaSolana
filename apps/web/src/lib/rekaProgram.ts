@@ -15,6 +15,7 @@ import { Buffer } from 'buffer'
 export const REKA_PROGRAM_ID = new PublicKey(
   'AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg',
 )
+export const REKA_CLUSTER = 'devnet'
 
 export type BrowserWallet = {
   publicKey?: PublicKey
@@ -329,16 +330,35 @@ export async function transferPassportOnChain(
   return { signature }
 }
 
+export async function checkRekaProgramStatus() {
+  const connection = createRekaConnection()
+  const account = await connection.getAccountInfo(REKA_PROGRAM_ID)
+
+  return {
+    programId: REKA_PROGRAM_ID.toBase58(),
+    deployed: Boolean(account),
+    executable: Boolean(account?.executable),
+  }
+}
+
+export function getRekaProgramExplorerUrl() {
+  return `https://explorer.solana.com/address/${REKA_PROGRAM_ID.toBase58()}?cluster=${REKA_CLUSTER}`
+}
+
 function getRekaProgram(wallet: BrowserWallet) {
   if (!wallet.publicKey || !wallet.signTransaction || !wallet.signAllTransactions) {
     throw new Error('Wallet harus tersambung dan mendukung signing transaksi.')
   }
 
-  const connection = new Connection(clusterApiUrl('devnet'), 'confirmed')
+  const connection = createRekaConnection()
   const provider = new AnchorProvider(connection, wallet as unknown as AnchorProvider['wallet'], {
     commitment: 'confirmed',
     preflightCommitment: 'confirmed',
   })
 
   return new Program(REKA_IDL, provider)
+}
+
+function createRekaConnection() {
+  return new Connection(clusterApiUrl(REKA_CLUSTER), 'confirmed')
 }

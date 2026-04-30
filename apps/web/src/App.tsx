@@ -27,8 +27,11 @@ import { QRCodeCanvas } from 'qrcode.react'
 import { PublicKey, type Transaction } from '@solana/web3.js'
 import {
   addHistoryOnChain,
+  checkRekaProgramStatus,
   createPassportOnChain,
   derivePassportPda,
+  getRekaProgramExplorerUrl,
+  REKA_PROGRAM_ID,
   transferPassportOnChain,
   type BrowserWallet,
 } from './lib/rekaProgram'
@@ -91,6 +94,8 @@ type SolanaProvider = {
     transaction: Transaction,
   ) => Promise<{ signature: string }>
 }
+
+type ProgramStatus = 'checking' | 'ready' | 'missing' | 'offline'
 
 declare global {
   interface Window {
@@ -279,10 +284,28 @@ function App() {
   const [walletAddress, setWalletAddress] = useState('')
   const [isWritingChain, setIsWritingChain] = useState(false)
   const [chainMessage, setChainMessage] = useState('')
+  const [programStatus, setProgramStatus] = useState<ProgramStatus>('checking')
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(passports))
   }, [passports])
+
+  useEffect(() => {
+    let shouldUpdate = true
+
+    checkRekaProgramStatus()
+      .then((status) => {
+        if (!shouldUpdate) return
+        setProgramStatus(status.deployed && status.executable ? 'ready' : 'missing')
+      })
+      .catch(() => {
+        if (shouldUpdate) setProgramStatus('offline')
+      })
+
+    return () => {
+      shouldUpdate = false
+    }
+  }, [])
 
   const filteredPassports = useMemo(() => {
     const term = query.trim().toLowerCase()
@@ -308,6 +331,7 @@ function App() {
   const publicUrl = selectedPassport
     ? `${window.location.origin}${window.location.pathname}?passport=${selectedPassport.id}`
     : window.location.href
+  const programStatusText = getProgramStatusText(programStatus)
 
   async function connectWallet() {
     if (!window.solana) {
@@ -565,6 +589,17 @@ function App() {
           </button>
         </div>
 
+        <a
+          className={`program-card ${programStatus}`}
+          href={getRekaProgramExplorerUrl()}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span>Smart contract</span>
+          <strong>{shortWallet(REKA_PROGRAM_ID.toBase58())}</strong>
+          <small>{programStatusText}</small>
+        </a>
+
         <label className="search-box">
           <Search size={18} />
           <input
@@ -615,6 +650,15 @@ function App() {
               <BookOpenCheck size={17} />
               Beranda
             </button>
+            <a
+              className="secondary-button"
+              href={getRekaProgramExplorerUrl()}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Link2 size={17} />
+              Program
+            </a>
             <a
               className="secondary-button"
               href={explorerUrl(selectedPassport.lastTxSignature)}
@@ -678,7 +722,10 @@ function App() {
 
         <div className="chain-status">
           {isWritingChain ? <Loader2 className="spin" size={18} /> : <FileClock size={18} />}
-          <span>{chainMessage || 'Create, update, dan transfer sekarang memanggil smart contract Reka di Solana Devnet.'}</span>
+          <span>
+            {chainMessage ||
+              `${programStatusText}. Create, update, dan transfer memakai program Reka di Solana Devnet.`}
+          </span>
         </div>
 
         <section className="content-grid">
@@ -1195,6 +1242,16 @@ function shortWallet(value: string) {
   if (!value) return ''
   if (value.length <= 10) return value
   return `${value.slice(0, 4)}...${value.slice(-4)}`
+}
+
+function getProgramStatusText(status: ProgramStatus) {
+  const messages: Record<ProgramStatus, string> = {
+    checking: 'Checking Devnet program',
+    ready: 'Program deployed & executable',
+    missing: 'Program belum ditemukan di Devnet',
+    offline: 'RPC Devnet belum merespons',
+  }
+  return messages[status]
 }
 
 function today() {
