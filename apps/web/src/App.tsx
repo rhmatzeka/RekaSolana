@@ -14,6 +14,7 @@ import {
   Loader2,
   MapPin,
   Plus,
+  Settings,
   Search,
   ScanLine,
   ShieldCheck,
@@ -32,7 +33,6 @@ import {
   derivePassportPda,
   getRekaProgramExplorerUrl,
   initializeRegistryOnChain,
-  REKA_PROGRAM_ID,
   registerVerifierOnChain,
   transferPassportOnChain,
   type BrowserWallet,
@@ -615,74 +615,31 @@ function App() {
   return (
     <main className="app-shell">
       <aside className="sidebar">
-        <div className="brand-block">
-          <div className="brand-mark">
-            <Fingerprint size={24} />
-          </div>
-          <div>
-            <p className="eyebrow">Solana RWA Passport</p>
-            <h1>Reka</h1>
-          </div>
-        </div>
-
-        <button className="sidebar-home-button" type="button" onClick={() => setView('home')}>
-          <ArrowRight size={17} />
-          Beranda
+        <button className="rail-logo" type="button" onClick={() => setView('home')} aria-label="Reka home">
+          R
         </button>
-
-        <div className="wallet-panel">
-          <div>
-            <span>Devnet wallet</span>
-            <strong>{walletAddress ? shortWallet(walletAddress) : 'Not connected'}</strong>
-          </div>
-          <button className="icon-button" type="button" onClick={connectWallet}>
-            <Wallet size={18} />
+        <nav className="rail-nav" aria-label="Dashboard navigation">
+          <button className="rail-button active" type="button" aria-label="Passport">
+            <Wallet size={22} />
           </button>
-        </div>
-
-        <a
-          className={`program-card ${programStatus}`}
-          href={getRekaProgramExplorerUrl()}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span>Smart contract</span>
-          <strong>{shortWallet(REKA_PROGRAM_ID.toBase58())}</strong>
-          <small>{programStatusText}</small>
-        </a>
-
-        <label className="search-box">
-          <Search size={18} />
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Cari device, owner, kota"
-          />
-        </label>
-
-        <div className="passport-list">
-          {filteredPassports.map((passport) => {
-            const ListIcon = deviceIcons[passport.category]
-            return (
-              <button
-                className={`passport-row ${
-                  passport.id === selectedPassport.id ? 'active' : ''
-                }`}
-                key={passport.id}
-                type="button"
-                onClick={() => setSelectedId(passport.id)}
-              >
-                <span className="row-icon">
-                  <ListIcon size={18} />
-                </span>
-                <span>
-                  <strong>{passport.brand}</strong>
-                  <small>{passport.model}</small>
-                </span>
-                <em>{passport.trustScore}</em>
-              </button>
-            )
-          })}
+          <button className="rail-button" type="button" aria-label="Devices">
+            <Laptop size={22} />
+          </button>
+          <button className="rail-button" type="button" aria-label="History">
+            <FileClock size={22} />
+          </button>
+          <button className="rail-button" type="button" aria-label="Verifier">
+            <ShieldCheck size={22} />
+          </button>
+          <button className="rail-button" type="button" aria-label="Settings">
+            <Settings size={22} />
+          </button>
+        </nav>
+        <div className="rail-profile">
+          <span>Profile</span>
+          <button className="profile-toggle" type="button" onClick={connectWallet} aria-label="Connect wallet">
+            <span />
+          </button>
         </div>
       </aside>
 
@@ -690,9 +647,13 @@ function App() {
         <header className="topbar">
           <div>
             <p className="eyebrow">Second-hand trust layer for campus markets</p>
-            <h2>{selectedPassport.brand} {selectedPassport.model}</h2>
+            <h2>Premium Asset Detail & History</h2>
           </div>
           <div className="topbar-actions">
+            <button className="wallet-chip" type="button" onClick={connectWallet}>
+              <Wallet size={17} />
+              {walletAddress ? shortWallet(walletAddress) : 'Connect wallet'}
+            </button>
             <button
               className="secondary-button"
               type="button"
@@ -726,31 +687,69 @@ function App() {
           </div>
         </header>
 
+        <section className="device-tray">
+          <label className="search-box">
+            <Search size={18} />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Cari device, owner, kota"
+            />
+          </label>
+
+          <div className="passport-list">
+            {filteredPassports.map((passport) => {
+              const ListIcon = deviceIcons[passport.category]
+              return (
+                <button
+                  className={`passport-row ${
+                    passport.id === selectedPassport.id ? 'active' : ''
+                  }`}
+                  key={passport.id}
+                  type="button"
+                  onClick={() => setSelectedId(passport.id)}
+                >
+                  <span className="row-icon">
+                    <ListIcon size={18} />
+                  </span>
+                  <span>
+                    <strong>{passport.brand}</strong>
+                    <small>{passport.model}</small>
+                  </span>
+                  <em>{passport.trustScore}</em>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+
         <section className="passport-hero">
           <div className="device-visual">
-            <div className={`device-shape ${selectedPassport.category.toLowerCase()}`}>
-              <DeviceIcon size={74} />
-            </div>
-            <div className="trust-meter">
-              <span>Trust score</span>
-              <strong>{selectedPassport.trustScore}</strong>
-            </div>
+            {selectedPassport.category === 'Laptop' ? (
+              <div className="laptop-render" aria-hidden="true">
+                <div className="laptop-screen">
+                  <span />
+                </div>
+                <div className="laptop-keyboard" />
+              </div>
+            ) : (
+              <div className={`device-shape ${selectedPassport.category.toLowerCase()}`}>
+                <DeviceIcon size={74} />
+              </div>
+            )}
+          </div>
+
+          <div className="verified-seal" aria-label="Verified passport">
+            <CheckCircle2 size={38} />
+            <strong>Verified</strong>
           </div>
 
           <div className="passport-summary">
             <div className="status-line">
-              <span className="verified-pill">
-                <CheckCircle2 size={16} />
-                Verified passport
-              </span>
+              <span>Digital Passport</span>
               <span>{selectedPassport.id}</span>
             </div>
             <h3>{selectedPassport.brand} {selectedPassport.model}</h3>
-            <p>
-              Public passport untuk membuktikan identitas barang, histori servis,
-              kondisi terakhir, dan transfer kepemilikan tanpa menyimpan serial
-              number mentah.
-            </p>
 
             <div className="metric-grid">
               <Metric icon={Fingerprint} label="Serial hash" value={selectedPassport.serialHash} />
@@ -759,6 +758,14 @@ function App() {
               <Metric icon={MapPin} label="City" value={selectedPassport.city} />
               <Metric icon={Store} label="Verifier" value={selectedPassport.verifier} />
               <Metric icon={UserRoundCheck} label="Owner" value={selectedPassport.ownerName} />
+            </div>
+
+            <div className="chain-status">
+              {isWritingChain ? <Loader2 className="spin" size={18} /> : <ShieldCheck size={18} />}
+              <span>
+                {chainMessage ||
+                  `${programStatusText}. Smart contract Reka aktif di Solana Devnet.`}
+              </span>
             </div>
           </div>
 
@@ -771,16 +778,8 @@ function App() {
           </div>
         </section>
 
-        <div className="chain-status">
-          {isWritingChain ? <Loader2 className="spin" size={18} /> : <FileClock size={18} />}
-          <span>
-            {chainMessage ||
-              `${programStatusText}. Create, update, dan transfer memakai program Reka di Solana Devnet.`}
-          </span>
-        </div>
-
         <section className="content-grid">
-          <div className="panel">
+          <div className="panel create-panel">
             <div className="panel-heading">
               <div>
                 <p className="eyebrow">Create RWA passport</p>
@@ -916,7 +915,7 @@ function App() {
             </form>
           </div>
 
-          <div className="panel stack">
+          <div className="panel stack lifecycle-panel">
             <div className="panel-heading">
               <div>
                 <p className="eyebrow">Lifecycle log</p>
@@ -1049,8 +1048,8 @@ function App() {
           <div className="panel transfer-panel">
             <div className="panel-heading">
               <div>
-                <p className="eyebrow">Ownership transfer</p>
-                <h3>Pindah tangan</h3>
+                <p className="eyebrow">Quick transfer</p>
+                <h3>Transfer asset</h3>
               </div>
               <UserRoundCheck size={20} />
             </div>
@@ -1079,9 +1078,17 @@ function App() {
               />
               <button className="primary-button" type="submit" disabled={isWritingChain}>
                 <UserRoundCheck size={17} />
-                Transfer Passport
+                Transfer Asset
               </button>
             </form>
+            <a
+              className="transaction-link"
+              href={explorerUrl(selectedPassport.lastTxSignature)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              View transaction
+            </a>
           </div>
         </section>
       </section>

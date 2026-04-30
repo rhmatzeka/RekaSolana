@@ -949,6 +949,437 @@ textarea {
   grid-column: 2;
 }
 
+.app-shell {
+  grid-template-columns: 100px minmax(0, 1fr);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.82), rgba(235, 239, 246, 0.78)),
+    #edf1f6;
+}
+
+.sidebar {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  gap: 28px;
+  padding: 28px 18px;
+  background: rgba(246, 248, 252, 0.82);
+  box-shadow: inset -1px 0 0 rgba(197, 205, 216, 0.74);
+}
+
+.rail-logo {
+  width: 54px;
+  height: 54px;
+  color: #151a22;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  font: 900 2.4rem/1 var(--sans);
+  cursor: pointer;
+}
+
+.rail-nav {
+  display: grid;
+  align-content: center;
+  gap: 24px;
+}
+
+.rail-button {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  color: #68717c;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.rail-button.active,
+.rail-button:hover {
+  color: #151a22;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 16px 32px rgba(45, 55, 72, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+}
+
+.rail-profile {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  color: #6b7280;
+  font-size: 0.82rem;
+}
+
+.profile-toggle {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: #8b94a1;
+  box-shadow: 0 10px 18px rgba(55, 65, 81, 0.18);
+  cursor: pointer;
+}
+
+.profile-toggle span {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.workspace {
+  max-width: 1440px;
+  width: 100%;
+  padding: 34px 32px 42px;
+}
+
+.topbar {
+  align-items: flex-start;
+}
+
+.topbar .eyebrow {
+  color: #111827;
+  font-size: 0.86rem;
+  letter-spacing: 0;
+}
+
+.topbar h2 {
+  margin-top: 5px;
+  color: #05070a;
+  font-size: clamp(2rem, 3.6vw, 3.2rem);
+  font-weight: 900;
+}
+
+.wallet-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 14px;
+  color: #151a22;
+  border: 1px solid rgba(205, 213, 224, 0.86);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(45, 55, 72, 0.08);
+}
+
+.device-tray {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.device-tray .search-box,
+.device-tray .passport-row,
+.passport-hero,
+.panel {
+  border-color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow:
+    0 26px 70px rgba(47, 57, 76, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px);
+}
+
+.device-tray .passport-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 0;
+}
+
+.passport-row {
+  min-height: 64px;
+  border-radius: 18px;
+}
+
+.passport-row.active {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.row-icon,
+.icon-button {
+  border-radius: 13px;
+}
+
+.passport-hero {
+  grid-template-columns: minmax(260px, 360px) 160px minmax(360px, 1fr) 190px;
+  gap: 24px;
+  align-items: center;
+  min-height: 352px;
+  padding: 28px 28px 24px;
+  border-radius: 24px;
+}
+
+.device-visual {
+  min-height: 296px;
+  border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(226, 231, 240, 0.78)),
+    #eef2f7;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.84),
+    0 18px 42px rgba(45, 55, 72, 0.13);
+}
+
+.laptop-render {
+  width: min(82%, 300px);
+  transform: translateY(10px);
+}
+
+.laptop-screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 7px;
+  border-radius: 7px 7px 3px 3px;
+  background: #1f2937;
+  box-shadow: 0 20px 30px rgba(31, 41, 55, 0.22);
+}
+
+.laptop-screen span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 3px;
+  background:
+    radial-gradient(circle at 18% 10%, #fff173 0 12%, transparent 28%),
+    radial-gradient(circle at 86% 4%, #18d1ff 0 11%, transparent 26%),
+    linear-gradient(128deg, #ff7d36 0 22%, #111827 23% 36%, #2563eb 37% 68%, #05132f 69% 100%);
+}
+
+.laptop-keyboard {
+  width: 112%;
+  height: 52px;
+  margin-left: -6%;
+  border-radius: 0 0 42px 42px;
+  background:
+    linear-gradient(180deg, #eef1f5, #cfd6df 74%, #aeb7c4);
+  transform: perspective(320px) rotateX(58deg) translateY(-7px);
+  transform-origin: top;
+  box-shadow: 0 18px 30px rgba(45, 55, 72, 0.16);
+}
+
+.verified-seal {
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 150px;
+  color: #87909c;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.96) 0 42%, rgba(221, 255, 244, 0.72) 43% 53%, transparent 54%),
+    conic-gradient(from 10deg, #d8dde6, #f8fafc, #cdd5df, #f7f8fb, #d8dde6);
+  box-shadow:
+    0 24px 46px rgba(45, 55, 72, 0.16),
+    inset 0 0 0 8px rgba(232, 236, 243, 0.7);
+}
+
+.verified-seal strong {
+  margin-top: -22px;
+  font-size: 1.15rem;
+}
+
+.passport-summary h3 {
+  margin-bottom: 24px;
+  color: #05070a;
+  font-size: clamp(2rem, 3vw, 3rem);
+  font-weight: 900;
+}
+
+.status-line {
+  margin-bottom: 4px;
+  color: #05070a;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.metric-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px 26px;
+  margin-top: 0;
+}
+
+.metric {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.metric svg {
+  display: none;
+}
+
+.metric span {
+  color: #0f172a;
+  font-size: 0.94rem;
+  font-weight: 500;
+}
+
+.metric strong {
+  margin-top: 4px;
+  color: #05070a;
+  font-size: 1.15rem;
+  font-weight: 850;
+}
+
+.qr-panel {
+  min-height: 212px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 24px 44px rgba(45, 55, 72, 0.13),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+}
+
+.qr-panel canvas {
+  width: 132px !important;
+  height: 132px !important;
+}
+
+.chain-status {
+  margin: 28px 0 0;
+  border-color: rgba(209, 216, 227, 0.8);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.52);
+  color: #151a22;
+}
+
+.content-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 320px);
+  gap: 20px;
+}
+
+.lifecycle-panel {
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 230px;
+}
+
+.transfer-panel {
+  grid-column: 2;
+  grid-row: 1;
+  min-height: 230px;
+}
+
+.create-panel {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.panel {
+  border-radius: 22px;
+}
+
+.lifecycle-panel .panel-heading {
+  margin-bottom: 22px;
+}
+
+.lifecycle-panel .timeline {
+  position: relative;
+  order: 1;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 10px;
+  padding: 22px 6px 14px;
+}
+
+.lifecycle-panel .timeline::before {
+  position: absolute;
+  top: 42px;
+  right: 26px;
+  left: 26px;
+  height: 2px;
+  content: "";
+  background: linear-gradient(90deg, #aeb6c2, #c2c9d3);
+}
+
+.lifecycle-panel .timeline-item {
+  position: relative;
+  display: block;
+  min-width: 0;
+  padding-top: 34px;
+  text-align: center;
+}
+
+.lifecycle-panel .timeline-icon {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  color: transparent;
+  border: 3px solid #a5adba;
+  border-radius: 999px;
+  background: #eef2f7;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.lifecycle-panel .timeline-title {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+}
+
+.lifecycle-panel .timeline-title strong {
+  font-size: 1rem;
+}
+
+.lifecycle-panel .timeline-item p {
+  display: none;
+}
+
+.lifecycle-panel .timeline-item small {
+  display: block;
+  margin-top: 4px;
+}
+
+.lifecycle-panel .verifier-form {
+  order: 2;
+  margin-top: 20px;
+}
+
+.lifecycle-panel .compact-form {
+  order: 3;
+}
+
+.transfer-panel .compact-form {
+  gap: 14px;
+}
+
+.transfer-panel input {
+  height: 46px;
+  border-radius: 12px;
+}
+
+.transfer-panel .primary-button {
+  min-height: 48px;
+  border-radius: 18px;
+  color: #151a22;
+  background: rgba(244, 247, 252, 0.96);
+  box-shadow: 0 14px 26px rgba(45, 55, 72, 0.14);
+}
+
+.transaction-link {
+  display: block;
+  margin-top: 16px;
+  color: #111827;
+  font-weight: 700;
+  text-align: center;
+}
+
 .spin {
   animation: spin 0.9s linear infinite;
 }
