@@ -5,17 +5,17 @@ anchor_version = "0.31.1"
 resolution = true
 skip-lint = false
 
-[programs.testnet]
-reka = "7JbqgR4UB9vBVB3jQ5CtqNZy6ocuyTzqnS2BRF3ciGjR"
+[programs.devnet]
+reka = "3CLJYRpGhR5ZKmaC3Asvtww7BECvbFsa5L81454NZWjX"
 
 [programs.localnet]
-reka = "7JbqgR4UB9vBVB3jQ5CtqNZy6ocuyTzqnS2BRF3ciGjR"
+reka = "3CLJYRpGhR5ZKmaC3Asvtww7BECvbFsa5L81454NZWjX"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "testnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

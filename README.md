@@ -30,7 +30,7 @@ The product is designed for the RWA and Consumer Apps tracks:
 - Add inspection, repair, warranty, and condition history.
 - Transfer passport ownership after resale.
 - Generate a public QR verification link.
-- Write create, update, and transfer audit events to Solana Testnet using the Memo program.
+- Write create, update, and transfer audit events to Solana Devnet using the Memo program.
 
 ## Smart Contract
 
@@ -49,14 +49,15 @@ Core instructions:
 Current implementation status:
 
 - Frontend MVP is functional.
-- Solana Testnet Memo integration is functional from the browser when a wallet is connected.
+- Solana Devnet Memo integration is functional from the browser when a wallet is connected.
 - Custom Anchor program source is included, but it still needs Rust, Solana CLI, and Anchor installed before it can be built and deployed.
+- Program address: `3CLJYRpGhR5ZKmaC3Asvtww7BECvbFsa5L81454NZWjX`.
 
 After installing the Solana toolchain:
 
 ```bash
 anchor build
-anchor deploy --provider.cluster testnet
+anchor deploy --provider.cluster devnet
 ```
 
 ## Tech Stack
@@ -64,6 +65,7 @@ anchor deploy --provider.cluster testnet
 - React
 - TypeScript
 - Vite
+- Bun
 - Solana Web3.js
 - Anchor / Rust program source
 - QR verification with `qrcode.react`
@@ -72,7 +74,7 @@ anchor deploy --provider.cluster testnet
 
 1. Open the landing page and explain the trust problem in second-hand campus markets.
 2. Click **Coba Dashboard** or **Buka MVP**.
-3. Connect a Phantom wallet configured for Solana Testnet.
+3. Connect a Phantom wallet configured for Solana Devnet.
 4. Create a passport for a laptop, phone, or camera.
 5. Confirm the Solana Memo transaction.
 6. Add a service or inspection history entry.
@@ -84,25 +86,25 @@ anchor deploy --provider.cluster testnet
 Install dependencies:
 
 ```bash
-npm install
+bun install
 ```
 
 Run the app:
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 Build and lint:
 
 ```bash
-npm run build
-npm run lint
+bun run build
+bun run lint
 ```
 
 ## Production Roadmap
 
-- Deploy the Anchor program to Solana Testnet.
+- Deploy the Anchor program to Solana Devnet.
 - Replace Memo-only writes with direct calls to the Reka program.
 - Add persistent off-chain metadata storage for public passport pages.
 - Add verifier roles and review workflow.

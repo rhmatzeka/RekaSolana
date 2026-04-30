@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("7JbqgR4UB9vBVB3jQ5CtqNZy6ocuyTzqnS2BRF3ciGjR");
+declare_id!("3CLJYRpGhR5ZKmaC3Asvtww7BECvbFsa5L81454NZWjX");
 
 const MAX_ID_LEN: usize = 32;
 const MAX_CATEGORY_LEN: usize = 16;

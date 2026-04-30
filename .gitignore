@@ -12,6 +12,7 @@ dist
 dist-ssr
 target
 .anchor
+package-lock.json
 *.local
 
 # Editor directories and files

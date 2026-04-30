@@ -313,16 +313,16 @@ function App() {
 
   async function connectWallet() {
     if (!window.solana) {
-      setChainMessage('Wallet belum ditemukan. Install Phantom lalu pakai Testnet.')
+      setChainMessage('Wallet belum ditemukan. Install Phantom lalu pakai Devnet.')
       return
     }
 
     const response = await window.solana.connect()
     setWalletAddress(response.publicKey.toBase58())
-    setChainMessage('Wallet tersambung ke Reka Testnet mode.')
+    setChainMessage('Wallet tersambung ke Reka Devnet mode.')
   }
 
-  async function writeMemoToTestnet(memo: string) {
+  async function writeMemoToDevnet(memo: string) {
     if (!window.solana?.publicKey) {
       await connectWallet()
     }
@@ -333,10 +333,10 @@ function App() {
     }
 
     setIsWritingChain(true)
-    setChainMessage('Menulis audit memo ke Solana Testnet...')
+    setChainMessage('Menulis audit memo ke Solana Devnet...')
 
     try {
-      const connection = new Connection(clusterApiUrl('testnet'), 'confirmed')
+      const connection = new Connection(clusterApiUrl('devnet'), 'confirmed')
       const latestBlockhash = await connection.getLatestBlockhash('confirmed')
       const transaction = new Transaction().add(
         new TransactionInstruction({
@@ -358,13 +358,13 @@ function App() {
         },
         'confirmed',
       )
-      setChainMessage('Audit memo berhasil dicatat di Solana Testnet.')
+      setChainMessage('Audit memo berhasil dicatat di Solana Devnet.')
       return signature
     } catch (error) {
       setChainMessage(
         error instanceof Error
           ? error.message
-          : 'Transaksi Testnet dibatalkan atau gagal.',
+          : 'Transaksi Devnet dibatalkan atau gagal.',
       )
       return undefined
     } finally {
@@ -404,7 +404,7 @@ function App() {
       ],
     }
 
-    const signature = await writeMemoToTestnet(
+    const signature = await writeMemoToDevnet(
       `Reka CREATE ${id} ${form.category} ${form.brand} ${form.model} ${serialHash}`,
     )
     newPassport.lastTxSignature = signature
@@ -428,7 +428,7 @@ function App() {
       date: today(),
     }
 
-    const signature = await writeMemoToTestnet(
+    const signature = await writeMemoToDevnet(
       `Reka ${historyForm.kind.toUpperCase()} ${selectedPassport.id} ${historyForm.title}`,
     )
     entry.txSignature = signature
@@ -457,7 +457,7 @@ function App() {
     event.preventDefault()
     if (!selectedPassport) return
 
-    const signature = await writeMemoToTestnet(
+    const signature = await writeMemoToDevnet(
       `Reka TRANSFER ${selectedPassport.id} ${selectedPassport.ownerName} -> ${transferForm.ownerName}`,
     )
 
@@ -529,7 +529,7 @@ function App() {
 
         <div className="wallet-panel">
           <div>
-            <span>Testnet wallet</span>
+            <span>Devnet wallet</span>
             <strong>{walletAddress ? shortWallet(walletAddress) : 'Not connected'}</strong>
           </div>
           <button className="icon-button" type="button" onClick={connectWallet}>
@@ -650,7 +650,7 @@ function App() {
 
         <div className="chain-status">
           {isWritingChain ? <Loader2 className="spin" size={18} /> : <FileClock size={18} />}
-          <span>{chainMessage || 'Aksi create, update, dan transfer bisa dicatat ke Solana Testnet Memo.'}</span>
+          <span>{chainMessage || 'Aksi create, update, dan transfer bisa dicatat ke Solana Devnet Memo.'}</span>
         </div>
 
         <section className="content-grid">
@@ -961,7 +961,7 @@ function LandingPage({
           <div className="home-proof-row" aria-label="Project proof points">
             <span>RWA</span>
             <span>Consumer App</span>
-            <span>Solana Testnet</span>
+            <span>Solana Devnet</span>
           </div>
         </div>
 
@@ -1024,7 +1024,7 @@ function LandingPage({
           <p>
             Verifier seperti toko servis, komunitas kampus, atau koperasi bisa
             menambahkan inspeksi dan garansi. Event penting dicatat ke Solana
-            Testnet sebagai audit trail.
+            Devnet sebagai audit trail.
           </p>
         </div>
         <div className="flow-list">
@@ -1040,7 +1040,7 @@ function LandingPage({
           <p className="eyebrow">MVP yang sudah bisa dicoba</p>
           <h2>Demo Reka siap dipakai untuk video 3 menit.</h2>
           <p>
-            Flow demo paling enak: buka dashboard, connect Phantom Testnet, buat
+            Flow demo paling enak: buka dashboard, connect Phantom Devnet, buat
             passport, tambah riwayat servis, transfer owner, lalu scan QR.
           </p>
         </div>
@@ -1143,8 +1143,8 @@ function today() {
 }
 
 function explorerUrl(signature?: string) {
-  if (!signature) return 'https://explorer.solana.com/?cluster=testnet'
-  return `https://explorer.solana.com/tx/${signature}?cluster=testnet`
+  if (!signature) return 'https://explorer.solana.com/?cluster=devnet'
+  return `https://explorer.solana.com/tx/${signature}?cluster=devnet`
 }
 
 export default App
