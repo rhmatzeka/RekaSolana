@@ -869,6 +869,31 @@ textarea {
   gap: 10px;
 }
 
+.verifier-form {
+  display: grid;
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid #b9ddcd;
+  border-radius: 8px;
+  background: #eef9f2;
+}
+
+.verifier-form strong,
+.verifier-form span {
+  display: block;
+}
+
+.verifier-form strong {
+  color: var(--ink);
+}
+
+.verifier-form span {
+  margin-top: 3px;
+  color: #14684d;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 .timeline {
   display: grid;
   gap: 12px;
@@ -903,6 +928,16 @@ textarea {
 .timeline-item p {
   margin: 5px 0;
   color: #5f6876;
+}
+
+.evidence-link {
+  display: inline-flex;
+  width: fit-content;
+  margin: 6px 0;
+  color: #1d4f7a;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-decoration: none;
 }
 
 .timeline-item small {

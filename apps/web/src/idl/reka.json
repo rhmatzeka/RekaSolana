@@ -1,0 +1,1030 @@
+{
+  "address": "AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg",
+  "metadata": {
+    "name": "reka",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Solana asset passport program for second-hand devices"
+  },
+  "instructions": [
+    {
+      "name": "add_history",
+      "discriminator": [
+        35,
+        145,
+        238,
+        126,
+        183,
+        72,
+        172,
+        72
+      ],
+      "accounts": [
+        {
+          "name": "passport",
+          "writable": true
+        },
+        {
+          "name": "verifier_profile",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  105,
+                  102,
+                  105,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "verifier"
+              }
+            ]
+          }
+        },
+        {
+          "name": "history_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  105,
+                  115,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "passport"
+              },
+              {
+                "kind": "arg",
+                "path": "input.entry_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "verifier",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "input",
+          "type": {
+            "defined": {
+              "name": "AddHistoryInput"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "create_passport",
+      "discriminator": [
+        107,
+        136,
+        98,
+        163,
+        167,
+        217,
+        174,
+        84
+      ],
+      "accounts": [
+        {
+          "name": "passport",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  97,
+                  115,
+                  115,
+                  112,
+                  111,
+                  114,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "input.serial_hash"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "input",
+          "type": {
+            "defined": {
+              "name": "CreatePassportInput"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "initialize_registry",
+      "discriminator": [
+        189,
+        181,
+        20,
+        17,
+        174,
+        57,
+        249,
+        59
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "authority_name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "register_verifier",
+      "discriminator": [
+        67,
+        234,
+        172,
+        169,
+        184,
+        188,
+        145,
+        156
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "verifier_profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  105,
+                  102,
+                  105,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "verifier"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "verifier"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "location",
+          "type": "string"
+        },
+        {
+          "name": "evidence_uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "set_verifier_status",
+      "discriminator": [
+        68,
+        126,
+        148,
+        25,
+        209,
+        59,
+        95,
+        65
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "verifier_profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  105,
+                  102,
+                  105,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "verifier_profile.verifier",
+                "account": "VerifierProfile"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "active",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "transfer_passport",
+      "discriminator": [
+        136,
+        240,
+        160,
+        85,
+        79,
+        87,
+        213,
+        229
+      ],
+      "accounts": [
+        {
+          "name": "passport",
+          "writable": true
+        },
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "passport"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "new_owner",
+          "type": "pubkey"
+        },
+        {
+          "name": "new_owner_name",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "DevicePassport",
+      "discriminator": [
+        149,
+        14,
+        206,
+        51,
+        183,
+        17,
+        64,
+        37
+      ]
+    },
+    {
+      "name": "HistoryEntry",
+      "discriminator": [
+        14,
+        178,
+        110,
+        12,
+        9,
+        209,
+        227,
+        182
+      ]
+    },
+    {
+      "name": "RegistryConfig",
+      "discriminator": [
+        23,
+        118,
+        10,
+        246,
+        173,
+        231,
+        243,
+        156
+      ]
+    },
+    {
+      "name": "VerifierProfile",
+      "discriminator": [
+        95,
+        52,
+        82,
+        13,
+        42,
+        25,
+        4,
+        47
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "HistoryAdded",
+      "discriminator": [
+        138,
+        230,
+        17,
+        203,
+        117,
+        129,
+        38,
+        3
+      ]
+    },
+    {
+      "name": "PassportCreated",
+      "discriminator": [
+        141,
+        164,
+        208,
+        246,
+        206,
+        99,
+        181,
+        228
+      ]
+    },
+    {
+      "name": "PassportTransferred",
+      "discriminator": [
+        75,
+        188,
+        194,
+        167,
+        118,
+        90,
+        28,
+        221
+      ]
+    },
+    {
+      "name": "RegistryInitialized",
+      "discriminator": [
+        144,
+        138,
+        62,
+        105,
+        58,
+        38,
+        100,
+        177
+      ]
+    },
+    {
+      "name": "VerifierRegistered",
+      "discriminator": [
+        203,
+        97,
+        26,
+        57,
+        161,
+        104,
+        177,
+        144
+      ]
+    },
+    {
+      "name": "VerifierStatusChanged",
+      "discriminator": [
+        45,
+        149,
+        48,
+        91,
+        23,
+        125,
+        24,
+        223
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "FieldTooLong",
+      "msg": "One of the text fields is longer than the supported MVP limit."
+    },
+    {
+      "code": 6001,
+      "name": "InvalidHistoryKind",
+      "msg": "History kind must be 0 inspection, 1 repair, 2 warranty, or 3 ownership."
+    },
+    {
+      "code": 6002,
+      "name": "UnauthorizedOwner",
+      "msg": "Only the current owner can transfer this passport."
+    },
+    {
+      "code": 6003,
+      "name": "CounterOverflow",
+      "msg": "Counter overflow."
+    },
+    {
+      "code": 6004,
+      "name": "UnauthorizedRegistryAuthority",
+      "msg": "Only the registry authority can approve or suspend verifiers."
+    },
+    {
+      "code": 6005,
+      "name": "InactiveVerifier",
+      "msg": "Verifier is not active in the Reka verifier registry."
+    },
+    {
+      "code": 6006,
+      "name": "FieldRequired",
+      "msg": "A required field is empty."
+    }
+  ],
+  "types": [
+    {
+      "name": "AddHistoryInput",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "entry_id",
+            "type": "string"
+          },
+          {
+            "name": "kind",
+            "type": "u8"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "notes",
+            "type": "string"
+          },
+          {
+            "name": "evidence_hash",
+            "type": "string"
+          },
+          {
+            "name": "evidence_uri",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreatePassportInput",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "category",
+            "type": "string"
+          },
+          {
+            "name": "brand",
+            "type": "string"
+          },
+          {
+            "name": "model",
+            "type": "string"
+          },
+          {
+            "name": "serial_hash",
+            "type": "string"
+          },
+          {
+            "name": "condition",
+            "type": "string"
+          },
+          {
+            "name": "battery_health",
+            "type": "string"
+          },
+          {
+            "name": "estimated_value",
+            "type": "string"
+          },
+          {
+            "name": "city",
+            "type": "string"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner_name",
+            "type": "string"
+          },
+          {
+            "name": "verifier_name",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DevicePassport",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner_name",
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "type": "string"
+          },
+          {
+            "name": "brand",
+            "type": "string"
+          },
+          {
+            "name": "model",
+            "type": "string"
+          },
+          {
+            "name": "serial_hash",
+            "type": "string"
+          },
+          {
+            "name": "condition",
+            "type": "string"
+          },
+          {
+            "name": "battery_health",
+            "type": "string"
+          },
+          {
+            "name": "estimated_value",
+            "type": "string"
+          },
+          {
+            "name": "city",
+            "type": "string"
+          },
+          {
+            "name": "verifier_name",
+            "type": "string"
+          },
+          {
+            "name": "trust_score",
+            "type": "u8"
+          },
+          {
+            "name": "history_count",
+            "type": "u32"
+          },
+          {
+            "name": "transfer_count",
+            "type": "u32"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HistoryAdded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "passport",
+            "type": "pubkey"
+          },
+          {
+            "name": "history_entry",
+            "type": "pubkey"
+          },
+          {
+            "name": "verifier",
+            "type": "pubkey"
+          },
+          {
+            "name": "verifier_profile",
+            "type": "pubkey"
+          },
+          {
+            "name": "kind",
+            "type": "u8"
+          },
+          {
+            "name": "evidence_hash",
+            "type": "string"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HistoryEntry",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "passport",
+            "type": "pubkey"
+          },
+          {
+            "name": "verifier",
+            "type": "pubkey"
+          },
+          {
+            "name": "entry_id",
+            "type": "string"
+          },
+          {
+            "name": "kind",
+            "type": "u8"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "notes",
+            "type": "string"
+          },
+          {
+            "name": "evidence_hash",
+            "type": "string"
+          },
+          {
+            "name": "evidence_uri",
+            "type": "string"
+          },
+          {
+            "name": "verifier_name",
+            "type": "string"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PassportCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "passport",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "serial_hash",
+            "type": "string"
+          },
+          {
+            "name": "verifier_name",
+            "type": "string"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PassportTransferred",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "passport",
+            "type": "pubkey"
+          },
+          {
+            "name": "previous_owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "transferred_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegistryConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority_name",
+            "type": "string"
+          },
+          {
+            "name": "verifier_count",
+            "type": "u32"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegistryInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "config",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerifierProfile",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "verifier",
+            "type": "pubkey"
+          },
+          {
+            "name": "approved_by",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "location",
+            "type": "string"
+          },
+          {
+            "name": "evidence_uri",
+            "type": "string"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "reputation",
+            "type": "u16"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerifierRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "verifier_profile",
+            "type": "pubkey"
+          },
+          {
+            "name": "verifier",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerifierStatusChanged",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "verifier_profile",
+            "type": "pubkey"
+          },
+          {
+            "name": "verifier",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}

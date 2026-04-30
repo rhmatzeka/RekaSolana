@@ -31,7 +31,9 @@ import {
   createPassportOnChain,
   derivePassportPda,
   getRekaProgramExplorerUrl,
+  initializeRegistryOnChain,
   REKA_PROGRAM_ID,
+  registerVerifierOnChain,
   transferPassportOnChain,
   type BrowserWallet,
 } from './lib/rekaProgram'
@@ -46,6 +48,8 @@ type PassportHistory = {
   kind: HistoryKind
   title: string
   notes: string
+  evidenceHash?: string
+  evidenceUri?: string
   verifier: string
   date: string
   txSignature?: string
@@ -276,6 +280,12 @@ function App() {
     title: '',
     notes: '',
     verifier: '',
+    evidenceUri: '',
+  })
+  const [verifierForm, setVerifierForm] = useState({
+    name: '',
+    location: '',
+    evidenceUri: '',
   })
   const [transferForm, setTransferForm] = useState({
     ownerName: '',
@@ -383,6 +393,39 @@ function App() {
     }
   }
 
+  async function setupVerifier(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const verifierName = verifierForm.name.trim()
+    const location = verifierForm.location.trim()
+    const evidenceUri = verifierForm.evidenceUri.trim()
+
+    const result = await runRekaTransaction('Mengaktifkan verifier', async (wallet) => {
+      try {
+        await initializeRegistryOnChain(wallet, 'Reka Campus Registry')
+      } catch (error) {
+        const message = error instanceof Error ? error.message.toLowerCase() : ''
+        if (!message.includes('already in use') && !message.includes('already initialized')) {
+          throw error
+        }
+      }
+
+      return registerVerifierOnChain(wallet, {
+        verifier: wallet.publicKey!,
+        name: verifierName,
+        location,
+        evidenceUri,
+      })
+    })
+
+    if (!result) return
+
+    setHistoryForm((current) => ({
+      ...current,
+      verifier: verifierName,
+    }))
+    setChainMessage(`Verifier ${verifierName} aktif. Sekarang riwayat servis wajib punya evidence.`)
+  }
+
   async function createPassport(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const serialHash = await hashSerial(form.serialNumber)
@@ -448,6 +491,10 @@ function App() {
     if (!selectedPassport) return
 
     const entryId = makeEntryId()
+    const evidenceUri = historyForm.evidenceUri.trim()
+    const evidenceHash = await hashEvidence(
+      `${selectedPassport.serialHash}:${entryId}:${historyForm.title}:${historyForm.notes}:${evidenceUri}`,
+    )
     const onChainResult = await runRekaTransaction('Menambah riwayat', (wallet) =>
       addHistoryOnChain(wallet, {
         passport: derivePassportPda(selectedPassport.serialHash),
@@ -455,7 +502,8 @@ function App() {
         kind: historyKindToNumber(historyForm.kind),
         title: historyForm.title.trim(),
         notes: historyForm.notes.trim(),
-        verifierName: historyForm.verifier.trim(),
+        evidenceHash,
+        evidenceUri,
       }),
     )
 
@@ -466,7 +514,9 @@ function App() {
       kind: historyForm.kind,
       title: historyForm.title.trim(),
       notes: historyForm.notes.trim(),
-      verifier: historyForm.verifier.trim(),
+      evidenceHash,
+      evidenceUri,
+      verifier: historyForm.verifier.trim() || 'Registered verifier',
       date: today(),
       txSignature: onChainResult.signature,
     }
@@ -488,6 +538,7 @@ function App() {
       title: '',
       notes: '',
       verifier: '',
+      evidenceUri: '',
     })
   }
 
@@ -874,6 +925,41 @@ function App() {
               <Wrench size={20} />
             </div>
 
+            <form className="verifier-form" onSubmit={setupVerifier}>
+              <div>
+                <strong>Verifier registry</strong>
+                <span>Aktifkan wallet ini sebagai teknisi/toko terverifikasi.</span>
+              </div>
+              <input
+                required
+                value={verifierForm.name}
+                onChange={(event) =>
+                  setVerifierForm({ ...verifierForm, name: event.target.value })
+                }
+                placeholder="Nama verifier"
+              />
+              <input
+                required
+                value={verifierForm.location}
+                onChange={(event) =>
+                  setVerifierForm({ ...verifierForm, location: event.target.value })
+                }
+                placeholder="Kampus / kota"
+              />
+              <input
+                required
+                value={verifierForm.evidenceUri}
+                onChange={(event) =>
+                  setVerifierForm({ ...verifierForm, evidenceUri: event.target.value })
+                }
+                placeholder="Bukti izin / profil: ipfs://... atau link"
+              />
+              <button className="secondary-button" type="submit" disabled={isWritingChain}>
+                <ShieldCheck size={17} />
+                Activate Verifier
+              </button>
+            </form>
+
             <form className="compact-form" onSubmit={addHistory}>
               <select
                 value={historyForm.kind}
@@ -897,12 +983,19 @@ function App() {
                 placeholder="Judul riwayat"
               />
               <input
-                required
                 value={historyForm.verifier}
                 onChange={(event) =>
                   setHistoryForm({ ...historyForm, verifier: event.target.value })
                 }
-                placeholder="Verifier"
+                placeholder="Label verifier untuk tampilan lokal"
+              />
+              <input
+                required
+                value={historyForm.evidenceUri}
+                onChange={(event) =>
+                  setHistoryForm({ ...historyForm, evidenceUri: event.target.value })
+                }
+                placeholder="Evidence: foto invoice / IPFS / Arweave / Drive"
               />
               <textarea
                 required
@@ -932,6 +1025,16 @@ function App() {
                         <time>{item.date}</time>
                       </div>
                       <p>{item.notes}</p>
+                      {item.evidenceHash ? (
+                        <a
+                          className="evidence-link"
+                          href={item.evidenceUri}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Evidence {shortWallet(item.evidenceHash)}
+                        </a>
+                      ) : null}
                       <small>
                         {item.verifier}
                         {item.txSignature ? ` - ${shortWallet(item.txSignature)}` : ''}
@@ -1229,6 +1332,16 @@ async function hashSerial(serial: string) {
     .map((byte) => byte.toString(16).padStart(2, '0'))
     .join('')
     .slice(0, 16)}`
+}
+
+async function hashEvidence(value: string) {
+  const encoded = new TextEncoder().encode(value.trim())
+  const digest = await crypto.subtle.digest('SHA-256', encoded)
+  const bytes = Array.from(new Uint8Array(digest))
+  return `sha256:${bytes
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('')
+    .slice(0, 32)}`
 }
 
 function makePassportId(brand: string, model: string) {

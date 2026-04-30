@@ -13,12 +13,102 @@ const MAX_VALUE_LEN: usize = 24;
 const MAX_CITY_LEN: usize = 32;
 const MAX_NAME_LEN: usize = 48;
 const MAX_VERIFIER_LEN: usize = 48;
+const MAX_LOCATION_LEN: usize = 32;
 const MAX_TITLE_LEN: usize = 72;
 const MAX_NOTES_LEN: usize = 280;
+const MAX_EVIDENCE_HASH_LEN: usize = 96;
+const MAX_EVIDENCE_URI_LEN: usize = 160;
 
 #[program]
 pub mod reka {
     use super::*;
+
+    pub fn initialize_registry(
+        ctx: Context<InitializeRegistry>,
+        authority_name: String,
+    ) -> Result<()> {
+        require_len(&authority_name, MAX_NAME_LEN)?;
+
+        let now = Clock::get()?.unix_timestamp;
+        let config = &mut ctx.accounts.config;
+
+        config.authority = ctx.accounts.authority.key();
+        config.authority_name = authority_name;
+        config.verifier_count = 0;
+        config.created_at = now;
+        config.bump = ctx.bumps.config;
+
+        emit!(RegistryInitialized {
+            config: config.key(),
+            authority: config.authority,
+            created_at: now,
+        });
+
+        Ok(())
+    }
+
+    pub fn register_verifier(
+        ctx: Context<RegisterVerifier>,
+        name: String,
+        location: String,
+        evidence_uri: String,
+    ) -> Result<()> {
+        require_len(&name, MAX_VERIFIER_LEN)?;
+        require_len(&location, MAX_LOCATION_LEN)?;
+        require_len(&evidence_uri, MAX_EVIDENCE_URI_LEN)?;
+        require_not_empty(&name)?;
+        require_not_empty(&evidence_uri)?;
+
+        let now = Clock::get()?.unix_timestamp;
+        let config = &mut ctx.accounts.config;
+        let verifier_profile = &mut ctx.accounts.verifier_profile;
+
+        verifier_profile.verifier = ctx.accounts.verifier.key();
+        verifier_profile.approved_by = ctx.accounts.authority.key();
+        verifier_profile.name = name;
+        verifier_profile.location = location;
+        verifier_profile.evidence_uri = evidence_uri;
+        verifier_profile.active = true;
+        verifier_profile.reputation = 70;
+        verifier_profile.created_at = now;
+        verifier_profile.updated_at = now;
+        verifier_profile.bump = ctx.bumps.verifier_profile;
+
+        config.verifier_count = config
+            .verifier_count
+            .checked_add(1)
+            .ok_or_else(|| error!(RekaError::CounterOverflow))?;
+
+        emit!(VerifierRegistered {
+            verifier_profile: verifier_profile.key(),
+            verifier: verifier_profile.verifier,
+            name: verifier_profile.name.clone(),
+            active: verifier_profile.active,
+            created_at: now,
+        });
+
+        Ok(())
+    }
+
+    pub fn set_verifier_status(
+        ctx: Context<SetVerifierStatus>,
+        active: bool,
+    ) -> Result<()> {
+        let now = Clock::get()?.unix_timestamp;
+        let verifier_profile = &mut ctx.accounts.verifier_profile;
+
+        verifier_profile.active = active;
+        verifier_profile.updated_at = now;
+
+        emit!(VerifierStatusChanged {
+            verifier_profile: verifier_profile.key(),
+            verifier: verifier_profile.verifier,
+            active,
+            updated_at: now,
+        });
+
+        Ok(())
+    }
 
     pub fn create_passport(
         ctx: Context<CreatePassport>,
@@ -65,6 +155,9 @@ pub mod reka {
         let now = Clock::get()?.unix_timestamp;
         let passport = &mut ctx.accounts.passport;
         let history = &mut ctx.accounts.history_entry;
+        let verifier_profile = &ctx.accounts.verifier_profile;
+
+        require!(verifier_profile.active, RekaError::InactiveVerifier);
 
         history.passport = passport.key();
         history.verifier = ctx.accounts.verifier.key();
@@ -72,7 +165,9 @@ pub mod reka {
         history.kind = input.kind;
         history.title = input.title;
         history.notes = input.notes;
-        history.verifier_name = input.verifier_name;
+        history.evidence_hash = input.evidence_hash;
+        history.evidence_uri = input.evidence_uri;
+        history.verifier_name = verifier_profile.name.clone();
         history.created_at = now;
         history.bump = ctx.bumps.history_entry;
 
@@ -87,7 +182,9 @@ pub mod reka {
             passport: passport.key(),
             history_entry: history.key(),
             verifier: history.verifier,
+            verifier_profile: verifier_profile.key(),
             kind: history.kind,
+            evidence_hash: history.evidence_hash.clone(),
             created_at: now,
         });
 
@@ -126,6 +223,62 @@ pub mod reka {
 }
 
 #[derive(Accounts)]
+pub struct InitializeRegistry<'info> {
+    #[account(
+        init,
+        payer = authority,
+        space = 8 + RegistryConfig::INIT_SPACE,
+        seeds = [b"config"],
+        bump
+    )]
+    pub config: Account<'info, RegistryConfig>,
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct RegisterVerifier<'info> {
+    #[account(
+        mut,
+        seeds = [b"config"],
+        bump = config.bump,
+        has_one = authority @ RekaError::UnauthorizedRegistryAuthority
+    )]
+    pub config: Account<'info, RegistryConfig>,
+    #[account(
+        init,
+        payer = authority,
+        space = 8 + VerifierProfile::INIT_SPACE,
+        seeds = [b"verifier", verifier.key().as_ref()],
+        bump
+    )]
+    pub verifier_profile: Account<'info, VerifierProfile>,
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    /// CHECK: This account is only used as the public verifier identity.
+    pub verifier: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct SetVerifierStatus<'info> {
+    #[account(
+        seeds = [b"config"],
+        bump = config.bump,
+        has_one = authority @ RekaError::UnauthorizedRegistryAuthority
+    )]
+    pub config: Account<'info, RegistryConfig>,
+    #[account(
+        mut,
+        seeds = [b"verifier", verifier_profile.verifier.as_ref()],
+        bump = verifier_profile.bump
+    )]
+    pub verifier_profile: Account<'info, VerifierProfile>,
+    pub authority: Signer<'info>,
+}
+
+#[derive(Accounts)]
 #[instruction(input: CreatePassportInput)]
 pub struct CreatePassport<'info> {
     #[account(
@@ -146,6 +299,11 @@ pub struct CreatePassport<'info> {
 pub struct AddHistory<'info> {
     #[account(mut)]
     pub passport: Account<'info, DevicePassport>,
+    #[account(
+        seeds = [b"verifier", verifier.key().as_ref()],
+        bump = verifier_profile.bump
+    )]
+    pub verifier_profile: Account<'info, VerifierProfile>,
     #[account(
         init,
         payer = verifier,
@@ -190,7 +348,37 @@ pub struct AddHistoryInput {
     pub kind: u8,
     pub title: String,
     pub notes: String,
-    pub verifier_name: String,
+    pub evidence_hash: String,
+    pub evidence_uri: String,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct RegistryConfig {
+    pub authority: Pubkey,
+    #[max_len(48)]
+    pub authority_name: String,
+    pub verifier_count: u32,
+    pub created_at: i64,
+    pub bump: u8,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct VerifierProfile {
+    pub verifier: Pubkey,
+    pub approved_by: Pubkey,
+    #[max_len(48)]
+    pub name: String,
+    #[max_len(32)]
+    pub location: String,
+    #[max_len(160)]
+    pub evidence_uri: String,
+    pub active: bool,
+    pub reputation: u16,
+    pub created_at: i64,
+    pub updated_at: i64,
+    pub bump: u8,
 }
 
 #[account]
@@ -238,10 +426,38 @@ pub struct HistoryEntry {
     pub title: String,
     #[max_len(280)]
     pub notes: String,
+    #[max_len(96)]
+    pub evidence_hash: String,
+    #[max_len(160)]
+    pub evidence_uri: String,
     #[max_len(48)]
     pub verifier_name: String,
     pub created_at: i64,
     pub bump: u8,
+}
+
+#[event]
+pub struct RegistryInitialized {
+    pub config: Pubkey,
+    pub authority: Pubkey,
+    pub created_at: i64,
+}
+
+#[event]
+pub struct VerifierRegistered {
+    pub verifier_profile: Pubkey,
+    pub verifier: Pubkey,
+    pub name: String,
+    pub active: bool,
+    pub created_at: i64,
+}
+
+#[event]
+pub struct VerifierStatusChanged {
+    pub verifier_profile: Pubkey,
+    pub verifier: Pubkey,
+    pub active: bool,
+    pub updated_at: i64,
 }
 
 #[event]
@@ -258,7 +474,9 @@ pub struct HistoryAdded {
     pub passport: Pubkey,
     pub history_entry: Pubkey,
     pub verifier: Pubkey,
+    pub verifier_profile: Pubkey,
     pub kind: u8,
+    pub evidence_hash: String,
     pub created_at: i64,
 }
 
@@ -280,6 +498,12 @@ pub enum RekaError {
     UnauthorizedOwner,
     #[msg("Counter overflow.")]
     CounterOverflow,
+    #[msg("Only the registry authority can approve or suspend verifiers.")]
+    UnauthorizedRegistryAuthority,
+    #[msg("Verifier is not active in the Reka verifier registry.")]
+    InactiveVerifier,
+    #[msg("A required field is empty.")]
+    FieldRequired,
 }
 
 fn validate_create_passport_input(input: &CreatePassportInput) -> Result<()> {
@@ -300,12 +524,20 @@ fn validate_add_history_input(input: &AddHistoryInput) -> Result<()> {
     require_len(&input.entry_id, MAX_ID_LEN)?;
     require_len(&input.title, MAX_TITLE_LEN)?;
     require_len(&input.notes, MAX_NOTES_LEN)?;
-    require_len(&input.verifier_name, MAX_VERIFIER_LEN)?;
+    require_len(&input.evidence_hash, MAX_EVIDENCE_HASH_LEN)?;
+    require_len(&input.evidence_uri, MAX_EVIDENCE_URI_LEN)?;
+    require_not_empty(&input.evidence_hash)?;
+    require_not_empty(&input.evidence_uri)?;
     require!(input.kind <= 3, RekaError::InvalidHistoryKind);
     Ok(())
 }
 
 fn require_len(value: &str, max: usize) -> Result<()> {
     require!(value.as_bytes().len() <= max, RekaError::FieldTooLong);
+    Ok(())
+}
+
+fn require_not_empty(value: &str) -> Result<()> {
+    require!(!value.trim().is_empty(), RekaError::FieldRequired);
     Ok(())
 }
