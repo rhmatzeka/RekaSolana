@@ -30,7 +30,7 @@ The product is designed for the RWA and Consumer Apps tracks:
 - Add inspection, repair, warranty, and condition history.
 - Transfer passport ownership after resale.
 - Generate a public QR verification link.
-- Write create, update, and transfer audit events to Solana Devnet using the Memo program.
+- Write create, update, and transfer transactions to the Reka Anchor program on Solana Devnet.
 
 ## Smart Contract
 
@@ -49,9 +49,15 @@ Core instructions:
 Current implementation status:
 
 - Frontend MVP is functional.
-- Solana Devnet Memo integration is functional from the browser when a wallet is connected.
-- Custom Anchor program source is included, but it still needs Rust, Solana CLI, and Anchor installed before it can be built and deployed.
+- Solana Devnet smart contract calls are wired from the browser when a wallet is connected.
+- Custom Anchor program source is included and the frontend is configured to call it.
 - Program address: `3CLJYRpGhR5ZKmaC3Asvtww7BECvbFsa5L81454NZWjX`.
+
+Check whether the Devnet program is actually deployed and executable:
+
+```bash
+bun run check:program
+```
 
 After installing the Solana toolchain:
 
@@ -76,7 +82,7 @@ anchor deploy --provider.cluster devnet
 2. Click **Coba Dashboard** or **Buka MVP**.
 3. Connect a Phantom wallet configured for Solana Devnet.
 4. Create a passport for a laptop, phone, or camera.
-5. Confirm the Solana Memo transaction.
+5. Confirm the Solana program transaction.
 6. Add a service or inspection history entry.
 7. Transfer the passport to a new owner.
 8. Scan or share the QR verification link.
@@ -102,10 +108,16 @@ bun run build
 bun run lint
 ```
 
+Check deployed program status:
+
+```bash
+bun run check:program
+```
+
 ## Production Roadmap
 
 - Deploy the Anchor program to Solana Devnet.
-- Replace Memo-only writes with direct calls to the Reka program.
+- Generate the production IDL directly from `anchor build` and replace the handwritten frontend IDL.
 - Add persistent off-chain metadata storage for public passport pages.
 - Add verifier roles and review workflow.
 - Add better fraud prevention around serial hash duplication.

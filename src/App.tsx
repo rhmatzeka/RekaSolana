@@ -24,14 +24,14 @@ import {
   Wrench,
 } from 'lucide-react'
 import { QRCodeCanvas } from 'qrcode.react'
+import { PublicKey, type Transaction } from '@solana/web3.js'
 import {
-  clusterApiUrl,
-  Connection,
-  PublicKey,
-  Transaction,
-  TransactionInstruction,
-} from '@solana/web3.js'
-import { Buffer } from 'buffer'
+  addHistoryOnChain,
+  createPassportOnChain,
+  derivePassportPda,
+  transferPassportOnChain,
+  type BrowserWallet,
+} from './lib/rekaProgram'
 import './App.css'
 
 type DeviceCategory = 'Laptop' | 'Phone' | 'Camera'
@@ -85,6 +85,8 @@ type SolanaProvider = {
   isPhantom?: boolean
   publicKey?: PublicKey
   connect: () => Promise<{ publicKey: PublicKey }>
+  signTransaction?: <T extends Transaction>(transaction: T) => Promise<T>
+  signAllTransactions?: <T extends Transaction>(transactions: T[]) => Promise<T[]>
   signAndSendTransaction: (
     transaction: Transaction,
   ) => Promise<{ signature: string }>
@@ -95,10 +97,6 @@ declare global {
     solana?: SolanaProvider
   }
 }
-
-const MEMO_PROGRAM_ID = new PublicKey(
-  'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr',
-)
 
 const initialPassports: Passport[] = [
   {
@@ -322,7 +320,7 @@ function App() {
     setChainMessage('Wallet tersambung ke Reka Devnet mode.')
   }
 
-  async function writeMemoToDevnet(memo: string) {
+  async function getConnectedWallet() {
     if (!window.solana?.publicKey) {
       await connectWallet()
     }
@@ -332,39 +330,28 @@ function App() {
       return undefined
     }
 
+    return provider
+  }
+
+  async function runRekaTransaction<T>(
+    actionLabel: string,
+    action: (wallet: BrowserWallet) => Promise<T>,
+  ) {
+    const provider = await getConnectedWallet()
+    if (!provider) return undefined
+
     setIsWritingChain(true)
-    setChainMessage('Menulis audit memo ke Solana Devnet...')
+    setChainMessage(`${actionLabel} ke program Reka di Solana Devnet...`)
 
     try {
-      const connection = new Connection(clusterApiUrl('devnet'), 'confirmed')
-      const latestBlockhash = await connection.getLatestBlockhash('confirmed')
-      const transaction = new Transaction().add(
-        new TransactionInstruction({
-          keys: [],
-          programId: MEMO_PROGRAM_ID,
-          data: Buffer.from(new TextEncoder().encode(memo)),
-        }),
-      )
-
-      transaction.feePayer = provider.publicKey
-      transaction.recentBlockhash = latestBlockhash.blockhash
-
-      const { signature } = await provider.signAndSendTransaction(transaction)
-      await connection.confirmTransaction(
-        {
-          signature,
-          blockhash: latestBlockhash.blockhash,
-          lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
-        },
-        'confirmed',
-      )
-      setChainMessage('Audit memo berhasil dicatat di Solana Devnet.')
-      return signature
+      const result = await action(provider)
+      setChainMessage(`${actionLabel} berhasil dicatat oleh smart contract Reka.`)
+      return result
     } catch (error) {
       setChainMessage(
         error instanceof Error
           ? error.message
-          : 'Transaksi Devnet dibatalkan atau gagal.',
+          : 'Transaksi program Reka dibatalkan atau gagal.',
       )
       return undefined
     } finally {
@@ -376,6 +363,26 @@ function App() {
     event.preventDefault()
     const serialHash = await hashSerial(form.serialNumber)
     const id = makePassportId(form.brand, form.model)
+    const onChainResult = await runRekaTransaction('Membuat passport', async (wallet) => {
+      const owner = parseWalletOrFallback(form.ownerWallet, wallet.publicKey!)
+      const result = await createPassportOnChain(wallet, {
+        category: form.category,
+        brand: form.brand.trim(),
+        model: form.model.trim(),
+        serialHash,
+        condition: form.condition.trim(),
+        batteryHealth: form.batteryHealth.trim() || 'N/A',
+        estimatedValue: form.estimatedValue.trim(),
+        city: form.city.trim(),
+        owner,
+        ownerName: form.ownerName.trim(),
+        verifierName: form.verifier.trim(),
+      })
+      return { ...result, owner }
+    })
+
+    if (!onChainResult) return
+
     const newPassport: Passport = {
       id,
       category: form.category,
@@ -387,7 +394,7 @@ function App() {
       estimatedValue: form.estimatedValue.trim(),
       city: form.city.trim(),
       ownerName: form.ownerName.trim(),
-      ownerWallet: form.ownerWallet.trim() || shortWallet(walletAddress),
+      ownerWallet: onChainResult.owner.toBase58(),
       verifier: form.verifier.trim(),
       createdAt: today(),
       trustScore: 78,
@@ -404,11 +411,8 @@ function App() {
       ],
     }
 
-    const signature = await writeMemoToDevnet(
-      `Reka CREATE ${id} ${form.category} ${form.brand} ${form.model} ${serialHash}`,
-    )
-    newPassport.lastTxSignature = signature
-    newPassport.history[0].txSignature = signature
+    newPassport.lastTxSignature = onChainResult.signature
+    newPassport.history[0].txSignature = onChainResult.signature
 
     setPassports((current) => [newPassport, ...current])
     setSelectedId(id)
@@ -419,19 +423,29 @@ function App() {
     event.preventDefault()
     if (!selectedPassport) return
 
+    const entryId = makeEntryId()
+    const onChainResult = await runRekaTransaction('Menambah riwayat', (wallet) =>
+      addHistoryOnChain(wallet, {
+        passport: derivePassportPda(selectedPassport.serialHash),
+        entryId,
+        kind: historyKindToNumber(historyForm.kind),
+        title: historyForm.title.trim(),
+        notes: historyForm.notes.trim(),
+        verifierName: historyForm.verifier.trim(),
+      }),
+    )
+
+    if (!onChainResult) return
+
     const entry: PassportHistory = {
-      id: crypto.randomUUID(),
+      id: entryId,
       kind: historyForm.kind,
       title: historyForm.title.trim(),
       notes: historyForm.notes.trim(),
       verifier: historyForm.verifier.trim(),
       date: today(),
+      txSignature: onChainResult.signature,
     }
-
-    const signature = await writeMemoToDevnet(
-      `Reka ${historyForm.kind.toUpperCase()} ${selectedPassport.id} ${historyForm.title}`,
-    )
-    entry.txSignature = signature
 
     setPassports((current) =>
       current.map((passport) =>
@@ -439,7 +453,7 @@ function App() {
           ? {
               ...passport,
               trustScore: Math.min(99, passport.trustScore + 3),
-              lastTxSignature: signature ?? passport.lastTxSignature,
+              lastTxSignature: onChainResult.signature,
               history: [entry, ...passport.history],
             }
           : passport,
@@ -457,19 +471,33 @@ function App() {
     event.preventDefault()
     if (!selectedPassport) return
 
-    const signature = await writeMemoToDevnet(
-      `Reka TRANSFER ${selectedPassport.id} ${selectedPassport.ownerName} -> ${transferForm.ownerName}`,
+    let newOwner: PublicKey
+    try {
+      newOwner = parseRequiredWallet(transferForm.ownerWallet)
+    } catch (error) {
+      setChainMessage(error instanceof Error ? error.message : 'Wallet pemilik baru tidak valid.')
+      return
+    }
+    const onChainResult = await runRekaTransaction('Transfer ownership', (wallet) =>
+      transferPassportOnChain(
+        wallet,
+        derivePassportPda(selectedPassport.serialHash),
+        newOwner,
+        transferForm.ownerName.trim(),
+      ),
     )
 
+    if (!onChainResult) return
+
     const entry: PassportHistory = {
-      id: crypto.randomUUID(),
+      id: makeEntryId(),
       kind: 'Ownership',
       title: `Ownership transferred to ${transferForm.ownerName}`,
       notes:
         'Seller and buyer agreed to transfer this asset passport after device handover.',
       verifier: walletAddress ? shortWallet(walletAddress) : 'Connected wallet',
       date: today(),
-      txSignature: signature,
+      txSignature: onChainResult.signature,
     }
 
     setPassports((current) =>
@@ -480,7 +508,7 @@ function App() {
               ownerName: transferForm.ownerName.trim(),
               ownerWallet: transferForm.ownerWallet.trim(),
               trustScore: Math.min(99, passport.trustScore + 2),
-              lastTxSignature: signature ?? passport.lastTxSignature,
+              lastTxSignature: onChainResult.signature,
               history: [entry, ...passport.history],
             }
           : passport,
@@ -650,7 +678,7 @@ function App() {
 
         <div className="chain-status">
           {isWritingChain ? <Loader2 className="spin" size={18} /> : <FileClock size={18} />}
-          <span>{chainMessage || 'Aksi create, update, dan transfer bisa dicatat ke Solana Devnet Memo.'}</span>
+          <span>{chainMessage || 'Create, update, dan transfer sekarang memanggil smart contract Reka di Solana Devnet.'}</span>
         </div>
 
         <section className="content-grid">
@@ -769,7 +797,7 @@ function App() {
                   onChange={(event) =>
                     setForm({ ...form, ownerWallet: event.target.value })
                   }
-                  placeholder="Optional"
+                  placeholder="Optional, default wallet terhubung"
                 />
               </label>
               <label className="wide">
@@ -897,7 +925,7 @@ function App() {
                     ownerWallet: event.target.value,
                   })
                 }
-                placeholder="Wallet / kontak pemilik baru"
+                placeholder="Public key wallet pemilik baru"
               />
               <button className="primary-button" type="submit" disabled={isWritingChain}>
                 <UserRoundCheck size={17} />
@@ -1113,6 +1141,37 @@ function Metric({
       <strong>{value}</strong>
     </div>
   )
+}
+
+function parseWalletOrFallback(value: string, fallback: PublicKey) {
+  const trimmed = value.trim()
+  if (!trimmed) return fallback
+  return parseRequiredWallet(trimmed)
+}
+
+function parseRequiredWallet(value: string) {
+  try {
+    return new PublicKey(value.trim())
+  } catch {
+    throw new Error('Masukkan public key wallet Solana yang valid.')
+  }
+}
+
+function historyKindToNumber(kind: HistoryKind) {
+  const map: Record<HistoryKind, number> = {
+    Inspection: 0,
+    Repair: 1,
+    Warranty: 2,
+    Ownership: 3,
+  }
+  return map[kind]
+}
+
+function makeEntryId() {
+  return `H${Date.now().toString(36).toUpperCase()}${Math.random()
+    .toString(36)
+    .slice(2, 8)
+    .toUpperCase()}`
 }
 
 async function hashSerial(serial: string) {
