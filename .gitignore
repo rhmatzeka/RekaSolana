@@ -13,6 +13,11 @@ dist-ssr
 target
 .anchor
 package-lock.json
+apps/*/node_modules
+apps/*/dist
+contracts/*/node_modules
+contracts/*/target
+contracts/*/.anchor
 *.local
 
 # Editor directories and files

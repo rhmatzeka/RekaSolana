@@ -37,7 +37,7 @@ The product is designed for the RWA and Consumer Apps tracks:
 The Anchor/Rust program source is included in:
 
 ```text
-programs/reka/src/lib.rs
+contracts/reka/programs/reka/src/lib.rs
 ```
 
 Core instructions:
@@ -62,6 +62,14 @@ bun run check:program
 After installing the Solana toolchain:
 
 ```bash
+bun run contract:build
+bun run contract:deploy
+```
+
+You can also run Anchor directly from the contract workspace:
+
+```bash
+cd contracts/reka
 anchor build
 anchor deploy --provider.cluster devnet
 ```
@@ -88,6 +96,14 @@ anchor deploy --provider.cluster devnet
 8. Scan or share the QR verification link.
 
 ## Local Development
+
+Project layout:
+
+```text
+apps/web         React + Vite frontend
+contracts/reka   Anchor/Rust Solana program
+scripts          Repository utility scripts
+```
 
 Install dependencies:
 
