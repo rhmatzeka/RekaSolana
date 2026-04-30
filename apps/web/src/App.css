@@ -1075,7 +1075,7 @@ textarea {
 
 .device-tray {
   display: grid;
-  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
   gap: 14px;
   align-items: start;
   margin-bottom: 18px;
@@ -1094,15 +1094,37 @@ textarea {
 }
 
 .device-tray .passport-list {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  display: flex;
   gap: 12px;
   margin-top: 0;
+  padding: 0 4px 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scroll-padding-inline: 4px;
+  scroll-snap-type: x proximity;
+}
+
+.device-tray .passport-list::-webkit-scrollbar {
+  height: 8px;
+}
+
+.device-tray .passport-list::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(203, 213, 225, 0.36);
+}
+
+.device-tray .passport-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.38);
 }
 
 .passport-row {
+  flex: 0 0 clamp(220px, 24vw, 300px);
   min-height: 64px;
+  padding: 10px 12px;
   border-radius: 18px;
+  scroll-snap-align: start;
 }
 
 .passport-row.active {
@@ -1418,8 +1440,12 @@ textarea {
     height: auto;
   }
 
-  .passport-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .device-tray {
+    grid-template-columns: 1fr;
+  }
+
+  .device-tray .passport-list {
+    display: flex;
   }
 
   .passport-hero {
@@ -1516,14 +1542,19 @@ textarea {
   }
 
   .topbar-actions,
-  .passport-list,
   .metric-grid,
   .form-grid {
     grid-template-columns: 1fr;
   }
 
-  .passport-list {
-    display: grid;
+  .device-tray .passport-list {
+    display: flex;
+    margin-right: -18px;
+    padding-right: 18px;
+  }
+
+  .passport-row {
+    flex-basis: 230px;
   }
 
   .passport-hero {
