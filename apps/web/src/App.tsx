@@ -43,6 +43,7 @@ type AttestationSource = 'On-chain service' | 'Verified receipt' | 'Owner claim'
 type AttestationStatus = 'Pending' | 'Verified' | 'Rejected' | 'Disputed'
 type HistoryConfidenceLevel = 'High' | 'Medium' | 'Low'
 type BuyerRiskLevel = 'Low' | 'Medium' | 'High'
+type HistoryActionTab = 'disclosure' | 'event' | 'checklist'
 type SellerDisclosureStatus =
   | 'Missing'
   | 'No known prior repair'
@@ -410,6 +411,15 @@ function railButtonClass(active: boolean) {
   )
 }
 
+function historyActionTabClass(active: boolean) {
+  return cx(
+    'inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-black transition',
+    active
+      ? 'bg-teal-600 text-white shadow-sm shadow-teal-900/15'
+      : 'text-stone-600 hover:bg-teal-50 hover:text-teal-700',
+  )
+}
+
 function App() {
   const [boot] = useState(() => {
     const storedPassports = readStoredPassports()
@@ -422,6 +432,7 @@ function App() {
   const [passports, setPassports] = useState<Passport[]>(boot.passports)
   const [selectedId, setSelectedId] = useState(boot.selectedId)
   const [activeRoute, setActiveRoute] = useState<AppRoute>(boot.initialRoute)
+  const [activeHistoryAction, setActiveHistoryAction] = useState<HistoryActionTab>('disclosure')
   const [query, setQuery] = useState('')
   const [form, setForm] = useState<FormState>(blankForm)
   const [historyForm, setHistoryForm] = useState({
@@ -1493,8 +1504,36 @@ function App() {
               </div>
             </div>
 
-            <div className="grid gap-4">
-            <div className={ui.panel}>
+            <div className={cx(ui.panel, 'sticky top-6 grid gap-4 self-start')}>
+              <div className="grid grid-cols-3 gap-2 rounded-xl border border-stone-200 bg-white/64 p-1">
+                <button
+                  className={historyActionTabClass(activeHistoryAction === 'disclosure')}
+                  type="button"
+                  onClick={() => setActiveHistoryAction('disclosure')}
+                >
+                  <ClipboardCheck size={15} />
+                  Disclosure
+                </button>
+                <button
+                  className={historyActionTabClass(activeHistoryAction === 'event')}
+                  type="button"
+                  onClick={() => setActiveHistoryAction('event')}
+                >
+                  <FileClock size={15} />
+                  Event
+                </button>
+                <button
+                  className={historyActionTabClass(activeHistoryAction === 'checklist')}
+                  type="button"
+                  onClick={() => setActiveHistoryAction('checklist')}
+                >
+                  <ListChecks size={15} />
+                  Checklist
+                </button>
+              </div>
+
+            {activeHistoryAction === 'disclosure' ? (
+            <div>
               <div className={ui.panelHeading}>
                 <div>
                   <p className={ui.eyebrow}>Seller disclosure</p>
@@ -1545,8 +1584,10 @@ function App() {
                 </button>
               </form>
             </div>
+            ) : null}
 
-            <div className={ui.panel}>
+            {activeHistoryAction === 'event' ? (
+            <div>
               <div className={ui.panelHeading}>
                 <div>
                   <p className={ui.eyebrow}>Add event</p>
@@ -1641,8 +1682,10 @@ function App() {
                 </button>
               </form>
             </div>
+            ) : null}
 
-            <div className={ui.panel}>
+            {activeHistoryAction === 'checklist' ? (
+            <div>
               <div className={ui.panelHeading}>
                 <div>
                   <p className={ui.eyebrow}>Buyer protection</p>
@@ -1659,10 +1702,10 @@ function App() {
                   }
                   placeholder="Nama teknisi / verifier inspeksi"
                 />
-                <div className="grid gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {inspectionItems.map((item) => (
                     <label
-                      className="grid grid-cols-[minmax(0,1fr)_130px] items-center gap-2 text-xs font-bold text-stone-600"
+                      className="grid gap-1 text-xs font-bold text-stone-600"
                       key={item.key}
                     >
                       {item.label}
@@ -1690,6 +1733,7 @@ function App() {
                 </button>
               </form>
             </div>
+            ) : null}
             </div>
           </section>
         ) : null}
