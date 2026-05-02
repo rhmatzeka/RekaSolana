@@ -163,6 +163,9 @@ pub mod reka {
         history.verifier = ctx.accounts.verifier.key();
         history.entry_id = input.entry_id;
         history.kind = input.kind;
+        history.service_date = input.service_date;
+        history.source = input.source;
+        history.status = input.status;
         history.title = input.title;
         history.notes = input.notes;
         history.evidence_hash = input.evidence_hash;
@@ -184,6 +187,9 @@ pub mod reka {
             verifier: history.verifier,
             verifier_profile: verifier_profile.key(),
             kind: history.kind,
+            service_date: history.service_date,
+            source: history.source,
+            status: history.status,
             evidence_hash: history.evidence_hash.clone(),
             created_at: now,
         });
@@ -346,6 +352,9 @@ pub struct CreatePassportInput {
 pub struct AddHistoryInput {
     pub entry_id: String,
     pub kind: u8,
+    pub service_date: i64,
+    pub source: u8,
+    pub status: u8,
     pub title: String,
     pub notes: String,
     pub evidence_hash: String,
@@ -422,6 +431,9 @@ pub struct HistoryEntry {
     #[max_len(32)]
     pub entry_id: String,
     pub kind: u8,
+    pub service_date: i64,
+    pub source: u8,
+    pub status: u8,
     #[max_len(72)]
     pub title: String,
     #[max_len(280)]
@@ -476,6 +488,9 @@ pub struct HistoryAdded {
     pub verifier: Pubkey,
     pub verifier_profile: Pubkey,
     pub kind: u8,
+    pub service_date: i64,
+    pub source: u8,
+    pub status: u8,
     pub evidence_hash: String,
     pub created_at: i64,
 }
@@ -504,6 +519,10 @@ pub enum RekaError {
     InactiveVerifier,
     #[msg("A required field is empty.")]
     FieldRequired,
+    #[msg("History source must be 0 direct on-chain, 1 verified off-chain evidence, or 2 owner claim.")]
+    InvalidHistorySource,
+    #[msg("History status must be 0 pending, 1 verified, 2 rejected, or 3 disputed.")]
+    InvalidHistoryStatus,
 }
 
 fn validate_create_passport_input(input: &CreatePassportInput) -> Result<()> {
@@ -529,6 +548,8 @@ fn validate_add_history_input(input: &AddHistoryInput) -> Result<()> {
     require_not_empty(&input.evidence_hash)?;
     require_not_empty(&input.evidence_uri)?;
     require!(input.kind <= 3, RekaError::InvalidHistoryKind);
+    require!(input.source <= 2, RekaError::InvalidHistorySource);
+    require!(input.status <= 3, RekaError::InvalidHistoryStatus);
     Ok(())
 }
 

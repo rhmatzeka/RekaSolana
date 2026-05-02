@@ -5,6 +5,7 @@ import {
 } from '@coral-xyz/anchor'
 import {
   clusterApiUrl,
+  type Cluster,
   Connection,
   PublicKey,
   SystemProgram,
@@ -13,10 +14,14 @@ import {
 import { Buffer } from 'buffer'
 import rekaIdl from '../idl/reka.json'
 
+const DEFAULT_REKA_PROGRAM_ID = 'AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg'
+const DEFAULT_REKA_CLUSTER: Cluster = 'devnet'
+
 export const REKA_PROGRAM_ID = new PublicKey(
-  'AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg',
+  import.meta.env.VITE_REKA_PROGRAM_ID || DEFAULT_REKA_PROGRAM_ID,
 )
-export const REKA_CLUSTER = 'devnet'
+export const REKA_CLUSTER = readRekaCluster()
+export const REKA_RPC_URL = import.meta.env.VITE_REKA_RPC_URL || ''
 
 export type BrowserWallet = {
   publicKey?: PublicKey
@@ -43,6 +48,9 @@ export type AddHistoryOnChainInput = {
   passport: PublicKey
   entryId: string
   kind: number
+  serviceDate: number
+  source: number
+  status: number
   title: string
   notes: string
   evidenceHash: string
@@ -186,6 +194,9 @@ export async function addHistoryOnChain(
     .addHistory({
       entryId: input.entryId,
       kind: input.kind,
+      serviceDate: input.serviceDate,
+      source: input.source,
+      status: input.status,
       title: input.title,
       notes: input.notes,
       evidenceHash: input.evidenceHash,
@@ -252,5 +263,14 @@ function getRekaProgram(wallet: BrowserWallet) {
 }
 
 function createRekaConnection() {
-  return new Connection(clusterApiUrl(REKA_CLUSTER), 'confirmed')
+  return new Connection(REKA_RPC_URL || clusterApiUrl(REKA_CLUSTER), 'confirmed')
+}
+
+function readRekaCluster(): Cluster {
+  const cluster = import.meta.env.VITE_REKA_CLUSTER
+  if (cluster === 'devnet' || cluster === 'testnet' || cluster === 'mainnet-beta') {
+    return cluster
+  }
+
+  return DEFAULT_REKA_CLUSTER
 }

@@ -571,6 +571,16 @@
       "code": 6006,
       "name": "FieldRequired",
       "msg": "A required field is empty."
+    },
+    {
+      "code": 6007,
+      "name": "InvalidHistorySource",
+      "msg": "History source must be 0 direct on-chain, 1 verified off-chain evidence, or 2 owner claim."
+    },
+    {
+      "code": 6008,
+      "name": "InvalidHistoryStatus",
+      "msg": "History status must be 0 pending, 1 verified, 2 rejected, or 3 disputed."
     }
   ],
   "types": [
@@ -585,6 +595,18 @@
           },
           {
             "name": "kind",
+            "type": "u8"
+          },
+          {
+            "name": "service_date",
+            "type": "i64"
+          },
+          {
+            "name": "source",
+            "type": "u8"
+          },
+          {
+            "name": "status",
             "type": "u8"
           },
           {
@@ -764,6 +786,18 @@
             "type": "u8"
           },
           {
+            "name": "service_date",
+            "type": "i64"
+          },
+          {
+            "name": "source",
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
             "name": "evidence_hash",
             "type": "string"
           },
@@ -793,6 +827,18 @@
           },
           {
             "name": "kind",
+            "type": "u8"
+          },
+          {
+            "name": "service_date",
+            "type": "i64"
+          },
+          {
+            "name": "source",
+            "type": "u8"
+          },
+          {
+            "name": "status",
             "type": "u8"
           },
           {
