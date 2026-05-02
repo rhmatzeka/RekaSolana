@@ -1497,6 +1497,58 @@ function App() {
             <div className={ui.panel}>
               <div className={ui.panelHeading}>
                 <div>
+                  <p className={ui.eyebrow}>Seller disclosure</p>
+                  <h3>Pengakuan penjual</h3>
+                </div>
+                <ClipboardCheck className="text-teal-700" size={20} />
+              </div>
+              <form className={ui.compactForm} onSubmit={saveSellerDisclosure}>
+                <select
+                  className={ui.input}
+                  value={sellerDisclosureForm.status}
+                  onChange={(event) =>
+                    setSellerDisclosureForm({
+                      ...sellerDisclosureForm,
+                      status: event.target.value as SellerDisclosureStatus,
+                    })
+                  }
+                >
+                  <option>No known prior repair</option>
+                  <option>Prior repair disclosed</option>
+                  <option>Seller declined disclosure</option>
+                </select>
+                <input
+                  className={ui.input}
+                  value={sellerDisclosureForm.knownRepairCount}
+                  onChange={(event) =>
+                    setSellerDisclosureForm({
+                      ...sellerDisclosureForm,
+                      knownRepairCount: event.target.value,
+                    })
+                  }
+                  placeholder="Jumlah service yang diketahui"
+                />
+                <textarea
+                  className={ui.textarea}
+                  value={sellerDisclosureForm.notes}
+                  onChange={(event) =>
+                    setSellerDisclosureForm({
+                      ...sellerDisclosureForm,
+                      notes: event.target.value,
+                    })
+                  }
+                  placeholder="Catatan seller: part diganti, pernah bongkar, atau alasan tidak disclose"
+                />
+                <button className={ui.secondaryButton} type="submit">
+                  <ClipboardCheck size={17} />
+                  Save Disclosure
+                </button>
+              </form>
+            </div>
+
+            <div className={ui.panel}>
+              <div className={ui.panelHeading}>
+                <div>
                   <p className={ui.eyebrow}>Add event</p>
                   <h3>Tambah riwayat</h3>
                 </div>
@@ -1586,58 +1638,6 @@ function App() {
                 <button className={ui.secondaryButton} type="submit" disabled={isWritingChain}>
                   <FileClock size={17} />
                   {historyForm.source === 'Owner claim' ? 'Save Owner Claim' : 'Add Attestation'}
-                </button>
-              </form>
-            </div>
-
-            <div className={ui.panel}>
-              <div className={ui.panelHeading}>
-                <div>
-                  <p className={ui.eyebrow}>Seller disclosure</p>
-                  <h3>Pengakuan penjual</h3>
-                </div>
-                <ClipboardCheck className="text-teal-700" size={20} />
-              </div>
-              <form className={ui.compactForm} onSubmit={saveSellerDisclosure}>
-                <select
-                  className={ui.input}
-                  value={sellerDisclosureForm.status}
-                  onChange={(event) =>
-                    setSellerDisclosureForm({
-                      ...sellerDisclosureForm,
-                      status: event.target.value as SellerDisclosureStatus,
-                    })
-                  }
-                >
-                  <option>No known prior repair</option>
-                  <option>Prior repair disclosed</option>
-                  <option>Seller declined disclosure</option>
-                </select>
-                <input
-                  className={ui.input}
-                  value={sellerDisclosureForm.knownRepairCount}
-                  onChange={(event) =>
-                    setSellerDisclosureForm({
-                      ...sellerDisclosureForm,
-                      knownRepairCount: event.target.value,
-                    })
-                  }
-                  placeholder="Jumlah service yang diketahui"
-                />
-                <textarea
-                  className={ui.textarea}
-                  value={sellerDisclosureForm.notes}
-                  onChange={(event) =>
-                    setSellerDisclosureForm({
-                      ...sellerDisclosureForm,
-                      notes: event.target.value,
-                    })
-                  }
-                  placeholder="Catatan seller: part diganti, pernah bongkar, atau alasan tidak disclose"
-                />
-                <button className={ui.secondaryButton} type="submit">
-                  <ClipboardCheck size={17} />
-                  Save Disclosure
                 </button>
               </form>
             </div>
