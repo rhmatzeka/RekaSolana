@@ -66,6 +66,8 @@ Current implementation status:
 - Solana Devnet smart contract calls are wired from the browser when a wallet is connected.
 - Custom Anchor program source is included and the frontend is configured to call it.
 - Program address: `AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg`.
+- Latest Devnet upgrade includes service history attestation fields
+  (`service_date`, `source`, and `status`).
 
 Check whether the Devnet program is actually deployed and executable:
 
@@ -147,8 +149,10 @@ bun run check:program
 
 ## Production Roadmap
 
-- Deploy the Anchor program to Solana Devnet.
-- Generate the production IDL directly from `anchor build` and replace the handwritten frontend IDL.
+- Fetch passport and history accounts directly from Solana instead of relying
+  on browser-local state after transactions.
+- Generate the production IDL directly from `anchor build` and keep the
+  frontend IDL synchronized automatically.
 - Add persistent off-chain metadata storage for public passport pages.
 - Add verifier roles and review workflow.
 - Add better fraud prevention around serial hash duplication.
