@@ -5,9 +5,11 @@ import {
   BookOpenCheck,
   Camera,
   CheckCircle2,
+  ClipboardCheck,
   Copy,
   FileClock,
   Fingerprint,
+  ListChecks,
   Laptop,
   Link2,
   Loader2,
@@ -40,6 +42,13 @@ type HistoryKind = 'Inspection' | 'Repair' | 'Ownership' | 'Warranty'
 type AttestationSource = 'On-chain service' | 'Verified receipt' | 'Owner claim'
 type AttestationStatus = 'Pending' | 'Verified' | 'Rejected' | 'Disputed'
 type HistoryConfidenceLevel = 'High' | 'Medium' | 'Low'
+type BuyerRiskLevel = 'Low' | 'Medium' | 'High'
+type SellerDisclosureStatus =
+  | 'Missing'
+  | 'No known prior repair'
+  | 'Prior repair disclosed'
+  | 'Seller declined disclosure'
+type ChecklistValue = 'Pass' | 'Watch' | 'Fail' | 'Unknown'
 type AppRoute = 'home' | 'passport' | 'devices' | 'history' | 'verifier' | 'transfer' | 'settings'
 
 type PassportHistory = {
@@ -73,7 +82,30 @@ type Passport = {
   createdAt: string
   trustScore: number
   lastTxSignature?: string
+  sellerDisclosure?: SellerDisclosure
+  inspectionChecklist?: InspectionChecklist
   history: PassportHistory[]
+}
+
+type SellerDisclosure = {
+  status: SellerDisclosureStatus
+  sellerName: string
+  knownRepairCount: string
+  notes: string
+  declaredAt: string
+}
+
+type InspectionChecklist = {
+  battery: ChecklistValue
+  display: ChecklistValue
+  camera: ChecklistValue
+  ports: ChecklistValue
+  storage: ChecklistValue
+  body: ChecklistValue
+  opened: ChecklistValue
+  parts: ChecklistValue
+  verifier: string
+  checkedAt: string
 }
 
 type FormState = {
@@ -265,6 +297,33 @@ function readInitialSelectedId(passports: Passport[]) {
   return passports[0]?.id ?? initialPassports[0].id
 }
 
+const blankInspectionChecklist: InspectionChecklist = {
+  battery: 'Unknown',
+  display: 'Unknown',
+  camera: 'Unknown',
+  ports: 'Unknown',
+  storage: 'Unknown',
+  body: 'Unknown',
+  opened: 'Unknown',
+  parts: 'Unknown',
+  verifier: '',
+  checkedAt: today(),
+}
+
+const inspectionItems: Array<{
+  key: keyof Omit<InspectionChecklist, 'verifier' | 'checkedAt'>
+  label: string
+}> = [
+  { key: 'battery', label: 'Battery' },
+  { key: 'display', label: 'Display' },
+  { key: 'camera', label: 'Camera' },
+  { key: 'ports', label: 'Ports' },
+  { key: 'storage', label: 'SSD / storage' },
+  { key: 'body', label: 'Body' },
+  { key: 'opened', label: 'Opened / tampered' },
+  { key: 'parts', label: 'Parts originality' },
+]
+
 function readInitialRoute(passports: Passport[]): AppRoute {
   const path = normalizePath(window.location.pathname)
   const passportId = getPassportIdFromLocation()
@@ -375,6 +434,14 @@ function App() {
     verifier: '',
     evidenceUri: '',
   })
+  const [sellerDisclosureForm, setSellerDisclosureForm] = useState({
+    status: 'No known prior repair' as SellerDisclosureStatus,
+    knownRepairCount: '',
+    notes: '',
+  })
+  const [inspectionForm, setInspectionForm] = useState<InspectionChecklist>({
+    ...blankInspectionChecklist,
+  })
   const [verifierForm, setVerifierForm] = useState({
     name: '',
     location: '',
@@ -457,6 +524,15 @@ function App() {
     : 0
   const historyConfidence = selectedPassport
     ? getHistoryConfidence(selectedPassport)
+    : undefined
+  const sellerDisclosure = selectedPassport
+    ? getSellerDisclosure(selectedPassport)
+    : undefined
+  const inspectionSummary = selectedPassport
+    ? getInspectionSummary(selectedPassport)
+    : undefined
+  const buyerRisk = selectedPassport
+    ? getBuyerRisk(selectedPassport)
     : undefined
 
   const publicUrl = selectedPassport
@@ -615,6 +691,123 @@ function App() {
     setPassports((current) => [newPassport, ...current])
     navigateTo('passport', id)
     setForm(blankForm)
+  }
+
+  function saveSellerDisclosure(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!selectedPassport) return
+
+    const disclosure: SellerDisclosure = {
+      status: sellerDisclosureForm.status,
+      sellerName: selectedPassport.ownerName,
+      knownRepairCount:
+        sellerDisclosureForm.status === 'No known prior repair'
+          ? '0'
+          : sellerDisclosureForm.knownRepairCount.trim() || 'Unknown',
+      notes:
+        sellerDisclosureForm.notes.trim() ||
+        getDisclosureDefaultNotes(sellerDisclosureForm.status),
+      declaredAt: today(),
+    }
+    const entry: PassportHistory = {
+      id: makeEntryId(),
+      kind: 'Inspection',
+      serviceDate: today(),
+      source: 'Owner claim',
+      status:
+        sellerDisclosureForm.status === 'Seller declined disclosure'
+          ? 'Disputed'
+          : 'Pending',
+      title: `Seller disclosure: ${sellerDisclosureForm.status}`,
+      notes: `${disclosure.notes} Known repair count: ${disclosure.knownRepairCount}.`,
+      verifier: selectedPassport.ownerName,
+      date: today(),
+    }
+
+    setPassports((current) =>
+      current.map((passport) =>
+        passport.id === selectedPassport.id
+          ? {
+              ...passport,
+              sellerDisclosure: disclosure,
+              history: [entry, ...passport.history],
+            }
+          : passport,
+      ),
+    )
+    setChainMessage('Seller disclosure disimpan. Ini tetap klaim seller sampai diverifikasi.')
+  }
+
+  function saveInspectionChecklist(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!selectedPassport) return
+
+    const checklist: InspectionChecklist = {
+      ...inspectionForm,
+      verifier: inspectionForm.verifier.trim() || selectedPassport.verifier,
+      checkedAt: today(),
+    }
+    const riskyFindings = inspectionItems
+      .filter(({ key }) => checklist[key] === 'Watch' || checklist[key] === 'Fail')
+      .map(({ label }) => label)
+    const entry: PassportHistory = {
+      id: makeEntryId(),
+      kind: 'Inspection',
+      serviceDate: today(),
+      source: checklist.verifier ? 'Verified receipt' : 'Owner claim',
+      status: riskyFindings.length > 0 ? 'Disputed' : 'Pending',
+      title: 'Buyer protection inspection checklist',
+      notes:
+        riskyFindings.length > 0
+          ? `Inspection found risk signals: ${riskyFindings.join(', ')}.`
+          : 'Checklist completed. Items marked unknown still need verifier evidence before trust increases.',
+      verifier: checklist.verifier || 'Checklist reviewer',
+      date: today(),
+    }
+
+    setPassports((current) =>
+      current.map((passport) =>
+        passport.id === selectedPassport.id
+          ? {
+              ...passport,
+              inspectionChecklist: checklist,
+              history: [entry, ...passport.history],
+            }
+          : passport,
+      ),
+    )
+    setChainMessage('Inspection checklist disimpan dan buyer risk diperbarui.')
+  }
+
+  function addHiddenRepairDispute() {
+    if (!selectedPassport) return
+
+    const entry: PassportHistory = {
+      id: makeEntryId(),
+      kind: 'Repair',
+      serviceDate: today(),
+      source: 'Owner claim',
+      status: 'Disputed',
+      title: 'Potential hidden repair history',
+      notes:
+        'Buyer or verifier flagged a risk that prior repairs may be missing from seller disclosure. Require fresh inspection evidence before pricing as clean.',
+      verifier: walletAddress ? shortWallet(walletAddress) : 'Buyer protection',
+      date: today(),
+    }
+
+    setPassports((current) =>
+      current.map((passport) =>
+        passport.id === selectedPassport.id
+          ? {
+              ...passport,
+              trustScore: clampTrustScore(passport.trustScore - 3),
+              history: [entry, ...passport.history],
+            }
+          : passport,
+      ),
+    )
+    navigateTo('history')
+    setChainMessage('Dispute ditambahkan. Device tidak boleh dipresentasikan sebagai clean tanpa evidence.')
   }
 
   async function addHistory(event: React.FormEvent<HTMLFormElement>) {
@@ -1015,6 +1208,32 @@ function App() {
                       `${programStatusText}. ${unverifiedHistoryCount} riwayat belum terverifikasi.`}
                   </span>
                 </div>
+                <div className="mt-4 grid gap-3 rounded-2xl border border-stone-200 bg-white/64 p-4 lg:grid-cols-[1fr_1fr_auto]">
+                  <Metric
+                    icon={ClipboardCheck}
+                    label="Seller disclosure"
+                    value={sellerDisclosure?.status ?? 'Missing'}
+                  />
+                  <Metric
+                    icon={ListChecks}
+                    label="Inspection checklist"
+                    value={inspectionSummary?.label ?? 'Not checked'}
+                  />
+                  <div className={cx('rounded-xl border p-4', buyerRiskClass(buyerRisk?.level ?? 'High'))}>
+                    <ShieldCheck size={18} />
+                    <span className="mt-2 block text-xs font-bold">Buyer risk</span>
+                    <strong className="mt-1 block text-sm font-black">{buyerRisk?.level ?? 'High'}</strong>
+                    <p className="m-0 mt-2 text-xs font-bold leading-5">{buyerRisk?.summary}</p>
+                    <button
+                      className="mt-3 inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-current bg-white/70 px-3 text-xs font-black"
+                      type="button"
+                      onClick={addHiddenRepairDispute}
+                    >
+                      <FileClock size={15} />
+                      Flag hidden repair
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <aside className={cx(ui.panel, 'grid content-start gap-4 p-5')}>
@@ -1274,6 +1493,7 @@ function App() {
               </div>
             </div>
 
+            <div className="grid gap-4">
             <div className={ui.panel}>
               <div className={ui.panelHeading}>
                 <div>
@@ -1368,6 +1588,108 @@ function App() {
                   {historyForm.source === 'Owner claim' ? 'Save Owner Claim' : 'Add Attestation'}
                 </button>
               </form>
+            </div>
+
+            <div className={ui.panel}>
+              <div className={ui.panelHeading}>
+                <div>
+                  <p className={ui.eyebrow}>Seller disclosure</p>
+                  <h3>Pengakuan penjual</h3>
+                </div>
+                <ClipboardCheck className="text-teal-700" size={20} />
+              </div>
+              <form className={ui.compactForm} onSubmit={saveSellerDisclosure}>
+                <select
+                  className={ui.input}
+                  value={sellerDisclosureForm.status}
+                  onChange={(event) =>
+                    setSellerDisclosureForm({
+                      ...sellerDisclosureForm,
+                      status: event.target.value as SellerDisclosureStatus,
+                    })
+                  }
+                >
+                  <option>No known prior repair</option>
+                  <option>Prior repair disclosed</option>
+                  <option>Seller declined disclosure</option>
+                </select>
+                <input
+                  className={ui.input}
+                  value={sellerDisclosureForm.knownRepairCount}
+                  onChange={(event) =>
+                    setSellerDisclosureForm({
+                      ...sellerDisclosureForm,
+                      knownRepairCount: event.target.value,
+                    })
+                  }
+                  placeholder="Jumlah service yang diketahui"
+                />
+                <textarea
+                  className={ui.textarea}
+                  value={sellerDisclosureForm.notes}
+                  onChange={(event) =>
+                    setSellerDisclosureForm({
+                      ...sellerDisclosureForm,
+                      notes: event.target.value,
+                    })
+                  }
+                  placeholder="Catatan seller: part diganti, pernah bongkar, atau alasan tidak disclose"
+                />
+                <button className={ui.secondaryButton} type="submit">
+                  <ClipboardCheck size={17} />
+                  Save Disclosure
+                </button>
+              </form>
+            </div>
+
+            <div className={ui.panel}>
+              <div className={ui.panelHeading}>
+                <div>
+                  <p className={ui.eyebrow}>Buyer protection</p>
+                  <h3>Inspection checklist</h3>
+                </div>
+                <ListChecks className="text-teal-700" size={20} />
+              </div>
+              <form className={ui.compactForm} onSubmit={saveInspectionChecklist}>
+                <input
+                  className={ui.input}
+                  value={inspectionForm.verifier}
+                  onChange={(event) =>
+                    setInspectionForm({ ...inspectionForm, verifier: event.target.value })
+                  }
+                  placeholder="Nama teknisi / verifier inspeksi"
+                />
+                <div className="grid gap-2">
+                  {inspectionItems.map((item) => (
+                    <label
+                      className="grid grid-cols-[minmax(0,1fr)_130px] items-center gap-2 text-xs font-bold text-stone-600"
+                      key={item.key}
+                    >
+                      {item.label}
+                      <select
+                        className={ui.input}
+                        value={inspectionForm[item.key]}
+                        onChange={(event) =>
+                          setInspectionForm({
+                            ...inspectionForm,
+                            [item.key]: event.target.value as ChecklistValue,
+                          })
+                        }
+                      >
+                        <option>Unknown</option>
+                        <option>Pass</option>
+                        <option>Watch</option>
+                        <option>Fail</option>
+                      </select>
+                    </label>
+                  ))}
+                </div>
+                <button className={ui.secondaryButton} type="submit">
+                  <ListChecks size={17} />
+                  Save Checklist
+                </button>
+              </form>
+            </div>
             </div>
           </section>
         ) : null}
@@ -1783,6 +2105,96 @@ function getHistoryConfidence(passport: Passport) {
     riskyCount: riskyEntries,
     summary,
   }
+}
+
+function getSellerDisclosure(passport: Passport): SellerDisclosure {
+  return (
+    passport.sellerDisclosure ?? {
+      status: 'Missing',
+      sellerName: passport.ownerName,
+      knownRepairCount: 'Unknown',
+      notes: 'Seller has not disclosed known prior repair history.',
+      declaredAt: '',
+    }
+  )
+}
+
+function getInspectionSummary(passport: Passport) {
+  const checklist = passport.inspectionChecklist
+  if (!checklist) {
+    return {
+      label: 'Not checked',
+      knownCount: 0,
+      riskyCount: inspectionItems.length,
+      unknownCount: inspectionItems.length,
+    }
+  }
+
+  const values = inspectionItems.map(({ key }) => checklist[key])
+  const riskyCount = values.filter((value) => value === 'Watch' || value === 'Fail').length
+  const unknownCount = values.filter((value) => value === 'Unknown').length
+  const knownCount = values.length - unknownCount
+
+  return {
+    label: `${knownCount}/${values.length} checked`,
+    knownCount,
+    riskyCount,
+    unknownCount,
+  }
+}
+
+function getBuyerRisk(passport: Passport) {
+  const disclosure = getSellerDisclosure(passport)
+  const inspection = getInspectionSummary(passport)
+  const confidence = getHistoryConfidence(passport)
+  const hasDispute = passport.history.some((item) => getAttestationStatus(item) === 'Disputed')
+
+  let level: BuyerRiskLevel = 'Low'
+  if (
+    disclosure.status === 'Missing' ||
+    disclosure.status === 'Seller declined disclosure' ||
+    inspection.knownCount < 5 ||
+    confidence.level === 'Low' ||
+    hasDispute
+  ) {
+    level = 'High'
+  } else if (
+    disclosure.status === 'Prior repair disclosed' ||
+    inspection.unknownCount > 0 ||
+    inspection.riskyCount > 0 ||
+    confidence.level === 'Medium'
+  ) {
+    level = 'Medium'
+  }
+
+  const summary =
+    level === 'High'
+      ? 'Do not price as clean without fresh inspection evidence.'
+      : level === 'Medium'
+        ? 'Some risk remains; compare disclosure with inspection results.'
+        : 'Disclosure, inspection, and verified history are aligned.'
+
+  return { level, summary }
+}
+
+function buyerRiskClass(level: BuyerRiskLevel) {
+  const styles: Record<BuyerRiskLevel, string> = {
+    Low: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+    Medium: 'border-amber-200 bg-amber-50 text-amber-800',
+    High: 'border-rose-200 bg-rose-50 text-rose-800',
+  }
+  return styles[level]
+}
+
+function getDisclosureDefaultNotes(status: SellerDisclosureStatus) {
+  const notes: Record<SellerDisclosureStatus, string> = {
+    Missing: 'Seller has not disclosed known prior repair history.',
+    'No known prior repair': 'Seller states they know no prior repair history.',
+    'Prior repair disclosed': 'Seller disclosed prior repair history.',
+    'Seller declined disclosure':
+      'Seller declined to disclose repair history; buyer should require inspection.',
+  }
+  return notes[status]
 }
 
 function getAttestationStatus(item: PassportHistory): AttestationStatus {

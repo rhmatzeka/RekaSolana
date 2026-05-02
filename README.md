@@ -32,6 +32,9 @@ The product is designed for the RWA and Consumer Apps tracks:
   or owner-reported and still pending verification.
 - Show history confidence, first verified date, and unknown prior history so
   buyers do not confuse missing data with a clean device.
+- Require seller disclosure and a buyer inspection checklist before treating an
+  older device as low risk.
+- Let buyers flag possible hidden repair history as a disputed timeline entry.
 - Transfer passport ownership after resale.
 - Generate a public QR verification link.
 - Write create, update, and transfer transactions to the Reka Anchor program on Solana Devnet.
@@ -59,6 +62,10 @@ it as verified audit-trail data.
 For older devices, Reka intentionally shows `Unknown before first verified`.
 This prevents a verifier from implying that one verified service means the
 device has only been serviced once in its lifetime.
+
+Seller disclosure is intentionally treated as a claim, not proof. If the seller
+does not disclose or declines to answer, the passport shows elevated buyer risk
+until a fresh inspection checklist and evidence-backed attestation are added.
 
 Current implementation status:
 
@@ -108,9 +115,10 @@ anchor deploy --provider.cluster devnet
 4. Create a passport for a laptop, phone, or camera.
 5. Confirm the Solana program transaction.
 6. Add a service or inspection history entry.
-7. Try adding an owner-reported service claim to show the unverified gap flow.
-8. Transfer the passport to a new owner.
-9. Scan or share the QR verification link.
+7. Add seller disclosure, then compare it with the buyer inspection checklist.
+8. Try the hidden-repair dispute action to show how missing history is flagged.
+9. Transfer the passport to a new owner.
+10. Scan or share the QR verification link.
 
 ## Local Development
 
