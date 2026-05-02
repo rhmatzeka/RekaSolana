@@ -5,21 +5,18 @@ import {
   BookOpenCheck,
   Camera,
   CheckCircle2,
-  CircleDollarSign,
   Copy,
   FileClock,
   Fingerprint,
   Laptop,
   Link2,
   Loader2,
-  MapPin,
   Plus,
   Settings,
   Search,
   ScanLine,
   ShieldCheck,
   Smartphone,
-  Store,
   UserRoundCheck,
   Wallet,
   Wrench,
@@ -37,16 +34,20 @@ import {
   transferPassportOnChain,
   type BrowserWallet,
 } from './lib/rekaProgram'
-import './App.css'
 
 type DeviceCategory = 'Laptop' | 'Phone' | 'Camera'
 type HistoryKind = 'Inspection' | 'Repair' | 'Ownership' | 'Warranty'
-type ViewMode = 'home' | 'app'
-type RailSection = 'passport' | 'devices' | 'history' | 'verifier' | 'settings'
+type AttestationSource = 'On-chain service' | 'Verified receipt' | 'Owner claim'
+type AttestationStatus = 'Pending' | 'Verified' | 'Rejected' | 'Disputed'
+type HistoryConfidenceLevel = 'High' | 'Medium' | 'Low'
+type AppRoute = 'home' | 'passport' | 'devices' | 'history' | 'verifier' | 'transfer' | 'settings'
 
 type PassportHistory = {
   id: string
   kind: HistoryKind
+  serviceDate?: string
+  source?: AttestationSource
+  status?: AttestationStatus
   title: string
   notes: string
   evidenceHash?: string
@@ -130,6 +131,9 @@ const initialPassports: Passport[] = [
       {
         id: 'H-001',
         kind: 'Inspection',
+        serviceDate: '2026-04-19',
+        source: 'On-chain service',
+        status: 'Verified',
         title: 'Initial device inspection',
         notes:
           'Body minor dent, keyboard normal, display no dead pixel, battery cycle 412.',
@@ -141,6 +145,9 @@ const initialPassports: Passport[] = [
       {
         id: 'H-002',
         kind: 'Warranty',
+        serviceDate: '2026-04-20',
+        source: 'Verified receipt',
+        status: 'Verified',
         title: '30-day campus store warranty',
         notes: 'Warranty covers keyboard, display, SSD, and charging port.',
         verifier: 'Koperasi Mahasiswa',
@@ -167,6 +174,9 @@ const initialPassports: Passport[] = [
       {
         id: 'H-003',
         kind: 'Repair',
+        serviceDate: '2026-04-21',
+        source: 'Verified receipt',
+        status: 'Verified',
         title: 'Battery and True Tone check',
         notes:
           'Battery original, camera original, display has been replaced by verified service partner.',
@@ -194,6 +204,9 @@ const initialPassports: Passport[] = [
       {
         id: 'H-004',
         kind: 'Inspection',
+        serviceDate: '2026-04-22',
+        source: 'On-chain service',
+        status: 'Verified',
         title: 'Shutter count verified',
         notes:
           'Shutter count 18.204, sensor clean, lens mount normal, invoice hash attached.',
@@ -245,21 +258,97 @@ function readStoredPassports() {
 }
 
 function readInitialSelectedId(passports: Passport[]) {
-  const params = new URLSearchParams(window.location.search)
-  const passportId = params.get('passport')
+  const passportId = getPassportIdFromLocation()
   if (passportId && passports.some((passport) => passport.id === passportId)) {
     return passportId
   }
   return passports[0]?.id ?? initialPassports[0].id
 }
 
-function readInitialView(passports: Passport[]): ViewMode {
-  const params = new URLSearchParams(window.location.search)
-  const passportId = params.get('passport')
+function readInitialRoute(passports: Passport[]): AppRoute {
+  const path = normalizePath(window.location.pathname)
+  const passportId = getPassportIdFromLocation()
+
   if (passportId && passports.some((passport) => passport.id === passportId)) {
-    return 'app'
+    return 'passport'
+  }
+
+  if (path === '/devices') return 'devices'
+  if (path === '/history') return 'history'
+  if (path === '/verifier') return 'verifier'
+  if (path === '/transfer') return 'transfer'
+  if (path === '/settings') return 'settings'
+  if (path === '/dashboard' || path === '/app' || path === '/passport') {
+    return 'passport'
   }
   return 'home'
+}
+
+function getPassportIdFromLocation() {
+  const params = new URLSearchParams(window.location.search)
+  const queryPassport = params.get('passport')
+  if (queryPassport) return queryPassport
+
+  const match = normalizePath(window.location.pathname).match(/^\/passport\/([^/]+)$/)
+  return match ? decodeURIComponent(match[1]) : null
+}
+
+function normalizePath(path: string) {
+  const normalized = path.replace(/\/+$/, '')
+  return normalized || '/'
+}
+
+function buildAppPath(route: AppRoute, passportId?: string) {
+  if (route === 'home') return '/'
+  if (route === 'passport') {
+    return passportId ? `/passport/${encodeURIComponent(passportId)}` : '/passport'
+  }
+  return `/${route}`
+}
+
+function getRouteTitle(route: AppRoute) {
+  const titles: Record<AppRoute, string> = {
+    home: 'Reka',
+    passport: 'Passport detail',
+    devices: 'Device registry',
+    history: 'Service history',
+    verifier: 'Verifier registry',
+    transfer: 'Transfer ownership',
+    settings: 'Program settings',
+  }
+  return titles[route]
+}
+
+function cx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(' ')
+}
+
+const ui = {
+  eyebrow: 'm-0 text-[11px] font-black uppercase tracking-[0.2em] text-teal-700',
+  primaryButton:
+    'inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-teal-600 bg-teal-600 px-4 text-sm font-black text-white no-underline shadow-sm shadow-teal-900/15 transition hover:bg-teal-700 disabled:cursor-wait disabled:opacity-70',
+  secondaryButton:
+    'inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white/80 px-4 text-sm font-black text-stone-800 no-underline shadow-sm shadow-stone-200/70 transition hover:border-teal-200 hover:bg-teal-50',
+  panel:
+    'rounded-2xl border border-white/70 bg-white/72 p-4 shadow-[0_22px_70px_rgba(88,95,84,0.12)] backdrop-blur-xl',
+  panelHeading: 'mb-4 flex items-center justify-between gap-4',
+  formGrid: 'grid grid-cols-1 gap-3 md:grid-cols-2',
+  compactForm: 'grid gap-3',
+  input:
+    'h-11 w-full min-w-0 rounded-xl border border-stone-200 bg-white/85 px-3 text-sm text-stone-950 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-900/10',
+  textarea:
+    'min-h-28 w-full min-w-0 resize-y rounded-xl border border-stone-200 bg-white/85 px-3 py-3 text-sm text-stone-950 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-900/10',
+  label: 'grid gap-2 text-xs font-bold text-stone-600',
+  wide: 'col-span-full',
+}
+
+function railButtonClass(active: boolean) {
+  return cx(
+    'relative grid h-10 w-10 place-items-center rounded-xl border transition',
+    active
+      ? 'border-teal-200 bg-teal-50 text-teal-700 shadow-sm shadow-teal-900/5 before:absolute before:-left-3 before:h-6 before:w-1 before:rounded-r before:bg-teal-500 before:content-[\'\']'
+      : 'border-transparent text-stone-500 hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700',
+  )
 }
 
 function App() {
@@ -268,16 +357,19 @@ function App() {
     return {
       passports: storedPassports,
       selectedId: readInitialSelectedId(storedPassports),
-      initialView: readInitialView(storedPassports),
+      initialRoute: readInitialRoute(storedPassports),
     }
   })
   const [passports, setPassports] = useState<Passport[]>(boot.passports)
   const [selectedId, setSelectedId] = useState(boot.selectedId)
-  const [view, setView] = useState<ViewMode>(boot.initialView)
+  const [activeRoute, setActiveRoute] = useState<AppRoute>(boot.initialRoute)
   const [query, setQuery] = useState('')
   const [form, setForm] = useState<FormState>(blankForm)
   const [historyForm, setHistoryForm] = useState({
     kind: 'Inspection' as HistoryKind,
+    serviceDate: today(),
+    source: 'On-chain service' as AttestationSource,
+    status: 'Verified' as AttestationStatus,
     title: '',
     notes: '',
     verifier: '',
@@ -296,12 +388,26 @@ function App() {
   const [isWritingChain, setIsWritingChain] = useState(false)
   const [chainMessage, setChainMessage] = useState('')
   const [programStatus, setProgramStatus] = useState<ProgramStatus>('checking')
-  const [activeRail, setActiveRail] = useState<RailSection>('passport')
   const searchInputRef = useRef<HTMLInputElement>(null)
   const verifierNameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(passports))
+  }, [passports])
+
+  useEffect(() => {
+    function syncRouteFromLocation() {
+      const route = readInitialRoute(passports)
+      const routePassportId = getPassportIdFromLocation()
+
+      setActiveRoute(route)
+      if (routePassportId && passports.some((passport) => passport.id === routePassportId)) {
+        setSelectedId(routePassportId)
+      }
+    }
+
+    window.addEventListener('popstate', syncRouteFromLocation)
+    return () => window.removeEventListener('popstate', syncRouteFromLocation)
   }, [passports])
 
   useEffect(() => {
@@ -341,11 +447,29 @@ function App() {
 
   const selectedPassport =
     passports.find((passport) => passport.id === selectedId) ?? passports[0]
+  const verifiedHistoryCount = selectedPassport
+    ? selectedPassport.history.filter(
+        (item) => (item.status ?? (item.txSignature ? 'Verified' : 'Pending')) === 'Verified',
+      ).length
+    : 0
+  const unverifiedHistoryCount = selectedPassport
+    ? selectedPassport.history.length - verifiedHistoryCount
+    : 0
+  const historyConfidence = selectedPassport
+    ? getHistoryConfidence(selectedPassport)
+    : undefined
 
   const publicUrl = selectedPassport
-    ? `${window.location.origin}${window.location.pathname}?passport=${selectedPassport.id}`
+    ? `${window.location.origin}/passport/${encodeURIComponent(selectedPassport.id)}`
     : window.location.href
   const programStatusText = getProgramStatusText(programStatus)
+
+  function navigateTo(route: AppRoute, nextSelectedId = selectedPassport?.id) {
+    const path = buildAppPath(route, nextSelectedId)
+    window.history.pushState({}, '', path)
+    setActiveRoute(route)
+    if (nextSelectedId) setSelectedId(nextSelectedId)
+  }
 
   async function connectWallet() {
     if (!window.solana) {
@@ -473,6 +597,9 @@ function App() {
         {
           id: crypto.randomUUID(),
           kind: 'Inspection',
+          serviceDate: today(),
+          source: 'On-chain service',
+          status: 'Verified',
           title: 'Passport created and serial hash verified',
           notes:
             'Device identity was hashed locally. Raw serial or IMEI is not stored in the app.',
@@ -486,7 +613,7 @@ function App() {
     newPassport.history[0].txSignature = onChainResult.signature
 
     setPassports((current) => [newPassport, ...current])
-    setSelectedId(id)
+    navigateTo('passport', id)
     setForm(blankForm)
   }
 
@@ -496,14 +623,59 @@ function App() {
 
     const entryId = makeEntryId()
     const evidenceUri = historyForm.evidenceUri.trim()
+    const source = historyForm.source
+    const status = source === 'Owner claim' ? 'Pending' : historyForm.status
+    if (source !== 'Owner claim' && !evidenceUri) {
+      setChainMessage('Evidence wajib untuk attestation verifier on-chain.')
+      return
+    }
+
     const evidenceHash = await hashEvidence(
-      `${selectedPassport.serialHash}:${entryId}:${historyForm.title}:${historyForm.notes}:${evidenceUri}`,
+      `${selectedPassport.serialHash}:${entryId}:${historyForm.serviceDate}:${source}:${status}:${historyForm.title}:${historyForm.notes}:${evidenceUri}`,
     )
-    const onChainResult = await runRekaTransaction('Menambah riwayat', (wallet) =>
+    const baseEntry: PassportHistory = {
+      id: entryId,
+      kind: historyForm.kind,
+      serviceDate: historyForm.serviceDate,
+      source,
+      status,
+      title: historyForm.title.trim(),
+      notes: historyForm.notes.trim(),
+      evidenceHash,
+      evidenceUri,
+      verifier:
+        historyForm.verifier.trim() ||
+        (source === 'Owner claim' ? selectedPassport.ownerName : 'Registered verifier'),
+      date: today(),
+    }
+
+    if (source === 'Owner claim') {
+      setPassports((current) =>
+        current.map((passport) =>
+          passport.id === selectedPassport.id
+            ? {
+                ...passport,
+                trustScore: clampTrustScore(
+                  passport.trustScore + getTrustScoreDelta(source, status),
+                ),
+                history: [baseEntry, ...passport.history],
+              }
+            : passport,
+        ),
+      )
+      setChainMessage('Klaim owner disimpan lokal sebagai riwayat belum terverifikasi.')
+      resetHistoryForm()
+      return
+    }
+
+    const onChainResult = await runRekaTransaction('Menambah attestation', (wallet) =>
       addHistoryOnChain(wallet, {
         passport: derivePassportPda(selectedPassport.serialHash),
         entryId,
         kind: historyKindToNumber(historyForm.kind),
+        serviceDate: dateToUnixSeconds(historyForm.serviceDate),
+        source: attestationSourceToNumber(source),
+        status: attestationStatusToNumber(status),
         title: historyForm.title.trim(),
         notes: historyForm.notes.trim(),
         evidenceHash,
@@ -514,14 +686,7 @@ function App() {
     if (!onChainResult) return
 
     const entry: PassportHistory = {
-      id: entryId,
-      kind: historyForm.kind,
-      title: historyForm.title.trim(),
-      notes: historyForm.notes.trim(),
-      evidenceHash,
-      evidenceUri,
-      verifier: historyForm.verifier.trim() || 'Registered verifier',
-      date: today(),
+      ...baseEntry,
       txSignature: onChainResult.signature,
     }
 
@@ -530,20 +695,16 @@ function App() {
         passport.id === selectedPassport.id
           ? {
               ...passport,
-              trustScore: Math.min(99, passport.trustScore + 3),
+              trustScore: clampTrustScore(
+                passport.trustScore + getTrustScoreDelta(source, status),
+              ),
               lastTxSignature: onChainResult.signature,
               history: [entry, ...passport.history],
             }
           : passport,
       ),
     )
-    setHistoryForm({
-      kind: 'Inspection',
-      title: '',
-      notes: '',
-      verifier: '',
-      evidenceUri: '',
-    })
+    resetHistoryForm()
   }
 
   async function transferOwnership(event: React.FormEvent<HTMLFormElement>) {
@@ -571,6 +732,9 @@ function App() {
     const entry: PassportHistory = {
       id: makeEntryId(),
       kind: 'Ownership',
+      serviceDate: today(),
+      source: 'On-chain service',
+      status: 'Verified',
       title: `Ownership transferred to ${transferForm.ownerName}`,
       notes:
         'Seller and buyer agreed to transfer this asset passport after device handover.',
@@ -596,38 +760,33 @@ function App() {
     setTransferForm({ ownerName: '', ownerWallet: '' })
   }
 
+  function resetHistoryForm() {
+    setHistoryForm({
+      kind: 'Inspection',
+      serviceDate: today(),
+      source: 'On-chain service',
+      status: 'Verified',
+      title: '',
+      notes: '',
+      verifier: '',
+      evidenceUri: '',
+    })
+  }
+
   function copyPublicUrl() {
     navigator.clipboard.writeText(publicUrl)
     setChainMessage('Link verifikasi publik disalin.')
   }
 
-  function handleRailAction(section: RailSection) {
-    setActiveRail(section)
+  function handleRouteAction(route: AppRoute) {
+    navigateTo(route)
 
-    if (section === 'settings') {
-      window.open(getRekaProgramExplorerUrl(), '_blank', 'noopener,noreferrer')
-      setChainMessage('Membuka smart contract Reka di Solana Explorer.')
-      return
+    if (route === 'devices') {
+      window.setTimeout(() => searchInputRef.current?.focus(), 80)
     }
 
-    const sectionTargets: Record<Exclude<RailSection, 'settings'>, string> = {
-      passport: 'passport-card',
-      devices: 'devices-section',
-      history: 'lifecycle-panel',
-      verifier: 'verifier-registry',
-    }
-
-    document.getElementById(sectionTargets[section])?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    })
-
-    if (section === 'devices') {
-      window.setTimeout(() => searchInputRef.current?.focus(), 420)
-    }
-
-    if (section === 'verifier') {
-      window.setTimeout(() => verifierNameInputRef.current?.focus(), 420)
+    if (route === 'verifier') {
+      window.setTimeout(() => verifierNameInputRef.current?.focus(), 80)
     }
   }
 
@@ -635,11 +794,11 @@ function App() {
     return null
   }
 
-  if (view === 'home') {
+  if (activeRoute === 'home') {
     return (
       <LandingPage
         featuredPassport={selectedPassport}
-        onOpenApp={() => setView('app')}
+        onOpenApp={() => navigateTo('passport')}
       />
     )
   }
@@ -647,87 +806,96 @@ function App() {
   const DeviceIcon = deviceIcons[selectedPassport.category]
 
   return (
-    <main className="app-shell">
-      <aside className="sidebar">
-        <button className="rail-logo" type="button" onClick={() => setView('home')} aria-label="Reka home">
+    <main className="grid min-h-screen grid-cols-[74px_minmax(0,1fr)] bg-[radial-gradient(circle_at_16%_8%,rgba(153,246,228,0.55),transparent_28%),radial-gradient(circle_at_88%_4%,rgba(254,215,170,0.52),transparent_26%),linear-gradient(135deg,#fbfbf8_0%,#eef8f3_44%,#fff7ed_100%)] text-stone-950">
+      <aside className="sticky top-0 grid h-screen grid-rows-[auto_1fr_auto] justify-items-center border-r border-stone-200/70 bg-white/58 px-3 py-5 shadow-[16px_0_44px_rgba(88,95,84,0.08)] backdrop-blur-xl">
+        <button className="grid h-11 w-11 place-items-center rounded-2xl border border-stone-200 bg-white text-3xl font-black leading-none text-stone-950 shadow-sm shadow-stone-200" type="button" onClick={() => navigateTo('home')} aria-label="Reka home">
           R
         </button>
-        <nav className="rail-nav" aria-label="Dashboard navigation">
+        <nav className="grid content-center gap-3" aria-label="Dashboard navigation">
           <button
-            className={`rail-button ${activeRail === 'passport' ? 'active' : ''}`}
+            className={railButtonClass(activeRoute === 'passport')}
             type="button"
             aria-label="Passport"
-            aria-current={activeRail === 'passport' ? 'page' : undefined}
-            onClick={() => handleRailAction('passport')}
+            aria-current={activeRoute === 'passport' ? 'page' : undefined}
+            onClick={() => handleRouteAction('passport')}
           >
             <Wallet size={22} />
           </button>
           <button
-            className={`rail-button ${activeRail === 'devices' ? 'active' : ''}`}
+            className={railButtonClass(activeRoute === 'devices')}
             type="button"
             aria-label="Devices"
-            aria-current={activeRail === 'devices' ? 'page' : undefined}
-            onClick={() => handleRailAction('devices')}
+            aria-current={activeRoute === 'devices' ? 'page' : undefined}
+            onClick={() => handleRouteAction('devices')}
           >
             <Laptop size={22} />
           </button>
           <button
-            className={`rail-button ${activeRail === 'history' ? 'active' : ''}`}
+            className={railButtonClass(activeRoute === 'history')}
             type="button"
             aria-label="History"
-            aria-current={activeRail === 'history' ? 'page' : undefined}
-            onClick={() => handleRailAction('history')}
+            aria-current={activeRoute === 'history' ? 'page' : undefined}
+            onClick={() => handleRouteAction('history')}
           >
             <FileClock size={22} />
           </button>
           <button
-            className={`rail-button ${activeRail === 'verifier' ? 'active' : ''}`}
+            className={railButtonClass(activeRoute === 'verifier')}
             type="button"
             aria-label="Verifier"
-            aria-current={activeRail === 'verifier' ? 'page' : undefined}
-            onClick={() => handleRailAction('verifier')}
+            aria-current={activeRoute === 'verifier' ? 'page' : undefined}
+            onClick={() => handleRouteAction('verifier')}
           >
             <ShieldCheck size={22} />
           </button>
           <button
-            className={`rail-button ${activeRail === 'settings' ? 'active' : ''}`}
+            className={railButtonClass(activeRoute === 'transfer')}
+            type="button"
+            aria-label="Transfer"
+            aria-current={activeRoute === 'transfer' ? 'page' : undefined}
+            onClick={() => handleRouteAction('transfer')}
+          >
+            <UserRoundCheck size={22} />
+          </button>
+          <button
+            className={railButtonClass(activeRoute === 'settings')}
             type="button"
             aria-label="Settings"
-            aria-current={activeRail === 'settings' ? 'page' : undefined}
-            onClick={() => handleRailAction('settings')}
+            aria-current={activeRoute === 'settings' ? 'page' : undefined}
+            onClick={() => handleRouteAction('settings')}
           >
             <Settings size={22} />
           </button>
         </nav>
-        <div className="rail-profile">
+        <div className="grid justify-items-center gap-2 text-xs font-semibold text-stone-500">
           <span>Profile</span>
-          <button className="profile-toggle" type="button" onClick={connectWallet} aria-label="Connect wallet">
-            <span />
+          <button className="relative h-7 w-12 rounded-full border border-stone-200 bg-stone-200" type="button" onClick={connectWallet} aria-label="Connect wallet">
+            <span className="absolute right-1 top-1 h-5 w-5 rounded-full bg-white shadow-sm" />
           </button>
         </div>
       </aside>
 
-      <section className="workspace">
-        <header className="topbar">
+      <section className="w-full max-w-[1280px] px-6 py-6">
+        <header className="mb-5 grid grid-cols-1 items-end justify-between gap-4 xl:grid-cols-[minmax(0,1fr)_auto]">
           <div>
-            <p className="eyebrow">Second-hand trust layer for campus markets</p>
-            <h2>Premium Asset Detail & History</h2>
+            <p className={ui.eyebrow}>Reka dashboard</p>
+            <h2 className="mt-1 text-4xl font-black leading-none tracking-normal text-stone-950">{getRouteTitle(activeRoute)}</h2>
           </div>
-          <div className="topbar-actions">
-            <button className="wallet-chip" type="button" onClick={connectWallet}>
+          <div className="flex flex-wrap justify-start gap-2 xl:justify-end">
+            <button className={ui.secondaryButton} type="button" onClick={connectWallet}>
               <Wallet size={17} />
               {walletAddress ? shortWallet(walletAddress) : 'Connect wallet'}
             </button>
             <button
-              className="secondary-button"
+              className={ui.secondaryButton}
               type="button"
-              onClick={() => setView('home')}
+              onClick={() => navigateTo('home')}
             >
               <BookOpenCheck size={17} />
               Beranda
             </button>
             <a
-              className="secondary-button"
+              className={ui.secondaryButton}
               href={getRekaProgramExplorerUrl()}
               target="_blank"
               rel="noreferrer"
@@ -736,7 +904,7 @@ function App() {
               Program
             </a>
             <a
-              className="secondary-button"
+              className={ui.secondaryButton}
               href={explorerUrl(selectedPassport.lastTxSignature)}
               target="_blank"
               rel="noreferrer"
@@ -744,385 +912,525 @@ function App() {
               <Link2 size={17} />
               Explorer
             </a>
-            <button className="primary-button" type="button" onClick={copyPublicUrl}>
+            <button className={ui.primaryButton} type="button" onClick={copyPublicUrl}>
               <Copy size={17} />
               Copy Verify Link
             </button>
           </div>
         </header>
 
-        <section className="device-tray" id="devices-section">
-          <label className="search-box">
-            <Search size={18} />
-            <input
-              ref={searchInputRef}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Cari device, owner, kota"
-            />
-          </label>
+        {activeRoute === 'passport' ? (
+          <section className="grid gap-4">
+            <div className="relative overflow-hidden rounded-[28px] border border-white/80 bg-white/70 shadow-[0_28px_90px_rgba(91,101,85,0.16)] backdrop-blur-2xl">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_8%_4%,rgba(45,212,191,0.35),transparent_32%),radial-gradient(circle_at_78%_14%,rgba(251,191,36,0.28),transparent_27%),linear-gradient(135deg,rgba(255,255,255,0.82),rgba(240,253,250,0.55)_45%,rgba(255,247,237,0.72))]" />
+              <div className="relative grid gap-6 p-6 xl:grid-cols-[minmax(0,1fr)_390px] xl:p-7">
+                <div className="flex min-w-0 flex-col justify-between gap-7">
+                  <div>
+                    <div className="mb-4 flex flex-wrap items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-stone-500">
+                      <span className="rounded-full border border-teal-200 bg-white/60 px-3 py-1.5 text-teal-700">{selectedPassport.category}</span>
+                      <span className="rounded-full border border-stone-200 bg-white/60 px-3 py-1.5">{selectedPassport.city}</span>
+                      <span className="rounded-full border border-amber-200 bg-amber-50/70 px-3 py-1.5 text-amber-800">{selectedPassport.id}</span>
+                    </div>
+                    <h3 className="max-w-4xl text-5xl font-black leading-[0.92] text-stone-950 md:text-7xl">
+                      {selectedPassport.brand} {selectedPassport.model}
+                    </h3>
+                    <div className="mt-5 flex flex-wrap items-center gap-2">
+                      <span className="inline-flex min-h-8 items-center gap-2 rounded-full border border-teal-200 bg-teal-50/80 px-3 text-xs font-black text-teal-800">
+                        <CheckCircle2 size={16} />
+                        Verified passport
+                      </span>
+                      <span className="inline-flex min-h-8 items-center gap-2 rounded-full border border-stone-200 bg-white/70 px-3 text-xs font-black text-stone-700">
+                        <ShieldCheck size={16} />
+                        Devnet audit trail
+                      </span>
+                    </div>
+                  </div>
 
-          <div className="passport-list">
-            {filteredPassports.map((passport) => {
-              const ListIcon = deviceIcons[passport.category]
-              return (
-                <button
-                  className={`passport-row ${
-                    passport.id === selectedPassport.id ? 'active' : ''
-                  }`}
-                  key={passport.id}
-                  type="button"
-                  onClick={() => setSelectedId(passport.id)}
-                >
-                  <span className="row-icon">
-                    <ListIcon size={18} />
-                  </span>
-                  <span>
-                    <strong>{passport.brand}</strong>
-                    <small>{passport.model}</small>
-                  </span>
-                  <em>{passport.trustScore}</em>
-                </button>
-              )
-            })}
-          </div>
-        </section>
-
-        <section className="passport-hero" id="passport-card">
-          <div className="device-visual">
-            {selectedPassport.category === 'Laptop' ? (
-              <div className="laptop-render" aria-hidden="true">
-                <div className="laptop-screen">
-                  <span />
+                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+                    <StatTile label="Trust score" value={`${selectedPassport.trustScore}/100`} tone="teal" />
+                    <StatTile label="Condition" value={selectedPassport.condition} tone="amber" />
+                    <StatTile label="Verified logs" value={`${verifiedHistoryCount}/${selectedPassport.history.length}`} tone="indigo" />
+                    <StatTile label="Confidence" value={historyConfidence?.level ?? 'Low'} tone={historyConfidenceTone(historyConfidence?.level ?? 'Low')} />
+                    <StatTile label="Value" value={selectedPassport.estimatedValue} tone="rose" />
+                  </div>
                 </div>
-                <div className="laptop-keyboard" />
+
+                <div className="relative min-h-[320px] overflow-hidden rounded-[24px] border border-white/70 bg-white/56 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
+                  <div className="absolute inset-0 bg-[linear-gradient(rgba(87,83,78,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(87,83,78,0.045)_1px,transparent_1px)] bg-[length:32px_32px]" />
+                  <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-teal-200/55 blur-3xl" />
+                  <div className="absolute -bottom-10 left-8 h-36 w-36 rounded-full bg-amber-200/60 blur-3xl" />
+                  <div className="relative grid h-full min-h-[280px] place-items-center">
+                    {selectedPassport.category === 'Laptop' ? (
+                      <div className="w-[min(92%,340px)] translate-y-3" aria-hidden="true">
+                        <div className="relative aspect-[16/10] rounded-t-2xl bg-white p-2 shadow-2xl shadow-stone-900/10 ring-1 ring-stone-900/10">
+                          <span className="block h-full rounded-xl bg-[radial-gradient(circle_at_18%_12%,#fff0a8_0_13%,transparent_29%),radial-gradient(circle_at_84%_8%,#8cf1dd_0_13%,transparent_28%),linear-gradient(132deg,#ffb26b_0_24%,#fffefa_25%_37%,#8bdcff_38%_68%,#c8f7e2_69%_100%)]" />
+                        </div>
+                        <div className="-ml-[7%] h-12 w-[114%] rounded-b-[44px] bg-gradient-to-b from-white to-stone-200 shadow-xl shadow-stone-900/10 [transform:perspective(340px)_rotateX(58deg)_translateY(-8px)] [transform-origin:top]" />
+                      </div>
+                    ) : (
+                      <div className="grid h-36 w-44 place-items-center rounded-[28px] bg-gradient-to-br from-teal-400 to-emerald-600 text-white shadow-xl shadow-teal-900/20">
+                        <DeviceIcon size={72} />
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            ) : (
-              <div className={`device-shape ${selectedPassport.category.toLowerCase()}`}>
-                <DeviceIcon size={74} />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
+              <div className={cx(ui.panel, 'p-5')}>
+                <div className="mb-4 flex items-center justify-between gap-4 border-b border-stone-200/80 pb-4">
+                  <div>
+                    <p className={ui.eyebrow}>Registry data</p>
+                    <h3 className="text-xl font-black text-stone-950">Identity & ownership</h3>
+                  </div>
+                  <button className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white/70 px-3 text-sm font-black text-stone-800 transition hover:bg-teal-50" type="button" onClick={() => navigateTo('history')}>
+                    <FileClock size={17} />
+                    View history
+                  </button>
+                </div>
+                <div className="grid gap-x-6 md:grid-cols-2">
+                  <DetailRow label="Serial hash" value={selectedPassport.serialHash} />
+                  <DetailRow label="Owner" value={selectedPassport.ownerName} />
+                  <DetailRow label="Owner wallet" value={selectedPassport.ownerWallet} />
+                  <DetailRow label="Verifier" value={selectedPassport.verifier} />
+                  <DetailRow label="Created" value={selectedPassport.createdAt} />
+                  <DetailRow label="First verified" value={historyConfidence?.firstVerifiedDate ?? 'Not verified'} />
+                  <DetailRow label="Unknown before first verified" value={historyConfidence?.unknownBeforeFirstVerified ? 'Yes' : 'No'} />
+                  <DetailRow label="Last transaction" value={selectedPassport.lastTxSignature ? shortWallet(selectedPassport.lastTxSignature) : 'Not recorded'} />
+                </div>
+                <div className="mt-5 grid gap-3 rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm font-semibold leading-6 text-stone-700">
+                  <div className="flex min-h-8 items-center gap-3">
+                    <ShieldCheck className="text-amber-700" size={18} />
+                    <span>{historyConfidence?.summary}</span>
+                  </div>
+                  <p className="m-0 text-xs font-bold leading-5 text-amber-900/80">
+                    Reka membuktikan riwayat yang sudah diverifikasi, bukan menjamin semua kejadian sebelum first verified date tidak pernah terjadi.
+                  </p>
+                </div>
+                <div className="mt-3 flex min-h-12 items-center gap-3 rounded-2xl border border-teal-200 bg-teal-50/80 px-4 py-3 text-sm font-semibold leading-6 text-stone-700">
+                  {isWritingChain ? <Loader2 className="animate-spin text-teal-700" size={18} /> : <ShieldCheck className="text-teal-700" size={18} />}
+                  <span>
+                    {chainMessage ||
+                      `${programStatusText}. ${unverifiedHistoryCount} riwayat belum terverifikasi.`}
+                  </span>
+                </div>
               </div>
-            )}
-          </div>
 
-          <div className="verified-seal" aria-label="Verified passport">
-            <CheckCircle2 size={38} />
-            <strong>Verified</strong>
-          </div>
-
-          <div className="passport-summary">
-            <div className="status-line">
-              <span>Digital Passport</span>
-              <span>{selectedPassport.id}</span>
+              <aside className={cx(ui.panel, 'grid content-start gap-4 p-5')}>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className={ui.eyebrow}>Public verify</p>
+                    <h3 className="text-xl font-black text-stone-950">Scan QR</h3>
+                  </div>
+                  <ScanLine className="text-teal-700" size={22} />
+                </div>
+                <div className="grid justify-items-center gap-4 rounded-2xl border border-stone-200 bg-white/60 p-4">
+                  <QRCodeCanvas className="h-36! w-36! rounded-2xl bg-white" value={publicUrl} size={144} marginSize={2} />
+                  <span className="max-w-full break-words rounded-xl bg-stone-100/80 px-3 py-2 text-xs font-black text-stone-600">{selectedPassport.id}</span>
+                </div>
+                <button className={cx(ui.primaryButton, 'w-full')} type="button" onClick={copyPublicUrl}>
+                  <Copy size={17} />
+                  Copy link
+                </button>
+              </aside>
             </div>
-            <h3>{selectedPassport.brand} {selectedPassport.model}</h3>
+          </section>
+        ) : null}
 
-            <div className="metric-grid">
-              <Metric icon={Fingerprint} label="Serial hash" value={selectedPassport.serialHash} />
-              <Metric icon={ShieldCheck} label="Condition" value={selectedPassport.condition} />
-              <Metric icon={CircleDollarSign} label="Value" value={selectedPassport.estimatedValue} />
-              <Metric icon={MapPin} label="City" value={selectedPassport.city} />
-              <Metric icon={Store} label="Verifier" value={selectedPassport.verifier} />
-              <Metric icon={UserRoundCheck} label="Owner" value={selectedPassport.ownerName} />
-            </div>
-
-            <div className="chain-status">
-              {isWritingChain ? <Loader2 className="spin" size={18} /> : <ShieldCheck size={18} />}
-              <span>
-                {chainMessage ||
-                  `${programStatusText}. Smart contract Reka aktif di Solana Devnet.`}
-              </span>
-            </div>
-          </div>
-
-          <div className="qr-panel">
-            <QRCodeCanvas value={publicUrl} size={148} marginSize={2} />
-            <div>
-              <strong>Scan to verify</strong>
-              <span>{selectedPassport.id}</span>
-            </div>
-          </div>
-        </section>
-
-        <section className="content-grid">
-          <div className="panel create-panel">
-            <div className="panel-heading">
-              <div>
-                <p className="eyebrow">Create RWA passport</p>
-                <h3>Daftarkan barang bekas</h3>
+        {activeRoute === 'devices' ? (
+          <section className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(310px,0.72fr)_minmax(0,1fr)]">
+            <div className={ui.panel}>
+              <div className={ui.panelHeading}>
+                <div>
+                  <p className={ui.eyebrow}>Device registry</p>
+                  <h3>Passport tersimpan</h3>
+                </div>
+                <Search className="text-teal-700" size={20} />
               </div>
-              <Plus size={20} />
+              <label className="flex h-11 items-center gap-2 rounded-xl border border-stone-200 bg-white/80 px-3 text-stone-500">
+                <Search size={18} />
+                <input
+                  className="h-full w-full border-0 bg-transparent px-0 text-sm outline-none focus:ring-0"
+                  ref={searchInputRef}
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Cari device, owner, kota"
+                />
+              </label>
+              <div className="mt-4 grid gap-3">
+                {filteredPassports.map((passport) => {
+                  const ListIcon = deviceIcons[passport.category]
+                  return (
+                    <button
+                      className={cx(
+                        'grid min-h-16 w-full grid-cols-[42px_minmax(0,1fr)_42px] items-center gap-3 rounded-xl border p-3 text-left text-stone-950 transition',
+                        passport.id === selectedPassport.id
+                          ? 'border-teal-200 bg-teal-50/80'
+                          : 'border-stone-200 bg-white/72 hover:border-teal-200 hover:bg-teal-50/70',
+                      )}
+                      key={passport.id}
+                      type="button"
+                      onClick={() => navigateTo('passport', passport.id)}
+                    >
+                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-teal-50 text-teal-700">
+                        <ListIcon size={18} />
+                      </span>
+                      <span>
+                        <strong className="block overflow-hidden text-ellipsis whitespace-nowrap">{passport.brand} {passport.model}</strong>
+                        <small className="block overflow-hidden text-ellipsis whitespace-nowrap text-sm text-stone-500">{passport.ownerName} - {passport.city}</small>
+                      </span>
+                      <em className="grid h-9 place-items-center rounded-xl bg-emerald-50 text-sm font-black not-italic text-emerald-700">{passport.trustScore}</em>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
 
-            <form className="form-grid" onSubmit={createPassport}>
-              <label>
-                Category
-                <select
-                  value={form.category}
+            <div className={ui.panel}>
+              <div className={ui.panelHeading}>
+                <div>
+                  <p className={ui.eyebrow}>Create RWA passport</p>
+                  <h3>Daftarkan barang bekas</h3>
+                </div>
+                <Plus className="text-teal-700" size={20} />
+              </div>
+
+              <form className={ui.formGrid} onSubmit={createPassport}>
+                <label className={ui.label}>
+                  Category
+                  <select className={ui.input} value={form.category}
+                    onChange={(event) =>
+                      setForm({ ...form, category: event.target.value as DeviceCategory })
+                    }
+                  >
+                    <option>Laptop</option>
+                    <option>Phone</option>
+                    <option>Camera</option>
+                  </select>
+                </label>
+                <label className={ui.label}>
+                  Brand
+                  <input className={ui.input} required value={form.brand}
+                    onChange={(event) => setForm({ ...form, brand: event.target.value })}
+                    placeholder="Lenovo"
+                  />
+                </label>
+                <label className={ui.label}>
+                  Model
+                  <input className={ui.input} required value={form.model}
+                    onChange={(event) => setForm({ ...form, model: event.target.value })}
+                    placeholder="ThinkPad X1 Carbon"
+                  />
+                </label>
+                <label className={ui.label}>
+                  Serial / IMEI
+                  <input className={ui.input} required value={form.serialNumber}
+                    onChange={(event) =>
+                      setForm({ ...form, serialNumber: event.target.value })
+                    }
+                    placeholder="Disimpan sebagai hash"
+                  />
+                </label>
+                <label className={ui.label}>
+                  Condition
+                  <select className={ui.input} value={form.condition}
+                    onChange={(event) =>
+                      setForm({ ...form, condition: event.target.value })
+                    }
+                  >
+                    <option>Grade A</option>
+                    <option>Grade A-</option>
+                    <option>Grade B+</option>
+                    <option>Grade B</option>
+                    <option>Need repair</option>
+                  </select>
+                </label>
+                <label className={ui.label}>
+                  Battery health
+                  <input className={ui.input} value={form.batteryHealth}
+                    onChange={(event) =>
+                      setForm({ ...form, batteryHealth: event.target.value })
+                    }
+                    placeholder="92% / N/A"
+                  />
+                </label>
+                <label className={ui.label}>
+                  Estimated value
+                  <input className={ui.input} required value={form.estimatedValue}
+                    onChange={(event) =>
+                      setForm({ ...form, estimatedValue: event.target.value })
+                    }
+                    placeholder="Rp 8.500.000"
+                  />
+                </label>
+                <label className={ui.label}>
+                  City
+                  <input className={ui.input} required value={form.city}
+                    onChange={(event) => setForm({ ...form, city: event.target.value })}
+                    placeholder="Depok"
+                  />
+                </label>
+                <label className={ui.label}>
+                  Owner
+                  <input className={ui.input} required value={form.ownerName}
+                    onChange={(event) =>
+                      setForm({ ...form, ownerName: event.target.value })
+                    }
+                    placeholder="Nama penjual"
+                  />
+                </label>
+                <label className={ui.label}>
+                  Owner wallet
+                  <input className={ui.input} value={form.ownerWallet}
+                    onChange={(event) =>
+                      setForm({ ...form, ownerWallet: event.target.value })
+                    }
+                    placeholder="Optional, default wallet terhubung"
+                  />
+                </label>
+                <label className={cx(ui.label, ui.wide)}>
+                  Verifier
+                  <input className={ui.input} required value={form.verifier}
+                    onChange={(event) =>
+                      setForm({ ...form, verifier: event.target.value })
+                    }
+                    placeholder="Toko servis / komunitas verifier"
+                  />
+                </label>
+                <button className={cx(ui.primaryButton, ui.wide)} type="submit" disabled={isWritingChain}>
+                  {isWritingChain ? <Loader2 className="animate-spin" size={17} /> : <Plus size={17} />}
+                  Create Passport
+                </button>
+              </form>
+            </div>
+          </section>
+        ) : null}
+
+        {activeRoute === 'history' ? (
+          <section className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,390px)]">
+            <div className={cx(ui.panel, 'grid gap-5')}>
+              <div className={ui.panelHeading}>
+                <div>
+                  <p className={ui.eyebrow}>Lifecycle log</p>
+                  <h3>Riwayat servis & kondisi</h3>
+                </div>
+                <Wrench className="text-teal-700" size={20} />
+              </div>
+              <div className="grid gap-3 rounded-2xl border border-stone-200 bg-white/64 p-4 md:grid-cols-3">
+                <Metric icon={ShieldCheck} label="History confidence" value={historyConfidence?.level ?? 'Low'} />
+                <Metric icon={FileClock} label="First verified" value={historyConfidence?.firstVerifiedDate ?? 'Not verified'} />
+                <Metric icon={Search} label="Unverified records" value={`${unverifiedHistoryCount}`} />
+              </div>
+
+              <div className="grid">
+                {selectedPassport.history.map((item) => {
+                  const KindIcon = kindIcons[item.kind]
+                  const source = item.source ?? (item.txSignature ? 'On-chain service' : 'Owner claim')
+                  const status = item.status ?? (item.txSignature ? 'Verified' : 'Pending')
+                  const serviceDate = item.serviceDate ?? item.date
+                  return (
+                    <article className="grid grid-cols-[42px_minmax(0,1fr)] gap-4 border-t border-stone-100 py-4 text-left first:border-t-0 first:pt-0" key={item.id}>
+                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-teal-50 text-teal-700">
+                        <KindIcon size={17} />
+                      </span>
+                      <div>
+                        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+                          <strong className="min-w-0 text-base font-bold leading-snug text-stone-950">{item.title}</strong>
+                          <time className="shrink-0 text-xs font-bold text-stone-500">{serviceDate}</time>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <span className={attestationStatusClass(status)}>
+                            {status}
+                          </span>
+                          <span className={attestationSourceClass(source)}>
+                            {source}
+                          </span>
+                          {item.date !== serviceDate ? (
+                            <span className="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-black text-stone-600">
+                              Attested {item.date}
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className="my-2 max-w-3xl text-sm leading-6 text-stone-600">{item.notes}</p>
+                        {item.evidenceHash ? (
+                          <a
+                            className="inline-flex w-fit text-sm font-bold text-teal-700 no-underline hover:text-teal-900"
+                            href={item.evidenceUri}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Evidence {shortWallet(item.evidenceHash)}
+                          </a>
+                        ) : null}
+                        <small className="text-xs font-semibold text-stone-500">
+                          {item.verifier}
+                          {item.txSignature ? ` - ${shortWallet(item.txSignature)}` : ''}
+                        </small>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className={ui.panel}>
+              <div className={ui.panelHeading}>
+                <div>
+                  <p className={ui.eyebrow}>Add event</p>
+                  <h3>Tambah riwayat</h3>
+                </div>
+                <FileClock className="text-teal-700" size={20} />
+              </div>
+              <form className={ui.compactForm} onSubmit={addHistory}>
+                <select className={ui.input} value={historyForm.kind}
                   onChange={(event) =>
-                    setForm({ ...form, category: event.target.value as DeviceCategory })
+                    setHistoryForm({
+                      ...historyForm,
+                      kind: event.target.value as HistoryKind,
+                    })
                   }
                 >
-                  <option>Laptop</option>
-                  <option>Phone</option>
-                  <option>Camera</option>
+                  <option>Inspection</option>
+                  <option>Repair</option>
+                  <option>Warranty</option>
                 </select>
-              </label>
-              <label>
-                Brand
                 <input
+                  className={ui.input}
                   required
-                  value={form.brand}
-                  onChange={(event) => setForm({ ...form, brand: event.target.value })}
-                  placeholder="Lenovo"
-                />
-              </label>
-              <label>
-                Model
-                <input
-                  required
-                  value={form.model}
-                  onChange={(event) => setForm({ ...form, model: event.target.value })}
-                  placeholder="ThinkPad X1 Carbon"
-                />
-              </label>
-              <label>
-                Serial / IMEI
-                <input
-                  required
-                  value={form.serialNumber}
+                  type="date"
+                  value={historyForm.serviceDate}
                   onChange={(event) =>
-                    setForm({ ...form, serialNumber: event.target.value })
+                    setHistoryForm({ ...historyForm, serviceDate: event.target.value })
                   }
-                  placeholder="Disimpan sebagai hash"
                 />
-              </label>
-              <label>
-                Condition
                 <select
-                  value={form.condition}
+                  className={ui.input}
+                  value={historyForm.source}
+                  onChange={(event) => {
+                    const source = event.target.value as AttestationSource
+                    setHistoryForm({
+                      ...historyForm,
+                      source,
+                      status: source === 'Owner claim' ? 'Pending' : historyForm.status,
+                    })
+                  }}
+                >
+                  <option>On-chain service</option>
+                  <option>Verified receipt</option>
+                  <option>Owner claim</option>
+                </select>
+                <select
+                  className={ui.input}
+                  value={historyForm.status}
+                  disabled={historyForm.source === 'Owner claim'}
                   onChange={(event) =>
-                    setForm({ ...form, condition: event.target.value })
+                    setHistoryForm({
+                      ...historyForm,
+                      status: event.target.value as AttestationStatus,
+                    })
                   }
                 >
-                  <option>Grade A</option>
-                  <option>Grade A-</option>
-                  <option>Grade B+</option>
-                  <option>Grade B</option>
-                  <option>Need repair</option>
+                  <option>Pending</option>
+                  <option>Verified</option>
+                  <option>Rejected</option>
+                  <option>Disputed</option>
                 </select>
-              </label>
-              <label>
-                Battery health
-                <input
-                  value={form.batteryHealth}
+                <input className={ui.input} required value={historyForm.title}
                   onChange={(event) =>
-                    setForm({ ...form, batteryHealth: event.target.value })
+                    setHistoryForm({ ...historyForm, title: event.target.value })
                   }
-                  placeholder="92% / N/A"
+                  placeholder="Judul riwayat"
                 />
-              </label>
-              <label>
-                Estimated value
-                <input
+                <input className={ui.input} value={historyForm.verifier}
+                  onChange={(event) =>
+                    setHistoryForm({ ...historyForm, verifier: event.target.value })
+                  }
+                  placeholder="Label verifier untuk tampilan lokal"
+                />
+                <input className={ui.input} required={historyForm.source !== 'Owner claim'} value={historyForm.evidenceUri}
+                  onChange={(event) =>
+                    setHistoryForm({ ...historyForm, evidenceUri: event.target.value })
+                  }
+                  placeholder={historyForm.source === 'Owner claim' ? 'Evidence optional untuk klaim owner' : 'Evidence wajib: IPFS / Arweave / Drive / invoice'}
+                />
+                <textarea
+                  className={ui.textarea}
                   required
-                  value={form.estimatedValue}
+                  value={historyForm.notes}
                   onChange={(event) =>
-                    setForm({ ...form, estimatedValue: event.target.value })
+                    setHistoryForm({ ...historyForm, notes: event.target.value })
                   }
-                  placeholder="Rp 8.500.000"
+                  placeholder="Catatan kondisi, sparepart, bukti invoice, atau garansi"
                 />
-              </label>
-              <label>
-                City
-                <input
-                  required
-                  value={form.city}
-                  onChange={(event) => setForm({ ...form, city: event.target.value })}
-                  placeholder="Depok"
-                />
-              </label>
-              <label>
-                Owner
-                <input
-                  required
-                  value={form.ownerName}
-                  onChange={(event) =>
-                    setForm({ ...form, ownerName: event.target.value })
-                  }
-                  placeholder="Nama penjual"
-                />
-              </label>
-              <label>
-                Owner wallet
-                <input
-                  value={form.ownerWallet}
-                  onChange={(event) =>
-                    setForm({ ...form, ownerWallet: event.target.value })
-                  }
-                  placeholder="Optional, default wallet terhubung"
-                />
-              </label>
-              <label className="wide">
-                Verifier
-                <input
-                  required
-                  value={form.verifier}
-                  onChange={(event) =>
-                    setForm({ ...form, verifier: event.target.value })
-                  }
-                  placeholder="Toko servis / komunitas verifier"
-                />
-              </label>
-              <button className="primary-button wide" type="submit" disabled={isWritingChain}>
-                {isWritingChain ? <Loader2 className="spin" size={17} /> : <Plus size={17} />}
-                Create Passport
-              </button>
-            </form>
-          </div>
-
-          <div className="panel stack lifecycle-panel" id="lifecycle-panel">
-            <div className="panel-heading">
-              <div>
-                <p className="eyebrow">Lifecycle log</p>
-                <h3>Riwayat servis & kondisi</h3>
-              </div>
-              <Wrench size={20} />
+                <button className={ui.secondaryButton} type="submit" disabled={isWritingChain}>
+                  <FileClock size={17} />
+                  {historyForm.source === 'Owner claim' ? 'Save Owner Claim' : 'Add Attestation'}
+                </button>
+              </form>
             </div>
+          </section>
+        ) : null}
 
-            <form className="verifier-form" id="verifier-registry" onSubmit={setupVerifier}>
+        {activeRoute === 'verifier' ? (
+          <section className={ui.panel}>
+            <div className={ui.panelHeading}>
               <div>
-                <strong>Verifier registry</strong>
-                <span>Aktifkan wallet ini sebagai teknisi/toko terverifikasi.</span>
+                <p className={ui.eyebrow}>Verifier registry</p>
+                <h3>Aktifkan wallet verifier</h3>
               </div>
-              <input
-                ref={verifierNameInputRef}
-                required
-                value={verifierForm.name}
-                onChange={(event) =>
-                  setVerifierForm({ ...verifierForm, name: event.target.value })
-                }
-                placeholder="Nama verifier"
-              />
-              <input
-                required
-                value={verifierForm.location}
-                onChange={(event) =>
-                  setVerifierForm({ ...verifierForm, location: event.target.value })
-                }
-                placeholder="Kampus / kota"
-              />
-              <input
-                required
-                value={verifierForm.evidenceUri}
-                onChange={(event) =>
-                  setVerifierForm({ ...verifierForm, evidenceUri: event.target.value })
-                }
-                placeholder="Bukti izin / profil: ipfs://... atau link"
-              />
-              <button className="secondary-button" type="submit" disabled={isWritingChain}>
+              <ShieldCheck className="text-teal-700" size={20} />
+            </div>
+            <form className={ui.formGrid} onSubmit={setupVerifier}>
+              <label className={ui.label}>
+                Nama verifier
+                <input ref={verifierNameInputRef}
+                  className={ui.input}
+                  required
+                  value={verifierForm.name}
+                  onChange={(event) =>
+                    setVerifierForm({ ...verifierForm, name: event.target.value })
+                  }
+                  placeholder="Nama toko / komunitas"
+                />
+              </label>
+              <label className={ui.label}>
+                Lokasi
+                <input className={ui.input} required value={verifierForm.location}
+                  onChange={(event) =>
+                    setVerifierForm({ ...verifierForm, location: event.target.value })
+                  }
+                  placeholder="Kampus / kota"
+                />
+              </label>
+              <label className={cx(ui.label, ui.wide)}>
+                Bukti izin / profil
+                <input className={ui.input} required value={verifierForm.evidenceUri}
+                  onChange={(event) =>
+                    setVerifierForm({ ...verifierForm, evidenceUri: event.target.value })
+                  }
+                  placeholder="ipfs://... atau link profil"
+                />
+              </label>
+              <button className={cx(ui.secondaryButton, ui.wide)} type="submit" disabled={isWritingChain}>
                 <ShieldCheck size={17} />
                 Activate Verifier
               </button>
             </form>
+          </section>
+        ) : null}
 
-            <form className="compact-form" onSubmit={addHistory}>
-              <select
-                value={historyForm.kind}
-                onChange={(event) =>
-                  setHistoryForm({
-                    ...historyForm,
-                    kind: event.target.value as HistoryKind,
-                  })
-                }
-              >
-                <option>Inspection</option>
-                <option>Repair</option>
-                <option>Warranty</option>
-              </select>
-              <input
-                required
-                value={historyForm.title}
-                onChange={(event) =>
-                  setHistoryForm({ ...historyForm, title: event.target.value })
-                }
-                placeholder="Judul riwayat"
-              />
-              <input
-                value={historyForm.verifier}
-                onChange={(event) =>
-                  setHistoryForm({ ...historyForm, verifier: event.target.value })
-                }
-                placeholder="Label verifier untuk tampilan lokal"
-              />
-              <input
-                required
-                value={historyForm.evidenceUri}
-                onChange={(event) =>
-                  setHistoryForm({ ...historyForm, evidenceUri: event.target.value })
-                }
-                placeholder="Evidence: foto invoice / IPFS / Arweave / Drive"
-              />
-              <textarea
-                required
-                value={historyForm.notes}
-                onChange={(event) =>
-                  setHistoryForm({ ...historyForm, notes: event.target.value })
-                }
-                placeholder="Catatan kondisi, sparepart, bukti invoice, atau garansi"
-              />
-              <button className="secondary-button" type="submit" disabled={isWritingChain}>
-                <FileClock size={17} />
-                Add History
-              </button>
-            </form>
-
-            <div className="timeline">
-              {selectedPassport.history.map((item) => {
-                const KindIcon = kindIcons[item.kind]
-                return (
-                  <article className="timeline-item" key={item.id}>
-                    <span className="timeline-icon">
-                      <KindIcon size={17} />
-                    </span>
-                    <div>
-                      <div className="timeline-title">
-                        <strong>{item.title}</strong>
-                        <time>{item.date}</time>
-                      </div>
-                      <p>{item.notes}</p>
-                      {item.evidenceHash ? (
-                        <a
-                          className="evidence-link"
-                          href={item.evidenceUri}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Evidence {shortWallet(item.evidenceHash)}
-                        </a>
-                      ) : null}
-                      <small>
-                        {item.verifier}
-                        {item.txSignature ? ` - ${shortWallet(item.txSignature)}` : ''}
-                      </small>
-                    </div>
-                  </article>
-                )
-              })}
-            </div>
-          </div>
-
-          <div className="panel transfer-panel">
-            <div className="panel-heading">
+        {activeRoute === 'transfer' ? (
+          <section className={ui.panel}>
+            <div className={ui.panelHeading}>
               <div>
-                <p className="eyebrow">Quick transfer</p>
+                <p className={ui.eyebrow}>Quick transfer</p>
                 <h3>Transfer asset</h3>
               </div>
-              <UserRoundCheck size={20} />
+              <UserRoundCheck className="text-teal-700" size={20} />
             </div>
-            <form className="compact-form" onSubmit={transferOwnership}>
-              <input
-                required
-                value={transferForm.ownerName}
+            <form className={ui.compactForm} onSubmit={transferOwnership}>
+              <input className={ui.input} required value={transferForm.ownerName}
                 onChange={(event) =>
                   setTransferForm({
                     ...transferForm,
@@ -1131,9 +1439,7 @@ function App() {
                 }
                 placeholder="Nama pemilik baru"
               />
-              <input
-                required
-                value={transferForm.ownerWallet}
+              <input className={ui.input} required value={transferForm.ownerWallet}
                 onChange={(event) =>
                   setTransferForm({
                     ...transferForm,
@@ -1142,21 +1448,59 @@ function App() {
                 }
                 placeholder="Public key wallet pemilik baru"
               />
-              <button className="primary-button" type="submit" disabled={isWritingChain}>
+              <button className={ui.primaryButton} type="submit" disabled={isWritingChain}>
                 <UserRoundCheck size={17} />
                 Transfer Asset
               </button>
             </form>
             <a
-              className="transaction-link"
+              className="mt-4 inline-flex w-fit text-sm font-bold text-teal-700 no-underline hover:text-teal-900"
               href={explorerUrl(selectedPassport.lastTxSignature)}
               target="_blank"
               rel="noreferrer"
             >
               View transaction
             </a>
-          </div>
-        </section>
+          </section>
+        ) : null}
+
+        {activeRoute === 'settings' ? (
+          <section className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(280px,380px)]">
+            <div className={ui.panel}>
+              <div className={ui.panelHeading}>
+                <div>
+                  <p className={ui.eyebrow}>Program</p>
+                  <h3>Solana Devnet status</h3>
+                </div>
+                <Settings className="text-teal-700" size={20} />
+              </div>
+              <div className="grid gap-3">
+                <Metric icon={ShieldCheck} label="Program status" value={programStatusText} />
+                <Metric icon={Fingerprint} label="Program ID" value="AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg" />
+                <Metric icon={Wallet} label="Connected wallet" value={walletAddress || 'Belum tersambung'} />
+              </div>
+            </div>
+            <div className={ui.panel}>
+              <div className={ui.panelHeading}>
+                <div>
+                  <p className={ui.eyebrow}>Links</p>
+                  <h3>Audit trail</h3>
+                </div>
+                <Link2 className="text-teal-700" size={20} />
+              </div>
+              <div className="grid gap-3">
+                <a className={ui.secondaryButton} href={getRekaProgramExplorerUrl()} target="_blank" rel="noreferrer">
+                  <Link2 size={17} />
+                  Open Program
+                </a>
+                <a className={ui.secondaryButton} href={explorerUrl(selectedPassport.lastTxSignature)} target="_blank" rel="noreferrer">
+                  <Link2 size={17} />
+                  Last Transaction
+                </a>
+              </div>
+            </div>
+          </section>
+        ) : null}
       </section>
     </main>
   )
@@ -1170,86 +1514,86 @@ function LandingPage({
   onOpenApp: () => void
 }) {
   const DeviceIcon = deviceIcons[featuredPassport.category]
-  const verifyUrl = `${window.location.origin}${window.location.pathname}?passport=${featuredPassport.id}`
+  const verifyUrl = `${window.location.origin}/passport/${encodeURIComponent(featuredPassport.id)}`
 
   return (
-    <main className="home-page">
-      <nav className="home-nav" aria-label="Main navigation">
-        <a className="home-brand" href="#home">
-          <span className="brand-mark small">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_16%_8%,rgba(153,246,228,0.55),transparent_28%),radial-gradient(circle_at_88%_4%,rgba(254,215,170,0.52),transparent_26%),linear-gradient(135deg,#fbfbf8_0%,#eef8f3_44%,#fff7ed_100%)] text-stone-950">
+      <nav className="sticky top-0 z-20 mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-5 border-b border-white/60 bg-white/58 px-6 py-4 shadow-sm shadow-stone-200/50 backdrop-blur-xl" aria-label="Main navigation">
+        <a className="inline-flex items-center gap-3 text-lg font-black text-stone-950 no-underline" href="#home">
+          <span className="grid h-10 w-10 place-items-center rounded-2xl border border-stone-200 bg-white text-teal-700 shadow-sm">
             <Fingerprint size={20} />
           </span>
           <span>Reka</span>
         </a>
-        <div className="home-links">
-          <a href="#problem">Masalah</a>
-          <a href="#flow">Cara Kerja</a>
-          <a href="#mvp">MVP</a>
+        <div className="flex items-center justify-center gap-6">
+          <a className="text-sm font-bold text-stone-600 no-underline hover:text-teal-700" href="#problem">Masalah</a>
+          <a className="text-sm font-bold text-stone-600 no-underline hover:text-teal-700" href="#flow">Cara Kerja</a>
+          <a className="text-sm font-bold text-stone-600 no-underline hover:text-teal-700" href="#mvp">MVP</a>
         </div>
-        <button className="primary-button" type="button" onClick={onOpenApp}>
+        <button className={cx(ui.primaryButton, 'justify-self-end')} type="button" onClick={onOpenApp}>
           Buka MVP
           <ArrowRight size={17} />
         </button>
       </nav>
 
-      <section className="home-hero" id="home">
-        <div className="hero-copy">
-          <p className="eyebrow">Frontier Solana Hackathon</p>
-          <h1>Reka</h1>
-          <p className="hero-lead">
+      <section className="mx-auto grid min-h-[calc(100vh-73px)] max-w-7xl grid-cols-1 items-center gap-10 px-6 py-12 lg:grid-cols-[0.82fr_1fr]" id="home">
+        <div>
+          <p className={ui.eyebrow}>Frontier Solana Hackathon</p>
+          <h1 className="mb-5 text-6xl font-black leading-none text-stone-950 md:text-8xl">Reka</h1>
+          <p className="m-0 max-w-2xl text-lg leading-8 text-stone-600 md:text-xl">
             Passport on-chain untuk laptop, HP, dan kamera second-hand, dibuat
             supaya mahasiswa bisa beli barang bekas dengan riwayat yang jelas.
           </p>
-          <div className="hero-actions">
-            <button className="primary-button" type="button" onClick={onOpenApp}>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <button className={ui.primaryButton} type="button" onClick={onOpenApp}>
               Coba Dashboard
               <ArrowRight size={17} />
             </button>
-            <a className="secondary-button" href="#flow">
+            <a className={ui.secondaryButton} href="#flow">
               Lihat Alur
             </a>
           </div>
-          <div className="home-proof-row" aria-label="Project proof points">
-            <span>RWA</span>
-            <span>Consumer App</span>
-            <span>Solana Devnet</span>
+          <div className="mt-7 flex flex-wrap gap-2" aria-label="Project proof points">
+            <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-black text-teal-700">RWA</span>
+            <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-black text-amber-700">Consumer App</span>
+            <span className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-black text-indigo-700">Solana Devnet</span>
           </div>
         </div>
 
-        <div className="hero-visual" aria-label="Reka product preview">
-          <div className="market-scene">
-            <div className="scene-device">
+        <div className="min-w-0" aria-label="Reka product preview">
+          <div className="relative min-h-[520px] overflow-hidden rounded-3xl border border-white/70 bg-white/68 shadow-[0_30px_90px_rgba(88,95,84,0.14)] backdrop-blur-xl">
+            <div className="absolute bottom-14 left-10 grid h-48 w-64 place-items-center rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-600 text-white shadow-2xl shadow-teal-900/20">
               <DeviceIcon size={72} />
             </div>
-            <div className="scene-passport">
+            <div className="absolute right-9 top-12 grid w-[min(300px,calc(100%-72px))] gap-4 rounded-2xl border border-white/80 bg-white/78 p-5 shadow-xl shadow-stone-900/10 backdrop-blur-xl">
               <div>
-                <span>Passport ID</span>
-                <strong>{featuredPassport.id}</strong>
+                <span className="block text-xs font-bold text-stone-500">Passport ID</span>
+                <strong className="mt-1 block break-words text-stone-950">{featuredPassport.id}</strong>
               </div>
               <div>
-                <span>Device</span>
-                <strong>
+                <span className="block text-xs font-bold text-stone-500">Device</span>
+                <strong className="mt-1 block break-words text-stone-950">
                   {featuredPassport.brand} {featuredPassport.model}
                 </strong>
               </div>
               <div>
-                <span>Trust score</span>
-                <strong>{featuredPassport.trustScore}/100</strong>
+                <span className="block text-xs font-bold text-stone-500">Trust score</span>
+                <strong className="mt-1 block break-words text-stone-950">{featuredPassport.trustScore}/100</strong>
               </div>
             </div>
-            <div className="scene-qr">
+            <div className="absolute bottom-14 right-12 grid h-32 w-32 place-items-center rounded-2xl bg-white shadow-xl shadow-stone-900/10">
               <QRCodeCanvas value={verifyUrl} size={92} marginSize={2} />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="home-band" id="problem">
-        <div className="section-heading">
-          <p className="eyebrow">Masalah yang dekat dengan mahasiswa</p>
-          <h2>Pasar barang bekas kampus punya trust issue.</h2>
+      <section className="mx-auto max-w-7xl px-6 py-16" id="problem">
+        <div className="max-w-3xl">
+          <p className={ui.eyebrow}>Masalah yang dekat dengan mahasiswa</p>
+          <h2 className="mb-3 text-3xl font-extrabold leading-tight text-stone-950 md:text-4xl">Pasar barang bekas kampus punya trust issue.</h2>
         </div>
-        <div className="problem-grid">
+        <div className="mt-7 grid grid-cols-1 gap-4 lg:grid-cols-3">
           <HomePoint
             icon={ShieldCheck}
             title="Identitas barang tidak jelas"
@@ -1268,17 +1612,17 @@ function LandingPage({
         </div>
       </section>
 
-      <section className="home-split" id="flow">
-        <div className="section-heading">
-          <p className="eyebrow">Solusi</p>
-          <h2>Satu passport publik untuk satu barang fisik.</h2>
-          <p>
+      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-16 lg:grid-cols-[0.85fr_1fr]" id="flow">
+        <div className="max-w-3xl">
+          <p className={ui.eyebrow}>Solusi</p>
+          <h2 className="mb-3 text-3xl font-extrabold leading-tight text-stone-950 md:text-4xl">Satu passport publik untuk satu barang fisik.</h2>
+          <p className="m-0 text-base leading-7 text-stone-600">
             Verifier seperti toko servis, komunitas kampus, atau koperasi bisa
             menambahkan inspeksi dan garansi. Event penting dicatat ke Solana
             Devnet sebagai audit trail.
           </p>
         </div>
-        <div className="flow-list">
+        <div className="grid gap-3">
           <HomeStep number="01" title="Hash identitas barang" text="Serial atau IMEI diubah menjadi hash agar privasi tetap aman." />
           <HomeStep number="02" title="Catat kondisi dan servis" text="Verifier menambahkan inspeksi, sparepart, warranty, dan estimasi harga." />
           <HomeStep number="03" title="Transfer saat dijual" text="Passport berpindah ke owner baru dan riwayatnya tetap ikut terbawa." />
@@ -1286,21 +1630,21 @@ function LandingPage({
         </div>
       </section>
 
-      <section className="mvp-section" id="mvp">
-        <div className="mvp-copy">
-          <p className="eyebrow">MVP yang sudah bisa dicoba</p>
-          <h2>Demo Reka siap dipakai untuk video 3 menit.</h2>
-          <p>
+      <section className="mx-auto mb-12 grid max-w-7xl grid-cols-1 items-center gap-6 border-t border-stone-200 px-6 py-16 lg:grid-cols-[minmax(0,1fr)_auto]" id="mvp">
+        <div>
+          <p className={ui.eyebrow}>MVP yang sudah bisa dicoba</p>
+          <h2 className="mb-3 text-3xl font-extrabold leading-tight text-stone-950 md:text-4xl">Demo Reka siap dipakai untuk video 3 menit.</h2>
+          <p className="m-0 text-base leading-7 text-stone-600">
             Flow demo paling enak: buka dashboard, connect Phantom Devnet, buat
             passport, tambah riwayat servis, transfer owner, lalu scan QR.
           </p>
         </div>
-        <div className="mvp-actions">
-          <button className="primary-button" type="button" onClick={onOpenApp}>
+        <div className="flex flex-wrap justify-start gap-3 lg:justify-end">
+          <button className={ui.primaryButton} type="button" onClick={onOpenApp}>
             Masuk ke MVP
             <ArrowRight size={17} />
           </button>
-          <a className="secondary-button" href={verifyUrl}>
+          <a className={ui.secondaryButton} href={verifyUrl}>
             Buka Contoh QR
             <ScanLine size={17} />
           </a>
@@ -1320,10 +1664,10 @@ function HomePoint({
   text: string
 }) {
   return (
-    <article className="home-point">
-      <Icon size={22} />
-      <h3>{title}</h3>
-      <p>{text}</p>
+    <article className={ui.panel}>
+      <Icon className="text-teal-700" size={22} />
+      <h3 className="mb-2 mt-4 text-lg font-bold leading-tight text-stone-950">{title}</h3>
+      <p className="m-0 text-stone-600">{text}</p>
     </article>
   )
 }
@@ -1338,11 +1682,11 @@ function HomeStep({
   text: string
 }) {
   return (
-    <article className="flow-step">
-      <span>{number}</span>
+    <article className={cx(ui.panel, 'grid grid-cols-[58px_minmax(0,1fr)] gap-4')}>
+      <span className="grid h-11 place-items-center rounded-xl bg-amber-50 text-sm font-black text-amber-800">{number}</span>
       <div>
-        <h3>{title}</h3>
-        <p>{text}</p>
+        <h3 className="mb-1 text-lg font-bold leading-tight text-stone-950">{title}</h3>
+        <p className="m-0 text-stone-600">{text}</p>
       </div>
     </article>
   )
@@ -1358,12 +1702,125 @@ function Metric({
   value: string
 }) {
   return (
-    <div className="metric">
-      <Icon size={18} />
-      <span>{label}</span>
-      <strong>{value}</strong>
+    <div className="rounded-xl border border-stone-200 bg-white/58 p-4">
+      <Icon className="text-teal-700" size={18} />
+      <span className="mt-2 block text-xs font-bold text-stone-500">{label}</span>
+      <strong className="mt-1 block break-words text-sm font-bold text-stone-950">{value}</strong>
     </div>
   )
+}
+
+function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="grid grid-cols-1 gap-1 border-b border-stone-100 py-3 md:grid-cols-[150px_minmax(0,1fr)] md:gap-5">
+      <span className="text-sm font-bold text-stone-500">{label}</span>
+      <strong className="min-w-0 break-words text-sm font-black text-stone-950">{value}</strong>
+    </div>
+  )
+}
+
+function StatTile({
+  label,
+  value,
+  tone,
+}: {
+  label: string
+  value: string
+  tone: 'teal' | 'amber' | 'indigo' | 'rose'
+}) {
+  const styles = {
+    teal: 'border-teal-200 bg-teal-50/76 text-teal-800',
+    amber: 'border-amber-200 bg-amber-50/76 text-amber-800',
+    indigo: 'border-indigo-200 bg-indigo-50/76 text-indigo-800',
+    rose: 'border-rose-200 bg-rose-50/76 text-rose-800',
+  }
+
+  return (
+    <div className={cx('min-w-0 rounded-2xl border p-4 shadow-sm shadow-white/60', styles[tone])}>
+      <span className="block text-[11px] font-black uppercase tracking-[0.16em] opacity-70">{label}</span>
+      <strong className="mt-2 block break-words text-lg font-black leading-tight text-stone-950">{value}</strong>
+    </div>
+  )
+}
+
+function getHistoryConfidence(passport: Passport) {
+  const verifiedEntries = passport.history.filter(
+    (item) => getAttestationStatus(item) === 'Verified',
+  )
+  const onChainVerifiedCount = verifiedEntries.filter(
+    (item) => getAttestationSource(item) === 'On-chain service',
+  ).length
+  const receiptVerifiedCount = verifiedEntries.filter(
+    (item) => getAttestationSource(item) === 'Verified receipt',
+  ).length
+  const riskyEntries = passport.history.filter((item) =>
+    ['Pending', 'Rejected', 'Disputed'].includes(getAttestationStatus(item)),
+  ).length
+  const firstVerifiedDate = verifiedEntries
+    .map((item) => item.serviceDate ?? item.date)
+    .sort()[0]
+  const unknownBeforeFirstVerified = Boolean(firstVerifiedDate)
+
+  let level: HistoryConfidenceLevel = 'Low'
+  if (verifiedEntries.length >= 3 && riskyEntries === 0 && onChainVerifiedCount >= 1) {
+    level = 'High'
+  } else if (
+    verifiedEntries.length >= 2 ||
+    (onChainVerifiedCount >= 1 && receiptVerifiedCount >= 1)
+  ) {
+    level = riskyEntries > 1 ? 'Low' : 'Medium'
+  }
+
+  const summary = firstVerifiedDate
+    ? `Hanya ${verifiedEntries.length} riwayat yang verified. Riwayat sebelum ${firstVerifiedDate} tetap unknown kecuali ada evidence tambahan.`
+    : 'Belum ada riwayat verified. Semua klaim service harus dianggap belum terbukti.'
+
+  return {
+    level,
+    firstVerifiedDate,
+    unknownBeforeFirstVerified,
+    verifiedCount: verifiedEntries.length,
+    riskyCount: riskyEntries,
+    summary,
+  }
+}
+
+function getAttestationStatus(item: PassportHistory): AttestationStatus {
+  return item.status ?? (item.txSignature ? 'Verified' : 'Pending')
+}
+
+function getAttestationSource(item: PassportHistory): AttestationSource {
+  return item.source ?? (item.txSignature ? 'On-chain service' : 'Owner claim')
+}
+
+function historyConfidenceTone(level: HistoryConfidenceLevel) {
+  const tones: Record<HistoryConfidenceLevel, 'teal' | 'amber' | 'indigo' | 'rose'> = {
+    High: 'teal',
+    Medium: 'amber',
+    Low: 'rose',
+  }
+  return tones[level]
+}
+
+function attestationStatusClass(status: AttestationStatus) {
+  const styles: Record<AttestationStatus, string> = {
+    Verified: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+    Pending: 'border-amber-200 bg-amber-50 text-amber-800',
+    Rejected: 'border-rose-200 bg-rose-50 text-rose-700',
+    Disputed: 'border-indigo-200 bg-indigo-50 text-indigo-700',
+  }
+
+  return cx('rounded-full border px-2.5 py-1 text-[11px] font-black', styles[status])
+}
+
+function attestationSourceClass(source: AttestationSource) {
+  const styles: Record<AttestationSource, string> = {
+    'On-chain service': 'border-teal-200 bg-teal-50 text-teal-700',
+    'Verified receipt': 'border-sky-200 bg-sky-50 text-sky-700',
+    'Owner claim': 'border-stone-200 bg-stone-50 text-stone-600',
+  }
+
+  return cx('rounded-full border px-2.5 py-1 text-[11px] font-black', styles[source])
 }
 
 function parseWalletOrFallback(value: string, fallback: PublicKey) {
@@ -1388,6 +1845,46 @@ function historyKindToNumber(kind: HistoryKind) {
     Ownership: 3,
   }
   return map[kind]
+}
+
+function attestationSourceToNumber(source: AttestationSource) {
+  const map: Record<AttestationSource, number> = {
+    'On-chain service': 0,
+    'Verified receipt': 1,
+    'Owner claim': 2,
+  }
+  return map[source]
+}
+
+function attestationStatusToNumber(status: AttestationStatus) {
+  const map: Record<AttestationStatus, number> = {
+    Pending: 0,
+    Verified: 1,
+    Rejected: 2,
+    Disputed: 3,
+  }
+  return map[status]
+}
+
+function getTrustScoreDelta(source: AttestationSource, status: AttestationStatus) {
+  if (status === 'Rejected') return -6
+  if (status === 'Disputed') return -3
+  if (status === 'Pending') return source === 'Owner claim' ? 0 : 1
+  if (source === 'On-chain service') return 3
+  if (source === 'Verified receipt') return 2
+  return 0
+}
+
+function clampTrustScore(value: number) {
+  return Math.max(0, Math.min(99, value))
+}
+
+function dateToUnixSeconds(value: string) {
+  const timestamp = Date.parse(`${value}T00:00:00.000Z`)
+  if (Number.isNaN(timestamp)) {
+    throw new Error('Tanggal service tidak valid.')
+  }
+  return Math.floor(timestamp / 1000)
 }
 
 function makeEntryId() {

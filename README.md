@@ -28,6 +28,10 @@ The product is designed for the RWA and Consumer Apps tracks:
 - Create a passport for a laptop, phone, or camera.
 - Hash serial number or IMEI locally before storing it.
 - Add inspection, repair, warranty, and condition history.
+- Mark service history as verified on-chain, verified from off-chain evidence,
+  or owner-reported and still pending verification.
+- Show history confidence, first verified date, and unknown prior history so
+  buyers do not confuse missing data with a clean device.
 - Transfer passport ownership after resale.
 - Generate a public QR verification link.
 - Write create, update, and transfer transactions to the Reka Anchor program on Solana Devnet.
@@ -45,6 +49,16 @@ Core instructions:
 - `create_passport`: creates a `DevicePassport` PDA for a physical device.
 - `add_history`: creates a `HistoryEntry` PDA for inspection, repair, warranty, or ownership history.
 - `transfer_passport`: lets the current owner transfer the passport to a new owner wallet.
+
+History entries are modeled as attestations. A verifier can record a service
+that happened directly in the Reka flow, or verify an off-chain receipt by
+storing its evidence hash/URI. If the owner only reports a service without a
+verifier, the frontend can keep it as a pending local claim instead of treating
+it as verified audit-trail data.
+
+For older devices, Reka intentionally shows `Unknown before first verified`.
+This prevents a verifier from implying that one verified service means the
+device has only been serviced once in its lifetime.
 
 Current implementation status:
 
@@ -92,8 +106,9 @@ anchor deploy --provider.cluster devnet
 4. Create a passport for a laptop, phone, or camera.
 5. Confirm the Solana program transaction.
 6. Add a service or inspection history entry.
-7. Transfer the passport to a new owner.
-8. Scan or share the QR verification link.
+7. Try adding an owner-reported service claim to show the unverified gap flow.
+8. Transfer the passport to a new owner.
+9. Scan or share the QR verification link.
 
 ## Local Development
 
