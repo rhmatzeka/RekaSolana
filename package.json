@@ -10,10 +10,10 @@
     "bun": ">=1.0.0"
   },
   "scripts": {
-    "dev": "bun --cwd apps/web run dev",
-    "build": "bun --cwd apps/web run build",
-    "lint": "bun --cwd apps/web run lint",
-    "preview": "bun --cwd apps/web run preview",
+    "dev": "bun run --cwd apps/web dev",
+    "build": "bun run --cwd apps/web build",
+    "lint": "bun run --cwd apps/web lint",
+    "preview": "bun run --cwd apps/web preview",
     "check:program": "node scripts/check-program.mjs",
     "contract:build": "cd contracts/reka && anchor build",
     "contract:deploy": "cd contracts/reka && anchor deploy --provider.cluster devnet"

@@ -19,6 +19,10 @@ contracts/*/node_modules
 contracts/*/target
 contracts/*/.anchor
 *.local
+.env
+.env.*
+!.env.example
+!apps/**/.env.example
 
 # Editor directories and files
 .vscode/*
