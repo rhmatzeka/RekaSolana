@@ -28,3 +28,159 @@
     @apply outline-3 outline-offset-2 outline-sky-900/20;
   }
 }
+
+@layer components {
+  .reka-landing {
+    background:
+      radial-gradient(circle at 12% 10%, rgba(45, 212, 191, 0.18), transparent 28%),
+      radial-gradient(circle at 90% 6%, rgba(251, 191, 36, 0.1), transparent 24%),
+      linear-gradient(180deg, #08111d 0%, #050b12 48%, #020711 100%);
+  }
+
+  .reka-landing::before {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    content: "";
+    opacity: 0.34;
+    background-image:
+      radial-gradient(circle, rgba(226, 232, 240, 0.72) 1px, transparent 1.4px),
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size:
+      96px 96px,
+      44px 44px,
+      44px 44px;
+    mask-image: linear-gradient(to bottom, black 0%, black 64%, transparent 100%);
+  }
+
+  .reka-landing > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .reka-dashboard::before {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    content: "";
+    background:
+      radial-gradient(circle at 76% 12%, rgba(20, 184, 166, 0.18), transparent 30%),
+      radial-gradient(circle at 18% 18%, rgba(148, 163, 184, 0.14), transparent 24%),
+      linear-gradient(180deg, #08111d 0%, #050b12 46%, #030712 100%);
+  }
+
+  .reka-dashboard::after {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    content: "";
+    opacity: 0.38;
+    background-image:
+      radial-gradient(circle, rgba(226, 232, 240, 0.68) 1px, transparent 1.4px),
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-position:
+      0 0,
+      0 0,
+      0 0;
+    background-size:
+      92px 92px,
+      44px 44px,
+      44px 44px;
+    mask-image: linear-gradient(to bottom, black 0%, black 58%, transparent 100%);
+  }
+
+  .reka-dashboard [class*="bg-white/"] {
+    background-color: rgba(15, 23, 42, 0.68);
+  }
+
+  .reka-dashboard [class*="bg-stone-"],
+  .reka-dashboard [class*="bg-slate-"] {
+    background-color: rgba(15, 23, 42, 0.68);
+  }
+
+  .reka-dashboard [class*="bg-teal-50"],
+  .reka-dashboard [class*="bg-amber-50"],
+  .reka-dashboard [class*="bg-indigo-50"],
+  .reka-dashboard [class*="bg-rose-50"],
+  .reka-dashboard [class*="bg-emerald-50"],
+  .reka-dashboard [class*="bg-sky-50"] {
+    background-color: rgba(255, 255, 255, 0.07);
+  }
+
+  .reka-dashboard [class*="border-stone-"],
+  .reka-dashboard [class*="border-white/"] {
+    border-color: rgba(226, 232, 240, 0.14);
+  }
+
+  .reka-dashboard .text-stone-950,
+  .reka-dashboard .text-stone-900,
+  .reka-dashboard .text-stone-800 {
+    color: rgb(248, 250, 252);
+  }
+
+  .reka-dashboard .text-stone-700,
+  .reka-dashboard .text-stone-600,
+  .reka-dashboard .text-stone-500 {
+    color: rgb(203, 213, 225);
+  }
+
+  .reka-dashboard .text-teal-700 {
+    color: rgb(94, 234, 212);
+  }
+
+  .reka-dashboard .text-amber-800,
+  .reka-dashboard .text-amber-700 {
+    color: rgb(253, 230, 138);
+  }
+
+  .reka-dashboard .text-rose-800,
+  .reka-dashboard .text-rose-700 {
+    color: rgb(253, 164, 175);
+  }
+
+  .reka-dashboard .text-indigo-800,
+  .reka-dashboard .text-indigo-700,
+  .reka-dashboard .text-sky-700,
+  .reka-dashboard .text-emerald-700,
+  .reka-dashboard .text-emerald-800 {
+    color: rgb(191, 219, 254);
+  }
+
+  .reka-dashboard input,
+  .reka-dashboard select,
+  .reka-dashboard textarea {
+    color: rgb(248, 250, 252);
+    background-color: rgba(15, 23, 42, 0.72);
+    border-color: rgba(226, 232, 240, 0.16);
+  }
+
+  .reka-dashboard input::placeholder,
+  .reka-dashboard textarea::placeholder {
+    color: rgba(203, 213, 225, 0.58);
+  }
+
+  .reka-dashboard option {
+    color: rgb(15, 23, 42);
+  }
+
+  .reka-dashboard h3,
+  .reka-dashboard strong {
+    color: rgb(248, 250, 252);
+  }
+
+  .reka-dashboard p,
+  .reka-dashboard small,
+  .reka-dashboard time {
+    color: rgb(203, 213, 225);
+  }
+
+  .reka-dashboard a,
+  .reka-dashboard button {
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.18);
+  }
+}

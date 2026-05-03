@@ -384,21 +384,21 @@ function cx(...classes: Array<string | false | null | undefined>) {
 }
 
 const ui = {
-  eyebrow: 'm-0 text-[11px] font-black uppercase tracking-[0.2em] text-teal-700',
+  eyebrow: 'm-0 text-[11px] font-black uppercase tracking-[0.22em] text-teal-300',
   primaryButton:
     'inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-teal-600 bg-teal-600 px-4 text-sm font-black text-white no-underline shadow-sm shadow-teal-900/15 transition hover:bg-teal-700 disabled:cursor-wait disabled:opacity-70',
   secondaryButton:
-    'inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white/80 px-4 text-sm font-black text-stone-800 no-underline shadow-sm shadow-stone-200/70 transition hover:border-teal-200 hover:bg-teal-50',
+    'inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/8 px-4 text-sm font-black text-slate-100 no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10',
   panel:
-    'rounded-2xl border border-white/70 bg-white/72 p-4 shadow-[0_22px_70px_rgba(88,95,84,0.12)] backdrop-blur-xl',
+    'rounded-2xl border border-white/12 bg-slate-900/72 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl',
   panelHeading: 'mb-4 flex items-center justify-between gap-4',
   formGrid: 'grid grid-cols-1 gap-3 md:grid-cols-2',
   compactForm: 'grid gap-3',
   input:
-    'h-11 w-full min-w-0 rounded-xl border border-stone-200 bg-white/85 px-3 text-sm text-stone-950 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-900/10',
+    'h-11 w-full min-w-0 rounded-xl border border-white/12 bg-slate-950/72 px-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-teal-300/60 focus:ring-4 focus:ring-teal-300/10',
   textarea:
-    'min-h-28 w-full min-w-0 resize-y rounded-xl border border-stone-200 bg-white/85 px-3 py-3 text-sm text-stone-950 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-900/10',
-  label: 'grid gap-2 text-xs font-bold text-stone-600',
+    'min-h-28 w-full min-w-0 resize-y rounded-xl border border-white/12 bg-slate-950/72 px-3 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-teal-300/60 focus:ring-4 focus:ring-teal-300/10',
+  label: 'grid gap-2 text-xs font-bold text-slate-300',
   wide: 'col-span-full',
 }
 
@@ -406,8 +406,8 @@ function railButtonClass(active: boolean) {
   return cx(
     'relative grid h-10 w-10 place-items-center rounded-xl border transition',
     active
-      ? 'border-teal-200 bg-teal-50 text-teal-700 shadow-sm shadow-teal-900/5 before:absolute before:-left-3 before:h-6 before:w-1 before:rounded-r before:bg-teal-500 before:content-[\'\']'
-      : 'border-transparent text-stone-500 hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700',
+      ? 'border-teal-300/40 bg-teal-300/12 text-teal-100 shadow-sm shadow-teal-950/20 before:absolute before:-left-3 before:h-6 before:w-1 before:rounded-r before:bg-teal-300 before:content-[\'\']'
+      : 'border-transparent text-slate-400 hover:border-teal-300/30 hover:bg-teal-300/10 hover:text-teal-100',
   )
 }
 
@@ -416,7 +416,7 @@ function historyActionTabClass(active: boolean) {
     'inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-black transition',
     active
       ? 'bg-teal-600 text-white shadow-sm shadow-teal-900/15'
-      : 'text-stone-600 hover:bg-teal-50 hover:text-teal-700',
+      : 'text-slate-400 hover:bg-teal-300/10 hover:text-teal-100',
   )
 }
 
@@ -1007,12 +1007,10 @@ function App() {
     )
   }
 
-  const DeviceIcon = deviceIcons[selectedPassport.category]
-
   return (
-    <main className="grid min-h-screen grid-cols-[74px_minmax(0,1fr)] bg-[radial-gradient(circle_at_16%_8%,rgba(153,246,228,0.55),transparent_28%),radial-gradient(circle_at_88%_4%,rgba(254,215,170,0.52),transparent_26%),linear-gradient(135deg,#fbfbf8_0%,#eef8f3_44%,#fff7ed_100%)] text-stone-950">
-      <aside className="sticky top-0 grid h-screen grid-rows-[auto_1fr_auto] justify-items-center border-r border-stone-200/70 bg-white/58 px-3 py-5 shadow-[16px_0_44px_rgba(88,95,84,0.08)] backdrop-blur-xl">
-        <button className="grid h-11 w-11 place-items-center rounded-2xl border border-stone-200 bg-white text-3xl font-black leading-none text-stone-950 shadow-sm shadow-stone-200" type="button" onClick={() => navigateTo('home')} aria-label="Reka home">
+    <main className="reka-dashboard relative isolate grid min-h-screen grid-cols-[74px_minmax(0,1fr)] bg-[#050b12] text-slate-100">
+      <aside className="sticky top-0 z-10 grid h-screen grid-rows-[auto_1fr_auto] justify-items-center border-r border-white/10 bg-slate-950/58 px-3 py-5 shadow-[18px_0_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+        <button className="grid h-11 w-11 place-items-center rounded-2xl border border-white/12 bg-white/8 text-3xl font-black leading-none text-white shadow-sm shadow-black/20" type="button" onClick={() => navigateTo('home')} aria-label="Reka home">
           R
         </button>
         <nav className="grid content-center gap-3" aria-label="Dashboard navigation">
@@ -1071,19 +1069,19 @@ function App() {
             <Settings size={22} />
           </button>
         </nav>
-        <div className="grid justify-items-center gap-2 text-xs font-semibold text-stone-500">
+        <div className="grid justify-items-center gap-2 text-xs font-semibold text-slate-400">
           <span>Profile</span>
-          <button className="relative h-7 w-12 rounded-full border border-stone-200 bg-stone-200" type="button" onClick={connectWallet} aria-label="Connect wallet">
-            <span className="absolute right-1 top-1 h-5 w-5 rounded-full bg-white shadow-sm" />
+          <button className="relative h-7 w-12 rounded-full border border-white/12 bg-white/12" type="button" onClick={connectWallet} aria-label="Connect wallet">
+            <span className="absolute right-1 top-1 h-5 w-5 rounded-full bg-teal-200 shadow-sm shadow-teal-950/30" />
           </button>
         </div>
       </aside>
 
-      <section className="w-full max-w-[1280px] px-6 py-6">
+      <section className="relative z-10 mx-auto w-full max-w-[1360px] px-6 py-6">
         <header className="mb-5 grid grid-cols-1 items-end justify-between gap-4 xl:grid-cols-[minmax(0,1fr)_auto]">
           <div>
             <p className={ui.eyebrow}>Reka dashboard</p>
-            <h2 className="mt-1 text-4xl font-black leading-none tracking-normal text-stone-950">{getRouteTitle(activeRoute)}</h2>
+            <h2 className="mt-1 text-4xl font-black leading-none tracking-normal text-white">{getRouteTitle(activeRoute)}</h2>
           </div>
           <div className="flex flex-wrap justify-start gap-2 xl:justify-end">
             <button className={ui.secondaryButton} type="button" onClick={connectWallet}>
@@ -1125,8 +1123,8 @@ function App() {
 
         {activeRoute === 'passport' ? (
           <section className="grid gap-4">
-            <div className="relative overflow-hidden rounded-[28px] border border-white/80 bg-white/70 shadow-[0_28px_90px_rgba(91,101,85,0.16)] backdrop-blur-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_8%_4%,rgba(45,212,191,0.35),transparent_32%),radial-gradient(circle_at_78%_14%,rgba(251,191,36,0.28),transparent_27%),linear-gradient(135deg,rgba(255,255,255,0.82),rgba(240,253,250,0.55)_45%,rgba(255,247,237,0.72))]" />
+            <div className="relative overflow-hidden rounded-[28px] border border-white/12 bg-slate-950/68 shadow-[0_28px_90px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_8%_4%,rgba(45,212,191,0.18),transparent_32%),radial-gradient(circle_at_78%_14%,rgba(251,191,36,0.12),transparent_27%),linear-gradient(135deg,rgba(15,23,42,0.86),rgba(8,20,33,0.74)_45%,rgba(18,24,38,0.82))]" />
               <div className="relative grid gap-6 p-6 xl:grid-cols-[minmax(0,1fr)_390px] xl:p-7">
                 <div className="flex min-w-0 flex-col justify-between gap-7">
                   <div>
@@ -1135,7 +1133,7 @@ function App() {
                       <span className="rounded-full border border-stone-200 bg-white/60 px-3 py-1.5">{selectedPassport.city}</span>
                       <span className="rounded-full border border-amber-200 bg-amber-50/70 px-3 py-1.5 text-amber-800">{selectedPassport.id}</span>
                     </div>
-                    <h3 className="max-w-4xl text-5xl font-black leading-[0.92] text-stone-950 md:text-7xl">
+                    <h3 className="max-w-4xl text-5xl font-black leading-[0.92] text-white md:text-7xl">
                       {selectedPassport.brand} {selectedPassport.model}
                     </h3>
                     <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -1159,23 +1157,10 @@ function App() {
                   </div>
                 </div>
 
-                <div className="relative min-h-[320px] overflow-hidden rounded-[24px] border border-white/70 bg-white/56 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
-                  <div className="absolute inset-0 bg-[linear-gradient(rgba(87,83,78,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(87,83,78,0.045)_1px,transparent_1px)] bg-[length:32px_32px]" />
-                  <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-teal-200/55 blur-3xl" />
-                  <div className="absolute -bottom-10 left-8 h-36 w-36 rounded-full bg-amber-200/60 blur-3xl" />
+                <div className="relative min-h-[320px] overflow-hidden rounded-[24px] border border-white/12 bg-white/6 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                  <div className="absolute inset-0 bg-[linear-gradient(rgba(226,232,240,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(226,232,240,0.055)_1px,transparent_1px)] bg-[length:32px_32px]" />
                   <div className="relative grid h-full min-h-[280px] place-items-center">
-                    {selectedPassport.category === 'Laptop' ? (
-                      <div className="w-[min(92%,340px)] translate-y-3" aria-hidden="true">
-                        <div className="relative aspect-[16/10] rounded-t-2xl bg-white p-2 shadow-2xl shadow-stone-900/10 ring-1 ring-stone-900/10">
-                          <span className="block h-full rounded-xl bg-[radial-gradient(circle_at_18%_12%,#fff0a8_0_13%,transparent_29%),radial-gradient(circle_at_84%_8%,#8cf1dd_0_13%,transparent_28%),linear-gradient(132deg,#ffb26b_0_24%,#fffefa_25%_37%,#8bdcff_38%_68%,#c8f7e2_69%_100%)]" />
-                        </div>
-                        <div className="-ml-[7%] h-12 w-[114%] rounded-b-[44px] bg-gradient-to-b from-white to-stone-200 shadow-xl shadow-stone-900/10 [transform:perspective(340px)_rotateX(58deg)_translateY(-8px)] [transform-origin:top]" />
-                      </div>
-                    ) : (
-                      <div className="grid h-36 w-44 place-items-center rounded-[28px] bg-gradient-to-br from-teal-400 to-emerald-600 text-white shadow-xl shadow-teal-900/20">
-                        <DeviceIcon size={72} />
-                      </div>
-                    )}
+                    <HeroDeviceMockup passport={selectedPassport} />
                   </div>
                 </div>
               </div>
@@ -1188,7 +1173,7 @@ function App() {
                     <p className={ui.eyebrow}>Registry data</p>
                     <h3 className="text-xl font-black text-stone-950">Identity & ownership</h3>
                   </div>
-                  <button className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white/70 px-3 text-sm font-black text-stone-800 transition hover:bg-teal-50" type="button" onClick={() => navigateTo('history')}>
+                  <button className={ui.secondaryButton} type="button" onClick={() => navigateTo('history')}>
                     <FileClock size={17} />
                     View history
                   </button>
@@ -1879,22 +1864,21 @@ function LandingPage({
   featuredPassport: Passport
   onOpenApp: () => void
 }) {
-  const DeviceIcon = deviceIcons[featuredPassport.category]
   const verifyUrl = `${window.location.origin}/passport/${encodeURIComponent(featuredPassport.id)}`
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_16%_8%,rgba(153,246,228,0.55),transparent_28%),radial-gradient(circle_at_88%_4%,rgba(254,215,170,0.52),transparent_26%),linear-gradient(135deg,#fbfbf8_0%,#eef8f3_44%,#fff7ed_100%)] text-stone-950">
-      <nav className="sticky top-0 z-20 mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-5 border-b border-white/60 bg-white/58 px-6 py-4 shadow-sm shadow-stone-200/50 backdrop-blur-xl" aria-label="Main navigation">
-        <a className="inline-flex items-center gap-3 text-lg font-black text-stone-950 no-underline" href="#home">
-          <span className="grid h-10 w-10 place-items-center rounded-2xl border border-stone-200 bg-white text-teal-700 shadow-sm">
+    <main className="reka-landing min-h-screen overflow-hidden bg-[#050b12] text-white">
+      <nav className="sticky top-0 z-20 mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-5 border-b border-white/10 bg-slate-950/62 px-6 py-4 shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-2xl" aria-label="Main navigation">
+        <a className="inline-flex items-center gap-3 text-lg font-black text-white no-underline" href="#home">
+          <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/12 bg-white/8 text-teal-200 shadow-sm shadow-black/20">
             <Fingerprint size={20} />
           </span>
           <span>Reka</span>
         </a>
         <div className="flex items-center justify-center gap-6">
-          <a className="text-sm font-bold text-stone-600 no-underline hover:text-teal-700" href="#problem">Masalah</a>
-          <a className="text-sm font-bold text-stone-600 no-underline hover:text-teal-700" href="#flow">Cara Kerja</a>
-          <a className="text-sm font-bold text-stone-600 no-underline hover:text-teal-700" href="#mvp">MVP</a>
+          <a className="text-sm font-bold text-slate-300 no-underline hover:text-teal-200" href="#problem">Masalah</a>
+          <a className="text-sm font-bold text-slate-300 no-underline hover:text-teal-200" href="#flow">Cara Kerja</a>
+          <a className="text-sm font-bold text-slate-300 no-underline hover:text-teal-200" href="#mvp">MVP</a>
         </div>
         <button className={cx(ui.primaryButton, 'justify-self-end')} type="button" onClick={onOpenApp}>
           Buka MVP
@@ -1902,11 +1886,11 @@ function LandingPage({
         </button>
       </nav>
 
-      <section className="mx-auto grid min-h-[calc(100vh-73px)] max-w-7xl grid-cols-1 items-center gap-10 px-6 py-12 lg:grid-cols-[0.82fr_1fr]" id="home">
+      <section className="mx-auto grid min-h-[calc(100vh-73px)] max-w-7xl grid-cols-1 items-center gap-10 px-6 py-12 lg:grid-cols-[0.9fr_1fr]" id="home">
         <div>
-          <p className={ui.eyebrow}>Frontier Solana Hackathon</p>
-          <h1 className="mb-5 text-6xl font-black leading-none text-stone-950 md:text-8xl">Reka</h1>
-          <p className="m-0 max-w-2xl text-lg leading-8 text-stone-600 md:text-xl">
+          <p className="m-0 text-[12px] font-black uppercase tracking-[0.34em] text-teal-300">Frontier Solana Hackathon</p>
+          <h1 className="mb-5 mt-4 text-6xl font-black leading-none text-white md:text-8xl">Reka</h1>
+          <p className="m-0 max-w-2xl text-lg leading-8 text-slate-300 md:text-xl">
             Passport on-chain untuk laptop, HP, dan kamera second-hand, dibuat
             supaya mahasiswa bisa beli barang bekas dengan riwayat yang jelas.
           </p>
@@ -1915,49 +1899,26 @@ function LandingPage({
               Coba Dashboard
               <ArrowRight size={17} />
             </button>
-            <a className={ui.secondaryButton} href="#flow">
+            <a className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/8 px-4 text-sm font-black text-white no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10" href="#flow">
               Lihat Alur
             </a>
           </div>
           <div className="mt-7 flex flex-wrap gap-2" aria-label="Project proof points">
-            <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-black text-teal-700">RWA</span>
-            <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-black text-amber-700">Consumer App</span>
-            <span className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-black text-indigo-700">Solana Devnet</span>
+            <span className="rounded-full border border-teal-300/28 bg-teal-300/10 px-3 py-1.5 text-xs font-black text-teal-200">RWA</span>
+            <span className="rounded-full border border-amber-300/28 bg-amber-300/10 px-3 py-1.5 text-xs font-black text-amber-200">Consumer App</span>
+            <span className="rounded-full border border-indigo-300/28 bg-indigo-300/10 px-3 py-1.5 text-xs font-black text-indigo-200">Solana Devnet</span>
           </div>
         </div>
 
         <div className="min-w-0" aria-label="Reka product preview">
-          <div className="relative min-h-[520px] overflow-hidden rounded-3xl border border-white/70 bg-white/68 shadow-[0_30px_90px_rgba(88,95,84,0.14)] backdrop-blur-xl">
-            <div className="absolute bottom-14 left-10 grid h-48 w-64 place-items-center rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-600 text-white shadow-2xl shadow-teal-900/20">
-              <DeviceIcon size={72} />
-            </div>
-            <div className="absolute right-9 top-12 grid w-[min(300px,calc(100%-72px))] gap-4 rounded-2xl border border-white/80 bg-white/78 p-5 shadow-xl shadow-stone-900/10 backdrop-blur-xl">
-              <div>
-                <span className="block text-xs font-bold text-stone-500">Passport ID</span>
-                <strong className="mt-1 block break-words text-stone-950">{featuredPassport.id}</strong>
-              </div>
-              <div>
-                <span className="block text-xs font-bold text-stone-500">Device</span>
-                <strong className="mt-1 block break-words text-stone-950">
-                  {featuredPassport.brand} {featuredPassport.model}
-                </strong>
-              </div>
-              <div>
-                <span className="block text-xs font-bold text-stone-500">Trust score</span>
-                <strong className="mt-1 block break-words text-stone-950">{featuredPassport.trustScore}/100</strong>
-              </div>
-            </div>
-            <div className="absolute bottom-14 right-12 grid h-32 w-32 place-items-center rounded-2xl bg-white shadow-xl shadow-stone-900/10">
-              <QRCodeCanvas value={verifyUrl} size={92} marginSize={2} />
-            </div>
-          </div>
+          <HeroDeviceMockup passport={featuredPassport} />
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-16" id="problem">
         <div className="max-w-3xl">
-          <p className={ui.eyebrow}>Masalah yang dekat dengan mahasiswa</p>
-          <h2 className="mb-3 text-3xl font-extrabold leading-tight text-stone-950 md:text-4xl">Pasar barang bekas kampus punya trust issue.</h2>
+          <p className="m-0 text-[11px] font-black uppercase tracking-[0.28em] text-slate-400">Masalah yang dekat dengan mahasiswa</p>
+          <h2 className="mb-3 mt-3 text-3xl font-extrabold leading-tight text-white md:text-4xl">Pasar barang bekas kampus punya trust issue.</h2>
         </div>
         <div className="mt-7 grid grid-cols-1 gap-4 lg:grid-cols-3">
           <HomePoint
@@ -1980,9 +1941,9 @@ function LandingPage({
 
       <section className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-16 lg:grid-cols-[0.85fr_1fr]" id="flow">
         <div className="max-w-3xl">
-          <p className={ui.eyebrow}>Solusi</p>
-          <h2 className="mb-3 text-3xl font-extrabold leading-tight text-stone-950 md:text-4xl">Satu passport publik untuk satu barang fisik.</h2>
-          <p className="m-0 text-base leading-7 text-stone-600">
+          <p className="m-0 text-[11px] font-black uppercase tracking-[0.28em] text-slate-400">Solusi</p>
+          <h2 className="mb-3 mt-3 text-3xl font-extrabold leading-tight text-white md:text-4xl">Satu passport publik untuk satu barang fisik.</h2>
+          <p className="m-0 text-base leading-7 text-slate-300">
             Verifier seperti toko servis, komunitas kampus, atau koperasi bisa
             menambahkan inspeksi dan garansi. Event penting dicatat ke Solana
             Devnet sebagai audit trail.
@@ -1996,11 +1957,11 @@ function LandingPage({
         </div>
       </section>
 
-      <section className="mx-auto mb-12 grid max-w-7xl grid-cols-1 items-center gap-6 border-t border-stone-200 px-6 py-16 lg:grid-cols-[minmax(0,1fr)_auto]" id="mvp">
+      <section className="mx-auto mb-12 grid max-w-7xl grid-cols-1 items-center gap-6 border-t border-white/10 px-6 py-16 lg:grid-cols-[minmax(0,1fr)_auto]" id="mvp">
         <div>
-          <p className={ui.eyebrow}>MVP yang sudah bisa dicoba</p>
-          <h2 className="mb-3 text-3xl font-extrabold leading-tight text-stone-950 md:text-4xl">Demo Reka siap dipakai untuk video 3 menit.</h2>
-          <p className="m-0 text-base leading-7 text-stone-600">
+          <p className="m-0 text-[11px] font-black uppercase tracking-[0.28em] text-slate-400">MVP yang sudah bisa dicoba</p>
+          <h2 className="mb-3 mt-3 text-3xl font-extrabold leading-tight text-white md:text-4xl">Demo Reka siap dipakai untuk video 3 menit.</h2>
+          <p className="m-0 text-base leading-7 text-slate-300">
             Flow demo paling enak: buka dashboard, connect Phantom Devnet, buat
             passport, tambah riwayat servis, transfer owner, lalu scan QR.
           </p>
@@ -2010,13 +1971,42 @@ function LandingPage({
             Masuk ke MVP
             <ArrowRight size={17} />
           </button>
-          <a className={ui.secondaryButton} href={verifyUrl}>
+          <a className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/8 px-4 text-sm font-black text-white no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10" href={verifyUrl}>
             Buka Contoh QR
             <ScanLine size={17} />
           </a>
         </div>
       </section>
     </main>
+  )
+}
+
+function HeroDeviceMockup({ passport }: { passport: Passport }) {
+  return (
+    <div className="relative mx-auto h-[360px] max-w-[520px] lg:mr-0">
+      <div className="absolute inset-x-8 bottom-4 h-20 rounded-full bg-teal-300/14 blur-3xl" />
+      <div className="absolute bottom-8 left-8 right-4 h-36 rounded-[22px] border border-white/14 bg-gradient-to-br from-slate-300 via-slate-500 to-slate-800 shadow-[0_30px_80px_rgba(0,0,0,0.48)] [transform:perspective(620px)_rotateX(63deg)_rotateZ(-10deg)]" />
+      <div className="absolute bottom-24 left-24 h-44 w-72 rounded-[20px] border border-white/16 bg-gradient-to-br from-slate-900 via-black to-slate-800 shadow-[0_28px_80px_rgba(0,0,0,0.55)] [transform:perspective(720px)_rotateY(-18deg)_rotateX(6deg)_rotateZ(2deg)]">
+        <div className="absolute inset-3 rounded-xl border border-white/8 bg-[radial-gradient(circle_at_75%_28%,rgba(20,184,166,0.2),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.08),transparent_38%)]" />
+      </div>
+      <div className="absolute right-12 top-12 h-64 w-40 rotate-[-13deg] rounded-[24px] border border-white/34 bg-white/13 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+        <div className="absolute inset-0 rounded-[24px] bg-gradient-to-br from-white/30 via-white/8 to-slate-900/24" />
+        <div className="relative grid h-full content-start justify-items-center gap-4 text-center">
+          <span className="text-[13px] font-black uppercase tracking-[0.16em] text-white/86">Passport</span>
+          <div className="grid h-16 w-16 place-items-center rounded-full border border-white/30 bg-white/8 text-white/72">
+            <Fingerprint size={34} />
+          </div>
+          <div className="grid w-full gap-2">
+            <span className="mx-auto h-2 w-24 rounded-full bg-white/58" />
+            <span className="mx-auto h-2 w-20 rounded-full bg-white/42" />
+            <span className="mx-auto h-2 w-28 rounded-full bg-white/30" />
+          </div>
+          <span className="mt-auto rounded-md border border-white/18 bg-white/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white/70">
+            {passport.id.slice(0, 8)}
+          </span>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -2030,10 +2020,12 @@ function HomePoint({
   text: string
 }) {
   return (
-    <article className={ui.panel}>
-      <Icon className="text-teal-700" size={22} />
-      <h3 className="mb-2 mt-4 text-lg font-bold leading-tight text-stone-950">{title}</h3>
-      <p className="m-0 text-stone-600">{text}</p>
+    <article className="rounded-2xl border border-white/12 bg-white/7 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.22)] backdrop-blur-xl">
+      <span className="grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-white/8 text-slate-200">
+        <Icon size={22} />
+      </span>
+      <h3 className="mb-2 mt-4 text-lg font-bold leading-tight text-white">{title}</h3>
+      <p className="m-0 text-slate-300">{text}</p>
     </article>
   )
 }
@@ -2048,11 +2040,11 @@ function HomeStep({
   text: string
 }) {
   return (
-    <article className={cx(ui.panel, 'grid grid-cols-[58px_minmax(0,1fr)] gap-4')}>
-      <span className="grid h-11 place-items-center rounded-xl bg-amber-50 text-sm font-black text-amber-800">{number}</span>
+    <article className="grid grid-cols-[58px_minmax(0,1fr)] gap-4 rounded-2xl border border-white/12 bg-white/7 p-4 shadow-[0_18px_55px_rgba(0,0,0,0.2)] backdrop-blur-xl">
+      <span className="grid h-11 place-items-center rounded-xl border border-white/10 bg-white/8 text-sm font-black text-teal-200">{number}</span>
       <div>
-        <h3 className="mb-1 text-lg font-bold leading-tight text-stone-950">{title}</h3>
-        <p className="m-0 text-stone-600">{text}</p>
+        <h3 className="mb-1 text-lg font-bold leading-tight text-white">{title}</h3>
+        <p className="m-0 text-slate-300">{text}</p>
       </div>
     </article>
   )
@@ -2068,19 +2060,19 @@ function Metric({
   value: string
 }) {
   return (
-    <div className="rounded-xl border border-stone-200 bg-white/58 p-4">
-      <Icon className="text-teal-700" size={18} />
-      <span className="mt-2 block text-xs font-bold text-stone-500">{label}</span>
-      <strong className="mt-1 block break-words text-sm font-bold text-stone-950">{value}</strong>
+    <div className="rounded-xl border border-white/12 bg-white/7 p-4">
+      <Icon className="text-teal-200" size={18} />
+      <span className="mt-2 block text-xs font-bold text-slate-400">{label}</span>
+      <strong className="mt-1 block break-words text-sm font-bold text-white">{value}</strong>
     </div>
   )
 }
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid grid-cols-1 gap-1 border-b border-stone-100 py-3 md:grid-cols-[150px_minmax(0,1fr)] md:gap-5">
-      <span className="text-sm font-bold text-stone-500">{label}</span>
-      <strong className="min-w-0 break-words text-sm font-black text-stone-950">{value}</strong>
+    <div className="grid grid-cols-1 gap-1 border-b border-white/8 py-3 md:grid-cols-[150px_minmax(0,1fr)] md:gap-5">
+      <span className="text-sm font-bold text-slate-400">{label}</span>
+      <strong className="min-w-0 break-words text-sm font-black text-white">{value}</strong>
     </div>
   )
 }
@@ -2095,16 +2087,16 @@ function StatTile({
   tone: 'teal' | 'amber' | 'indigo' | 'rose'
 }) {
   const styles = {
-    teal: 'border-teal-200 bg-teal-50/76 text-teal-800',
-    amber: 'border-amber-200 bg-amber-50/76 text-amber-800',
-    indigo: 'border-indigo-200 bg-indigo-50/76 text-indigo-800',
-    rose: 'border-rose-200 bg-rose-50/76 text-rose-800',
+    teal: 'border-teal-300/24 bg-teal-300/10 text-teal-200',
+    amber: 'border-amber-300/24 bg-amber-300/10 text-amber-200',
+    indigo: 'border-indigo-300/24 bg-indigo-300/10 text-indigo-200',
+    rose: 'border-rose-300/24 bg-rose-300/10 text-rose-200',
   }
 
   return (
-    <div className={cx('min-w-0 rounded-2xl border p-4 shadow-sm shadow-white/60', styles[tone])}>
+    <div className={cx('min-w-0 rounded-2xl border p-4 shadow-sm shadow-black/20', styles[tone])}>
       <span className="block text-[11px] font-black uppercase tracking-[0.16em] opacity-70">{label}</span>
-      <strong className="mt-2 block break-words text-lg font-black leading-tight text-stone-950">{value}</strong>
+      <strong className="mt-2 block break-words text-lg font-black leading-tight text-white">{value}</strong>
     </div>
   )
 }
@@ -2223,9 +2215,9 @@ function getBuyerRisk(passport: Passport) {
 
 function buyerRiskClass(level: BuyerRiskLevel) {
   const styles: Record<BuyerRiskLevel, string> = {
-    Low: 'border-emerald-200 bg-emerald-50 text-emerald-800',
-    Medium: 'border-amber-200 bg-amber-50 text-amber-800',
-    High: 'border-rose-200 bg-rose-50 text-rose-800',
+    Low: 'border-emerald-300/24 bg-emerald-300/10 text-emerald-200',
+    Medium: 'border-amber-300/24 bg-amber-300/10 text-amber-200',
+    High: 'border-rose-300/24 bg-rose-300/10 text-rose-200',
   }
   return styles[level]
 }
@@ -2260,10 +2252,10 @@ function historyConfidenceTone(level: HistoryConfidenceLevel) {
 
 function attestationStatusClass(status: AttestationStatus) {
   const styles: Record<AttestationStatus, string> = {
-    Verified: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-    Pending: 'border-amber-200 bg-amber-50 text-amber-800',
-    Rejected: 'border-rose-200 bg-rose-50 text-rose-700',
-    Disputed: 'border-indigo-200 bg-indigo-50 text-indigo-700',
+    Verified: 'border-emerald-300/24 bg-emerald-300/10 text-emerald-200',
+    Pending: 'border-amber-300/24 bg-amber-300/10 text-amber-200',
+    Rejected: 'border-rose-300/24 bg-rose-300/10 text-rose-200',
+    Disputed: 'border-indigo-300/24 bg-indigo-300/10 text-indigo-200',
   }
 
   return cx('rounded-full border px-2.5 py-1 text-[11px] font-black', styles[status])
@@ -2271,9 +2263,9 @@ function attestationStatusClass(status: AttestationStatus) {
 
 function attestationSourceClass(source: AttestationSource) {
   const styles: Record<AttestationSource, string> = {
-    'On-chain service': 'border-teal-200 bg-teal-50 text-teal-700',
-    'Verified receipt': 'border-sky-200 bg-sky-50 text-sky-700',
-    'Owner claim': 'border-stone-200 bg-stone-50 text-stone-600',
+    'On-chain service': 'border-teal-300/24 bg-teal-300/10 text-teal-200',
+    'Verified receipt': 'border-sky-300/24 bg-sky-300/10 text-sky-200',
+    'Owner claim': 'border-slate-300/18 bg-white/7 text-slate-300',
   }
 
   return cx('rounded-full border px-2.5 py-1 text-[11px] font-black', styles[source])
