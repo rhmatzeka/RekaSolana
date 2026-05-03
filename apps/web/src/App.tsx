@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  ArrowRight,
   BadgeCheck,
   BookOpenCheck,
   Camera,
@@ -25,6 +24,7 @@ import {
 } from 'lucide-react'
 import { QRCodeCanvas } from 'qrcode.react'
 import { PublicKey, type Transaction } from '@solana/web3.js'
+import BlueShiftLanding from './components/landing/LandingPage'
 import {
   addHistoryOnChain,
   checkRekaProgramStatus,
@@ -1000,10 +1000,7 @@ function App() {
 
   if (activeRoute === 'home') {
     return (
-      <LandingPage
-        featuredPassport={selectedPassport}
-        onOpenApp={() => navigateTo('passport')}
-      />
+      <BlueShiftLanding onLaunchApp={() => navigateTo('passport')} />
     )
   }
 
@@ -1858,258 +1855,6 @@ function App() {
   )
 }
 
-function LandingPage({
-  featuredPassport,
-  onOpenApp,
-}: {
-  featuredPassport: Passport
-  onOpenApp: () => void
-}) {
-  const verifyUrl = `${window.location.origin}/passport/${encodeURIComponent(featuredPassport.id)}`
-
-  return (
-    <main className="reka-landing min-h-screen overflow-hidden bg-[#050b12] text-white">
-      <nav className="sticky top-0 z-20 mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-5 border-b border-white/8 bg-slate-950/56 px-6 py-4 shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-2xl" aria-label="Main navigation">
-        <a className="inline-flex items-center gap-3 text-lg font-black text-white no-underline" href="#home">
-          <span className="grid h-10 w-10 place-items-center rounded-xl border border-teal-300/20 bg-teal-300/10 text-teal-200 shadow-sm shadow-black/20">
-            <Fingerprint size={20} />
-          </span>
-          <span>Reka</span>
-        </a>
-        <div className="flex items-center justify-center gap-6">
-          <a className="text-sm font-bold text-slate-300 no-underline hover:text-teal-200" href="#problem">Features</a>
-          <a className="text-sm font-bold text-slate-300 no-underline hover:text-teal-200" href="#flow">Flow</a>
-          <a className="text-sm font-bold text-slate-300 no-underline hover:text-teal-200" href="#mvp">MVP</a>
-        </div>
-        <button className={cx(ui.primaryButton, 'justify-self-end')} type="button" onClick={onOpenApp}>
-          Launch MVP
-          <ArrowRight size={17} />
-        </button>
-      </nav>
-
-      <section className="relative mx-auto grid min-h-[760px] max-w-7xl place-items-center px-6 py-20 text-center" id="home">
-        <div className="absolute left-8 top-28 hidden rounded border border-sky-300/20 bg-sky-300/7 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-sky-200 lg:block">
-          Anchor
-        </div>
-        <div className="absolute right-28 top-28 hidden rounded border border-amber-300/20 bg-amber-300/7 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-amber-200 lg:block">
-          RWA
-        </div>
-        <div className="absolute right-12 top-72 hidden rounded border border-lime-300/20 bg-lime-300/7 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-lime-200 lg:block">
-          Consumer
-        </div>
-
-        <div className="relative z-10 grid justify-items-center">
-          <CourseDeck />
-          <p className="mt-8 text-[11px] font-black uppercase tracking-[0.3em] text-teal-300">Frontier Solana Hackathon</p>
-          <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[0.95] text-white md:text-7xl">
-            Make the shift.
-            <span className="block text-slate-300">Verify on Solana.</span>
-          </h1>
-          <p className="mt-5 max-w-xl text-base font-semibold leading-7 text-slate-300">
-            Reka turns second-hand laptops, phones, and cameras into public asset
-            passports with ownership, repair history, and QR verification.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <button className={ui.primaryButton} type="button" onClick={onOpenApp}>
-              Open MVP
-              <ArrowRight size={17} />
-            </button>
-            <a className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/8 px-4 text-sm font-black text-white no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10" href="#problem">
-              Explore Flow
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-5xl px-6 pb-24 text-center" aria-label="Proof points">
-        <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500">Built for campus resale trust</p>
-        <div className="mt-8 grid grid-cols-2 gap-4 text-sm font-black uppercase tracking-[0.08em] text-slate-300 md:grid-cols-4">
-          <PartnerLogo label="Verifier" />
-          <PartnerLogo label="Passport" />
-          <PartnerLogo label="Devnet" />
-          <PartnerLogo label="QR Proof" />
-        </div>
-      </section>
-
-      <section className="reka-glow-band mx-auto max-w-7xl px-6 py-24" id="problem">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="m-0 text-[11px] font-black uppercase tracking-[0.28em] text-teal-300">Features</p>
-          <h2 className="mb-3 mt-4 text-3xl font-extrabold leading-tight text-white md:text-5xl">
-            The portable trust layer for second-hand devices.
-          </h2>
-          <p className="m-0 text-base leading-7 text-slate-300">
-            Hash the identity, attach verified evidence, disclose risk, and keep
-            every resale trail inspectable from one public QR.
-          </p>
-        </div>
-
-        <div className="mt-14 grid grid-cols-1 border border-white/10 md:grid-cols-2">
-          <FeatureMatrixCard icon={Fingerprint} title="Private identity hash" text="Serial or IMEI is hashed locally before the passport is created." />
-          <FeatureMatrixCard icon={Wrench} title="Repair and condition trail" text="Verifier attestations separate proven history from owner claims." />
-          <FeatureMatrixCard icon={ClipboardCheck} title="Buyer disclosure checks" text="Seller claims and inspection checklist expose missing context." />
-          <FeatureMatrixCard icon={ScanLine} title="QR verification page" text="Buyers open a public passport before paying for the device." />
-        </div>
-      </section>
-
-      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-24 lg:grid-cols-[0.82fr_1fr]" id="flow">
-        <div>
-          <p className="m-0 text-[11px] font-black uppercase tracking-[0.28em] text-slate-400">How it works</p>
-          <h2 className="mb-3 mt-3 text-4xl font-extrabold leading-tight text-white md:text-5xl">
-            One passport follows one physical device.
-          </h2>
-          <p className="m-0 max-w-xl text-base leading-7 text-slate-300">
-            Reka is intentionally strict about unknown history. Verified logs
-            raise confidence, but missing pre-verification context stays visible.
-          </p>
-        </div>
-        <div className="grid gap-3">
-          <HomeStep number="01" title="Hash identity" text="Serial or IMEI becomes a private device hash." />
-          <HomeStep number="02" title="Record verified service" text="Verifier adds inspection, sparepart, warranty, and evidence URI." />
-          <HomeStep number="03" title="Transfer ownership" text="Passport ownership moves after resale handover." />
-          <HomeStep number="04" title="Scan before buying" text="The buyer checks risk, disclosure, and trail from a QR link." />
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-6 py-24 text-center" id="mvp">
-        <p className="m-0 text-[11px] font-black uppercase tracking-[0.28em] text-slate-400">What are you waiting for?</p>
-        <h2 className="mx-auto mb-10 mt-3 max-w-2xl text-4xl font-extrabold leading-tight text-white md:text-5xl">
-          Jump in and verify the next resale.
-        </h2>
-        <button className={ui.primaryButton} type="button" onClick={onOpenApp}>
-          Launch Dashboard
-          <ArrowRight size={17} />
-        </button>
-
-        <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-3">
-          <CourseCard accent="teal" icon={Fingerprint} title="Create Passport" text="Register device identity and initial condition." />
-          <CourseCard accent="lime" icon={Wrench} title="Add Attestation" text="Attach service history with evidence-backed notes." />
-          <CourseCard accent="sky" icon={ScanLine} title="Share QR Proof" text="Open the public verification page for buyers." />
-        </div>
-
-        <div className="mt-24 grid grid-cols-1 items-center gap-6 rounded-2xl border border-white/10 bg-white/5 p-8 text-left shadow-[0_30px_90px_rgba(0,0,0,0.28)] md:grid-cols-[minmax(0,1fr)_auto]">
-          <div>
-            <p className="m-0 text-[11px] font-black uppercase tracking-[0.24em] text-slate-500">MVP ready</p>
-            <h3 className="mt-3 text-2xl font-black text-white">Demo flow is ready for a 3-minute video.</h3>
-            <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-slate-300">
-              Connect Phantom on Devnet, create a passport, add history, transfer owner, and open the QR verification link.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3 md:justify-end">
-            <button className={ui.primaryButton} type="button" onClick={onOpenApp}>
-              Masuk ke MVP
-              <ArrowRight size={17} />
-            </button>
-            <a className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/8 px-4 text-sm font-black text-white no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10" href={verifyUrl}>
-              Buka Contoh QR
-              <ScanLine size={17} />
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <footer className="mx-auto mb-10 grid max-w-7xl grid-cols-1 gap-8 border border-white/10 bg-slate-950/60 px-8 py-10 text-sm font-semibold text-slate-400 md:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
-        <span>© 2026 Reka</span>
-        <a className="text-slate-300 no-underline hover:text-teal-200" href="#problem">Features</a>
-        <a className="text-slate-300 no-underline hover:text-teal-200" href="#flow">Flow</a>
-        <button className="inline-flex w-fit items-center gap-2 border-0 bg-transparent p-0 text-sm font-black text-teal-200" type="button" onClick={onOpenApp}>
-          Dashboard
-          <ArrowRight size={15} />
-        </button>
-      </footer>
-    </main>
-  )
-}
-
-function CourseDeck() {
-  const cards = [
-    { label: 'SERIAL', title: 'Identity Hash', tone: 'from-teal-300/45' },
-    { label: 'REPAIR', title: 'Service Trail', tone: 'from-amber-300/28' },
-    { label: 'OWNER', title: 'Transfer Log', tone: 'from-sky-300/26' },
-    { label: 'VERIFY', title: 'QR Proof', tone: 'from-lime-300/24' },
-  ]
-
-  return (
-    <div className="relative h-48 w-[280px] md:h-56 md:w-[360px]" aria-hidden="true">
-      {cards.map((card, index) => (
-        <div
-          className="absolute left-1/2 top-0 h-44 w-48 -translate-x-1/2 rounded-xl border border-white/18 bg-slate-950 shadow-[0_24px_70px_rgba(0,0,0,0.44)] md:h-52 md:w-60"
-          key={card.title}
-          style={{
-            transform: `translateX(calc(-50% + ${index * 24 - 36}px)) rotate(${index * 3 - 5}deg)`,
-            zIndex: cards.length - index,
-          }}
-        >
-          <div className={cx('h-full rounded-xl bg-gradient-to-br to-transparent p-5 text-left', card.tone)}>
-            <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-300">{card.label}</span>
-            <strong className="mt-16 block text-xl font-black text-white">{card.title}</strong>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function PartnerLogo({ label }: { label: string }) {
-  return (
-    <div className="flex items-center justify-center gap-2 rounded-xl border border-white/8 bg-white/4 px-4 py-3">
-      <Fingerprint className="text-slate-500" size={16} />
-      <span>{label}</span>
-    </div>
-  )
-}
-
-function FeatureMatrixCard({
-  icon: Icon,
-  title,
-  text,
-}: {
-  icon: React.ElementType
-  title: string
-  text: string
-}) {
-  return (
-    <article className="min-h-56 border-b border-white/10 bg-slate-950/54 p-8 text-left md:border-r">
-      <span className="grid h-11 w-11 place-items-center rounded-lg border border-teal-300/18 bg-teal-300/8 text-teal-200">
-        <Icon size={19} />
-      </span>
-      <h3 className="mt-7 text-lg font-black text-white">{title}</h3>
-      <p className="mt-3 max-w-md text-sm font-semibold leading-6 text-slate-300">{text}</p>
-    </article>
-  )
-}
-
-function CourseCard({
-  accent,
-  icon: Icon,
-  title,
-  text,
-}: {
-  accent: 'teal' | 'lime' | 'sky'
-  icon: React.ElementType
-  title: string
-  text: string
-}) {
-  const accents = {
-    teal: 'border-teal-300/20 text-teal-200',
-    lime: 'border-lime-300/20 text-lime-200',
-    sky: 'border-sky-300/20 text-sky-200',
-  }
-
-  return (
-    <article className="group min-h-64 border border-white/10 bg-slate-950/72 p-6 text-left shadow-[0_22px_70px_rgba(0,0,0,0.2)] transition hover:-translate-y-1 hover:border-teal-300/24">
-      <span className={cx('grid h-12 w-12 place-items-center border bg-white/5', accents[accent])}>
-        <Icon size={20} />
-      </span>
-      <p className="mt-10 text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">Beginner</p>
-      <h3 className="mt-2 text-xl font-black text-white">{title}</h3>
-      <p className="mt-3 text-sm font-semibold leading-6 text-slate-300">{text}</p>
-      <button className="mt-8 border border-white/10 bg-white/5 px-4 py-2 text-xs font-black uppercase tracking-[0.08em] text-slate-200 transition group-hover:border-teal-300/30 group-hover:text-teal-100" type="button">
-        Start flow
-      </button>
-    </article>
-  )
-}
-
 function HeroDeviceMockup({ passport }: { passport: Passport }) {
   return (
     <div className="relative mx-auto h-[360px] max-w-[520px] lg:mr-0">
@@ -2136,26 +1881,6 @@ function HeroDeviceMockup({ passport }: { passport: Passport }) {
         </div>
       </div>
     </div>
-  )
-}
-
-function HomeStep({
-  number,
-  title,
-  text,
-}: {
-  number: string
-  title: string
-  text: string
-}) {
-  return (
-    <article className="grid grid-cols-[58px_minmax(0,1fr)] gap-4 rounded-2xl border border-white/12 bg-white/7 p-4 shadow-[0_18px_55px_rgba(0,0,0,0.2)] backdrop-blur-xl">
-      <span className="grid h-11 place-items-center rounded-xl border border-white/10 bg-white/8 text-sm font-black text-teal-200">{number}</span>
-      <div>
-        <h3 className="mb-1 text-lg font-bold leading-tight text-white">{title}</h3>
-        <p className="m-0 text-slate-300">{text}</p>
-      </div>
-    </article>
   )
 }
 
