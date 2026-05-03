@@ -404,10 +404,10 @@ const ui = {
 
 function railButtonClass(active: boolean) {
   return cx(
-    'relative grid h-10 w-10 place-items-center rounded-xl border transition',
+    'relative grid h-12 w-12 place-items-center rounded-2xl border transition',
     active
-      ? 'border-teal-300/40 bg-teal-300/12 text-teal-100 shadow-sm shadow-teal-950/20 before:absolute before:-left-3 before:h-6 before:w-1 before:rounded-r before:bg-teal-300 before:content-[\'\']'
-      : 'border-transparent text-slate-400 hover:border-teal-300/30 hover:bg-teal-300/10 hover:text-teal-100',
+      ? 'border-teal-300/42 bg-teal-300/14 text-teal-100 shadow-[0_16px_36px_rgba(20,184,166,0.16)] before:absolute before:-left-4 before:h-7 before:w-1 before:rounded-r before:bg-teal-300 before:content-[\'\']'
+      : 'border-transparent text-slate-400 hover:border-white/12 hover:bg-white/7 hover:text-teal-100',
   )
 }
 
@@ -1008,12 +1008,13 @@ function App() {
   }
 
   return (
-    <main className="reka-dashboard relative isolate grid min-h-screen grid-cols-[74px_minmax(0,1fr)] bg-[#050b12] text-slate-100">
-      <aside className="sticky top-0 z-10 grid h-screen grid-rows-[auto_1fr_auto] justify-items-center border-r border-white/10 bg-slate-950/58 px-3 py-5 shadow-[18px_0_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
-        <button className="grid h-11 w-11 place-items-center rounded-2xl border border-white/12 bg-white/8 text-3xl font-black leading-none text-white shadow-sm shadow-black/20" type="button" onClick={() => navigateTo('home')} aria-label="Reka home">
-          R
+    <main className="reka-dashboard relative isolate grid min-h-screen grid-cols-[88px_minmax(0,1fr)] bg-[#050b12] text-slate-100">
+      <aside className="sticky top-0 z-10 grid h-screen grid-rows-[auto_1fr_auto] justify-items-center border-r border-white/10 bg-slate-950/62 px-4 py-5 shadow-[18px_0_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+        <button className="group relative grid h-14 w-14 place-items-center rounded-3xl border border-teal-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.22),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] text-teal-100 shadow-[0_18px_42px_rgba(0,0,0,0.26)] transition hover:border-teal-300/40 hover:bg-teal-300/12" type="button" onClick={() => navigateTo('home')} aria-label="Reka home">
+          <Fingerprint size={26} strokeWidth={2.4} />
+          <span className="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-teal-200 shadow-[0_0_12px_rgba(153,246,228,0.85)]" />
         </button>
-        <nav className="grid content-center gap-3" aria-label="Dashboard navigation">
+        <nav className="grid content-center gap-4" aria-label="Dashboard navigation">
           <button
             className={railButtonClass(activeRoute === 'passport')}
             type="button"
@@ -1069,10 +1070,10 @@ function App() {
             <Settings size={22} />
           </button>
         </nav>
-        <div className="grid justify-items-center gap-2 text-xs font-semibold text-slate-400">
-          <span>Profile</span>
-          <button className="relative h-7 w-12 rounded-full border border-white/12 bg-white/12" type="button" onClick={connectWallet} aria-label="Connect wallet">
-            <span className="absolute right-1 top-1 h-5 w-5 rounded-full bg-teal-200 shadow-sm shadow-teal-950/30" />
+        <div className="grid justify-items-center gap-3 text-xs font-bold text-slate-400">
+          <span className="tracking-wide">Profile</span>
+          <button className="relative h-8 w-14 rounded-full border border-white/12 bg-white/10 shadow-inner shadow-black/20" type="button" onClick={connectWallet} aria-label="Connect wallet">
+            <span className="absolute right-1 top-1 h-6 w-6 rounded-full bg-teal-200 shadow-[0_0_18px_rgba(153,246,228,0.55)]" />
           </button>
         </div>
       </aside>
@@ -1868,116 +1869,244 @@ function LandingPage({
 
   return (
     <main className="reka-landing min-h-screen overflow-hidden bg-[#050b12] text-white">
-      <nav className="sticky top-0 z-20 mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-5 border-b border-white/10 bg-slate-950/62 px-6 py-4 shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-2xl" aria-label="Main navigation">
+      <nav className="sticky top-0 z-20 mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-5 border-b border-white/8 bg-slate-950/56 px-6 py-4 shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-2xl" aria-label="Main navigation">
         <a className="inline-flex items-center gap-3 text-lg font-black text-white no-underline" href="#home">
-          <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/12 bg-white/8 text-teal-200 shadow-sm shadow-black/20">
+          <span className="grid h-10 w-10 place-items-center rounded-xl border border-teal-300/20 bg-teal-300/10 text-teal-200 shadow-sm shadow-black/20">
             <Fingerprint size={20} />
           </span>
           <span>Reka</span>
         </a>
         <div className="flex items-center justify-center gap-6">
-          <a className="text-sm font-bold text-slate-300 no-underline hover:text-teal-200" href="#problem">Masalah</a>
-          <a className="text-sm font-bold text-slate-300 no-underline hover:text-teal-200" href="#flow">Cara Kerja</a>
+          <a className="text-sm font-bold text-slate-300 no-underline hover:text-teal-200" href="#problem">Features</a>
+          <a className="text-sm font-bold text-slate-300 no-underline hover:text-teal-200" href="#flow">Flow</a>
           <a className="text-sm font-bold text-slate-300 no-underline hover:text-teal-200" href="#mvp">MVP</a>
         </div>
         <button className={cx(ui.primaryButton, 'justify-self-end')} type="button" onClick={onOpenApp}>
-          Buka MVP
+          Launch MVP
           <ArrowRight size={17} />
         </button>
       </nav>
 
-      <section className="mx-auto grid min-h-[680px] max-w-7xl grid-cols-1 items-center gap-10 px-8 py-16 md:px-10 lg:grid-cols-[0.9fr_1fr] lg:px-12" id="home">
-        <div className="lg:pl-6 xl:pl-8">
-          <p className="m-0 text-[12px] font-black uppercase tracking-[0.34em] text-teal-300">Frontier Solana Hackathon</p>
-          <h1 className="mb-5 mt-4 text-6xl font-black leading-none text-white md:text-8xl">Reka</h1>
-          <p className="m-0 max-w-[760px] text-lg leading-8 text-slate-300 md:text-xl">
-            Passport on-chain untuk laptop, HP, dan kamera second-hand, dibuat
-            supaya mahasiswa bisa beli barang bekas dengan riwayat yang jelas.
+      <section className="relative mx-auto grid min-h-[760px] max-w-7xl place-items-center px-6 py-20 text-center" id="home">
+        <div className="absolute left-8 top-28 hidden rounded border border-sky-300/20 bg-sky-300/7 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-sky-200 lg:block">
+          Anchor
+        </div>
+        <div className="absolute right-28 top-28 hidden rounded border border-amber-300/20 bg-amber-300/7 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-amber-200 lg:block">
+          RWA
+        </div>
+        <div className="absolute right-12 top-72 hidden rounded border border-lime-300/20 bg-lime-300/7 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-lime-200 lg:block">
+          Consumer
+        </div>
+
+        <div className="relative z-10 grid justify-items-center">
+          <CourseDeck />
+          <p className="mt-8 text-[11px] font-black uppercase tracking-[0.3em] text-teal-300">Frontier Solana Hackathon</p>
+          <h1 className="mt-4 max-w-3xl text-5xl font-black leading-[0.95] text-white md:text-7xl">
+            Make the shift.
+            <span className="block text-slate-300">Verify on Solana.</span>
+          </h1>
+          <p className="mt-5 max-w-xl text-base font-semibold leading-7 text-slate-300">
+            Reka turns second-hand laptops, phones, and cameras into public asset
+            passports with ownership, repair history, and QR verification.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
             <button className={ui.primaryButton} type="button" onClick={onOpenApp}>
-              Coba Dashboard
+              Open MVP
               <ArrowRight size={17} />
             </button>
-            <a className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/8 px-4 text-sm font-black text-white no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10" href="#flow">
-              Lihat Alur
+            <a className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/8 px-4 text-sm font-black text-white no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10" href="#problem">
+              Explore Flow
             </a>
           </div>
-          <div className="mt-7 flex flex-wrap gap-2" aria-label="Project proof points">
-            <span className="rounded-full border border-teal-300/28 bg-teal-300/10 px-3 py-1.5 text-xs font-black text-teal-200">RWA</span>
-            <span className="rounded-full border border-amber-300/28 bg-amber-300/10 px-3 py-1.5 text-xs font-black text-amber-200">Consumer App</span>
-            <span className="rounded-full border border-indigo-300/28 bg-indigo-300/10 px-3 py-1.5 text-xs font-black text-indigo-200">Solana Devnet</span>
-          </div>
-        </div>
-
-        <div className="min-w-0" aria-label="Reka product preview">
-          <HeroDeviceMockup passport={featuredPassport} />
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-16" id="problem">
-        <div className="max-w-3xl">
-          <p className="m-0 text-[11px] font-black uppercase tracking-[0.28em] text-slate-400">Masalah yang dekat dengan mahasiswa</p>
-          <h2 className="mb-3 mt-3 text-3xl font-extrabold leading-tight text-white md:text-4xl">Pasar barang bekas kampus punya trust issue.</h2>
-        </div>
-        <div className="mt-7 grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <HomePoint
-            icon={ShieldCheck}
-            title="Identitas barang tidak jelas"
-            text="Serial atau IMEI sering cuma ditunjukkan di chat, lalu hilang setelah transaksi."
-          />
-          <HomePoint
-            icon={Wrench}
-            title="Riwayat servis tercecer"
-            text="Pembeli sulit tahu apakah layar, baterai, SSD, kamera, atau port pernah diganti."
-          />
-          <HomePoint
-            icon={UserRoundCheck}
-            title="Kepemilikan sulit dibuktikan"
-            text="Saat barang berpindah tangan, tidak ada catatan publik yang bisa diverifikasi."
-          />
+      <section className="mx-auto max-w-5xl px-6 pb-24 text-center" aria-label="Proof points">
+        <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500">Built for campus resale trust</p>
+        <div className="mt-8 grid grid-cols-2 gap-4 text-sm font-black uppercase tracking-[0.08em] text-slate-300 md:grid-cols-4">
+          <PartnerLogo label="Verifier" />
+          <PartnerLogo label="Passport" />
+          <PartnerLogo label="Devnet" />
+          <PartnerLogo label="QR Proof" />
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-16 lg:grid-cols-[0.85fr_1fr]" id="flow">
-        <div className="max-w-3xl">
-          <p className="m-0 text-[11px] font-black uppercase tracking-[0.28em] text-slate-400">Solusi</p>
-          <h2 className="mb-3 mt-3 text-3xl font-extrabold leading-tight text-white md:text-4xl">Satu passport publik untuk satu barang fisik.</h2>
+      <section className="reka-glow-band mx-auto max-w-7xl px-6 py-24" id="problem">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="m-0 text-[11px] font-black uppercase tracking-[0.28em] text-teal-300">Features</p>
+          <h2 className="mb-3 mt-4 text-3xl font-extrabold leading-tight text-white md:text-5xl">
+            The portable trust layer for second-hand devices.
+          </h2>
           <p className="m-0 text-base leading-7 text-slate-300">
-            Verifier seperti toko servis, komunitas kampus, atau koperasi bisa
-            menambahkan inspeksi dan garansi. Event penting dicatat ke Solana
-            Devnet sebagai audit trail.
+            Hash the identity, attach verified evidence, disclose risk, and keep
+            every resale trail inspectable from one public QR.
+          </p>
+        </div>
+
+        <div className="mt-14 grid grid-cols-1 border border-white/10 md:grid-cols-2">
+          <FeatureMatrixCard icon={Fingerprint} title="Private identity hash" text="Serial or IMEI is hashed locally before the passport is created." />
+          <FeatureMatrixCard icon={Wrench} title="Repair and condition trail" text="Verifier attestations separate proven history from owner claims." />
+          <FeatureMatrixCard icon={ClipboardCheck} title="Buyer disclosure checks" text="Seller claims and inspection checklist expose missing context." />
+          <FeatureMatrixCard icon={ScanLine} title="QR verification page" text="Buyers open a public passport before paying for the device." />
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-24 lg:grid-cols-[0.82fr_1fr]" id="flow">
+        <div>
+          <p className="m-0 text-[11px] font-black uppercase tracking-[0.28em] text-slate-400">How it works</p>
+          <h2 className="mb-3 mt-3 text-4xl font-extrabold leading-tight text-white md:text-5xl">
+            One passport follows one physical device.
+          </h2>
+          <p className="m-0 max-w-xl text-base leading-7 text-slate-300">
+            Reka is intentionally strict about unknown history. Verified logs
+            raise confidence, but missing pre-verification context stays visible.
           </p>
         </div>
         <div className="grid gap-3">
-          <HomeStep number="01" title="Hash identitas barang" text="Serial atau IMEI diubah menjadi hash agar privasi tetap aman." />
-          <HomeStep number="02" title="Catat kondisi dan servis" text="Verifier menambahkan inspeksi, sparepart, warranty, dan estimasi harga." />
-          <HomeStep number="03" title="Transfer saat dijual" text="Passport berpindah ke owner baru dan riwayatnya tetap ikut terbawa." />
-          <HomeStep number="04" title="Scan QR sebelum beli" text="Calon pembeli membuka halaman verifikasi publik dari QR." />
+          <HomeStep number="01" title="Hash identity" text="Serial or IMEI becomes a private device hash." />
+          <HomeStep number="02" title="Record verified service" text="Verifier adds inspection, sparepart, warranty, and evidence URI." />
+          <HomeStep number="03" title="Transfer ownership" text="Passport ownership moves after resale handover." />
+          <HomeStep number="04" title="Scan before buying" text="The buyer checks risk, disclosure, and trail from a QR link." />
         </div>
       </section>
 
-      <section className="mx-auto mb-12 grid max-w-7xl grid-cols-1 items-center gap-6 border-t border-white/10 px-6 py-16 lg:grid-cols-[minmax(0,1fr)_auto]" id="mvp">
-        <div>
-          <p className="m-0 text-[11px] font-black uppercase tracking-[0.28em] text-slate-400">MVP yang sudah bisa dicoba</p>
-          <h2 className="mb-3 mt-3 text-3xl font-extrabold leading-tight text-white md:text-4xl">Demo Reka siap dipakai untuk video 3 menit.</h2>
-          <p className="m-0 text-base leading-7 text-slate-300">
-            Flow demo paling enak: buka dashboard, connect Phantom Devnet, buat
-            passport, tambah riwayat servis, transfer owner, lalu scan QR.
-          </p>
+      <section className="mx-auto max-w-7xl px-6 py-24 text-center" id="mvp">
+        <p className="m-0 text-[11px] font-black uppercase tracking-[0.28em] text-slate-400">What are you waiting for?</p>
+        <h2 className="mx-auto mb-10 mt-3 max-w-2xl text-4xl font-extrabold leading-tight text-white md:text-5xl">
+          Jump in and verify the next resale.
+        </h2>
+        <button className={ui.primaryButton} type="button" onClick={onOpenApp}>
+          Launch Dashboard
+          <ArrowRight size={17} />
+        </button>
+
+        <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-3">
+          <CourseCard accent="teal" icon={Fingerprint} title="Create Passport" text="Register device identity and initial condition." />
+          <CourseCard accent="lime" icon={Wrench} title="Add Attestation" text="Attach service history with evidence-backed notes." />
+          <CourseCard accent="sky" icon={ScanLine} title="Share QR Proof" text="Open the public verification page for buyers." />
         </div>
-        <div className="flex flex-wrap justify-start gap-3 lg:justify-end">
-          <button className={ui.primaryButton} type="button" onClick={onOpenApp}>
-            Masuk ke MVP
-            <ArrowRight size={17} />
-          </button>
-          <a className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/8 px-4 text-sm font-black text-white no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10" href={verifyUrl}>
-            Buka Contoh QR
-            <ScanLine size={17} />
-          </a>
+
+        <div className="mt-24 grid grid-cols-1 items-center gap-6 rounded-2xl border border-white/10 bg-white/5 p-8 text-left shadow-[0_30px_90px_rgba(0,0,0,0.28)] md:grid-cols-[minmax(0,1fr)_auto]">
+          <div>
+            <p className="m-0 text-[11px] font-black uppercase tracking-[0.24em] text-slate-500">MVP ready</p>
+            <h3 className="mt-3 text-2xl font-black text-white">Demo flow is ready for a 3-minute video.</h3>
+            <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-slate-300">
+              Connect Phantom on Devnet, create a passport, add history, transfer owner, and open the QR verification link.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3 md:justify-end">
+            <button className={ui.primaryButton} type="button" onClick={onOpenApp}>
+              Masuk ke MVP
+              <ArrowRight size={17} />
+            </button>
+            <a className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/8 px-4 text-sm font-black text-white no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10" href={verifyUrl}>
+              Buka Contoh QR
+              <ScanLine size={17} />
+            </a>
+          </div>
         </div>
       </section>
+
+      <footer className="mx-auto mb-10 grid max-w-7xl grid-cols-1 gap-8 border border-white/10 bg-slate-950/60 px-8 py-10 text-sm font-semibold text-slate-400 md:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
+        <span>© 2026 Reka</span>
+        <a className="text-slate-300 no-underline hover:text-teal-200" href="#problem">Features</a>
+        <a className="text-slate-300 no-underline hover:text-teal-200" href="#flow">Flow</a>
+        <button className="inline-flex w-fit items-center gap-2 border-0 bg-transparent p-0 text-sm font-black text-teal-200" type="button" onClick={onOpenApp}>
+          Dashboard
+          <ArrowRight size={15} />
+        </button>
+      </footer>
     </main>
+  )
+}
+
+function CourseDeck() {
+  const cards = [
+    { label: 'SERIAL', title: 'Identity Hash', tone: 'from-teal-300/45' },
+    { label: 'REPAIR', title: 'Service Trail', tone: 'from-amber-300/28' },
+    { label: 'OWNER', title: 'Transfer Log', tone: 'from-sky-300/26' },
+    { label: 'VERIFY', title: 'QR Proof', tone: 'from-lime-300/24' },
+  ]
+
+  return (
+    <div className="relative h-48 w-[280px] md:h-56 md:w-[360px]" aria-hidden="true">
+      {cards.map((card, index) => (
+        <div
+          className="absolute left-1/2 top-0 h-44 w-48 -translate-x-1/2 rounded-xl border border-white/18 bg-slate-950 shadow-[0_24px_70px_rgba(0,0,0,0.44)] md:h-52 md:w-60"
+          key={card.title}
+          style={{
+            transform: `translateX(calc(-50% + ${index * 24 - 36}px)) rotate(${index * 3 - 5}deg)`,
+            zIndex: cards.length - index,
+          }}
+        >
+          <div className={cx('h-full rounded-xl bg-gradient-to-br to-transparent p-5 text-left', card.tone)}>
+            <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-300">{card.label}</span>
+            <strong className="mt-16 block text-xl font-black text-white">{card.title}</strong>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function PartnerLogo({ label }: { label: string }) {
+  return (
+    <div className="flex items-center justify-center gap-2 rounded-xl border border-white/8 bg-white/4 px-4 py-3">
+      <Fingerprint className="text-slate-500" size={16} />
+      <span>{label}</span>
+    </div>
+  )
+}
+
+function FeatureMatrixCard({
+  icon: Icon,
+  title,
+  text,
+}: {
+  icon: React.ElementType
+  title: string
+  text: string
+}) {
+  return (
+    <article className="min-h-56 border-b border-white/10 bg-slate-950/54 p-8 text-left md:border-r">
+      <span className="grid h-11 w-11 place-items-center rounded-lg border border-teal-300/18 bg-teal-300/8 text-teal-200">
+        <Icon size={19} />
+      </span>
+      <h3 className="mt-7 text-lg font-black text-white">{title}</h3>
+      <p className="mt-3 max-w-md text-sm font-semibold leading-6 text-slate-300">{text}</p>
+    </article>
+  )
+}
+
+function CourseCard({
+  accent,
+  icon: Icon,
+  title,
+  text,
+}: {
+  accent: 'teal' | 'lime' | 'sky'
+  icon: React.ElementType
+  title: string
+  text: string
+}) {
+  const accents = {
+    teal: 'border-teal-300/20 text-teal-200',
+    lime: 'border-lime-300/20 text-lime-200',
+    sky: 'border-sky-300/20 text-sky-200',
+  }
+
+  return (
+    <article className="group min-h-64 border border-white/10 bg-slate-950/72 p-6 text-left shadow-[0_22px_70px_rgba(0,0,0,0.2)] transition hover:-translate-y-1 hover:border-teal-300/24">
+      <span className={cx('grid h-12 w-12 place-items-center border bg-white/5', accents[accent])}>
+        <Icon size={20} />
+      </span>
+      <p className="mt-10 text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">Beginner</p>
+      <h3 className="mt-2 text-xl font-black text-white">{title}</h3>
+      <p className="mt-3 text-sm font-semibold leading-6 text-slate-300">{text}</p>
+      <button className="mt-8 border border-white/10 bg-white/5 px-4 py-2 text-xs font-black uppercase tracking-[0.08em] text-slate-200 transition group-hover:border-teal-300/30 group-hover:text-teal-100" type="button">
+        Start flow
+      </button>
+    </article>
   )
 }
 
@@ -2007,26 +2136,6 @@ function HeroDeviceMockup({ passport }: { passport: Passport }) {
         </div>
       </div>
     </div>
-  )
-}
-
-function HomePoint({
-  icon: Icon,
-  title,
-  text,
-}: {
-  icon: React.ElementType
-  title: string
-  text: string
-}) {
-  return (
-    <article className="rounded-2xl border border-white/12 bg-white/7 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.22)] backdrop-blur-xl">
-      <span className="grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-white/8 text-slate-200">
-        <Icon size={22} />
-      </span>
-      <h3 className="mb-2 mt-4 text-lg font-bold leading-tight text-white">{title}</h3>
-      <p className="m-0 text-slate-300">{text}</p>
-    </article>
   )
 }
 

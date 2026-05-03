@@ -60,6 +60,25 @@
     z-index: 1;
   }
 
+  .reka-glow-band {
+    position: relative;
+  }
+
+  .reka-glow-band::before {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    z-index: -1;
+    width: min(760px, 82vw);
+    height: 180px;
+    content: "";
+    background:
+      radial-gradient(ellipse at center, rgba(45, 212, 191, 0.38), transparent 68%),
+      linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.2), transparent);
+    filter: blur(22px);
+    transform: translateX(-50%);
+  }
+
   .reka-dashboard::before {
     position: fixed;
     inset: 0;
