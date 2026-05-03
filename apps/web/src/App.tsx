@@ -24,7 +24,7 @@ import {
 } from 'lucide-react'
 import { QRCodeCanvas } from 'qrcode.react'
 import { PublicKey, type Transaction } from '@solana/web3.js'
-import BlueShiftLanding from './components/landing/LandingPage'
+import RekaLanding from './components/landing/LandingPage'
 import {
   addHistoryOnChain,
   checkRekaProgramStatus,
@@ -1000,7 +1000,7 @@ function App() {
 
   if (activeRoute === 'home') {
     return (
-      <BlueShiftLanding onLaunchApp={() => navigateTo('passport')} />
+      <RekaLanding onLaunchApp={() => navigateTo('passport')} />
     )
   }
 

@@ -202,4 +202,119 @@
   .reka-dashboard button {
     box-shadow: 0 12px 34px rgba(0, 0, 0, 0.18);
   }
+
+  .reka-dashboard > aside {
+    animation: reka-rail-enter 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .reka-dashboard > section {
+    animation: reka-dashboard-enter 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .reka-dashboard > section > header {
+    animation: reka-panel-enter 520ms 80ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .reka-dashboard > section > section,
+  .reka-dashboard > section > div {
+    animation: reka-panel-enter 560ms 150ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .reka-dashboard > section > section [class*="rounded-"],
+  .reka-dashboard > section > div [class*="rounded-"] {
+    transform: translateZ(0);
+  }
+
+  @keyframes reka-rail-enter {
+    from {
+      opacity: 0;
+      transform: translateX(-18px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes reka-dashboard-enter {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.99);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes reka-panel-enter {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+      filter: saturate(0.86);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: saturate(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    .reka-dashboard > aside,
+    .reka-dashboard > section,
+    .reka-dashboard > section > header,
+    .reka-dashboard > section > section,
+    .reka-dashboard > section > div {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .reka-dashboard {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .reka-dashboard > aside {
+      position: sticky;
+      top: 0;
+      grid-template-columns: auto 1fr auto;
+      grid-template-rows: 1fr;
+      width: 100%;
+      height: auto;
+      min-height: 72px;
+      padding: 0.75rem;
+      border-right: 0;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.12);
+    }
+
+    .reka-dashboard > aside nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      overflow-x: auto;
+    }
+
+    .reka-dashboard > aside nav button {
+      width: 44px;
+      height: 44px;
+      flex: 0 0 auto;
+    }
+
+    .reka-dashboard > aside > div:last-child {
+      display: none;
+    }
+
+    .reka-dashboard > section {
+      padding: 1rem;
+    }
+  }
 }
