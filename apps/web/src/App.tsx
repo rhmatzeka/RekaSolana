@@ -23,19 +23,9 @@ import {
   Wrench,
 } from 'lucide-react'
 import { QRCodeCanvas } from 'qrcode.react'
-import { PublicKey, type Transaction } from '@solana/web3.js'
+import type { PublicKey, Transaction } from '@solana/web3.js'
 import RekaLanding from './components/landing/LandingPage'
-import {
-  addHistoryOnChain,
-  checkRekaProgramStatus,
-  createPassportOnChain,
-  derivePassportPda,
-  getRekaProgramExplorerUrl,
-  initializeRegistryOnChain,
-  registerVerifierOnChain,
-  transferPassportOnChain,
-  type BrowserWallet,
-} from './lib/rekaProgram'
+import type { BrowserWallet } from './lib/rekaProgram'
 
 type DeviceCategory = 'Laptop' | 'Phone' | 'Camera'
 type HistoryKind = 'Inspection' | 'Repair' | 'Ownership' | 'Warranty'
@@ -278,6 +268,7 @@ const kindIcons = {
 }
 
 const storageKey = 'reka-passports-v1'
+const defaultRekaProgramId = 'AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg'
 
 function readStoredPassports() {
   try {
@@ -491,7 +482,8 @@ function App() {
   useEffect(() => {
     let shouldUpdate = true
 
-    checkRekaProgramStatus()
+    loadRekaProgram()
+      .then(({ checkRekaProgramStatus }) => checkRekaProgramStatus())
       .then((status) => {
         if (!shouldUpdate) return
         setProgramStatus(status.deployed && status.executable ? 'ready' : 'missing')
@@ -615,6 +607,7 @@ function App() {
     const evidenceUri = verifierForm.evidenceUri.trim()
 
     const result = await runRekaTransaction('Mengaktifkan verifier', async (wallet) => {
+      const { initializeRegistryOnChain, registerVerifierOnChain } = await loadRekaProgram()
       try {
         await initializeRegistryOnChain(wallet, 'Reka Campus Registry')
       } catch (error) {
@@ -646,7 +639,8 @@ function App() {
     const serialHash = await hashSerial(form.serialNumber)
     const id = makePassportId(form.brand, form.model)
     const onChainResult = await runRekaTransaction('Membuat passport', async (wallet) => {
-      const owner = parseWalletOrFallback(form.ownerWallet, wallet.publicKey!)
+      const { createPassportOnChain } = await loadRekaProgram()
+      const owner = await parseWalletOrFallback(form.ownerWallet, wallet.publicKey!)
       const result = await createPassportOnChain(wallet, {
         category: form.category,
         brand: form.brand.trim(),
@@ -872,8 +866,9 @@ function App() {
       return
     }
 
-    const onChainResult = await runRekaTransaction('Menambah attestation', (wallet) =>
-      addHistoryOnChain(wallet, {
+    const onChainResult = await runRekaTransaction('Menambah attestation', async (wallet) => {
+      const { addHistoryOnChain, derivePassportPda } = await loadRekaProgram()
+      return addHistoryOnChain(wallet, {
         passport: derivePassportPda(selectedPassport.serialHash),
         entryId,
         kind: historyKindToNumber(historyForm.kind),
@@ -884,8 +879,8 @@ function App() {
         notes: historyForm.notes.trim(),
         evidenceHash,
         evidenceUri,
-      }),
-    )
+      })
+    })
 
     if (!onChainResult) return
 
@@ -917,19 +912,20 @@ function App() {
 
     let newOwner: PublicKey
     try {
-      newOwner = parseRequiredWallet(transferForm.ownerWallet)
+      newOwner = await parseRequiredWallet(transferForm.ownerWallet)
     } catch (error) {
       setChainMessage(error instanceof Error ? error.message : 'Wallet pemilik baru tidak valid.')
       return
     }
-    const onChainResult = await runRekaTransaction('Transfer ownership', (wallet) =>
-      transferPassportOnChain(
+    const onChainResult = await runRekaTransaction('Transfer ownership', async (wallet) => {
+      const { derivePassportPda, transferPassportOnChain } = await loadRekaProgram()
+      return transferPassportOnChain(
         wallet,
         derivePassportPda(selectedPassport.serialHash),
         newOwner,
         transferForm.ownerName.trim(),
-      ),
-    )
+      )
+    })
 
     if (!onChainResult) return
 
@@ -2105,14 +2101,15 @@ function attestationSourceClass(source: AttestationSource) {
   return cx('rounded-full border px-2.5 py-1 text-[11px] font-black', styles[source])
 }
 
-function parseWalletOrFallback(value: string, fallback: PublicKey) {
+async function parseWalletOrFallback(value: string, fallback: PublicKey) {
   const trimmed = value.trim()
   if (!trimmed) return fallback
   return parseRequiredWallet(trimmed)
 }
 
-function parseRequiredWallet(value: string) {
+async function parseRequiredWallet(value: string) {
   try {
+    const { PublicKey } = await import('@solana/web3.js')
     return new PublicKey(value.trim())
   } catch {
     throw new Error('Masukkan public key wallet Solana yang valid.')
@@ -2217,6 +2214,16 @@ function getProgramStatusText(status: ProgramStatus) {
     offline: 'RPC Devnet belum merespons',
   }
   return messages[status]
+}
+
+function getRekaProgramExplorerUrl() {
+  const programId = import.meta.env.VITE_REKA_PROGRAM_ID || defaultRekaProgramId
+  const cluster = import.meta.env.VITE_REKA_CLUSTER || 'devnet'
+  return `https://explorer.solana.com/address/${programId}?cluster=${cluster}`
+}
+
+function loadRekaProgram() {
+  return import('./lib/rekaProgram')
 }
 
 function today() {

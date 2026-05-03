@@ -66,7 +66,6 @@
     300px 299px,
     300px 299px,
     100% 100%;
-  animation: reka-rain 180s linear infinite;
 }
 
 .landing-root::after {
@@ -96,7 +95,7 @@
   z-index: 1;
   pointer-events: none;
   border-radius: 999px;
-  filter: blur(96px);
+  filter: blur(54px);
 }
 
 .landing-glow--hero {
@@ -238,6 +237,7 @@
 
 .landing-hero-copy {
   max-width: 31rem;
+  animation: landing-rise 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .landing-badge,
@@ -300,6 +300,7 @@
   border-radius: 8px;
   background: rgba(10, 10, 10, 0.72);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
+  animation: landing-rise 560ms 80ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .hero-switch-panel {
@@ -861,51 +862,15 @@
   color: #f8fafc;
 }
 
-@keyframes reka-rain {
-  0% {
-    background-position:
-      0 220px,
-      3px 220px,
-      151.5px 337.5px,
-      25px 24px,
-      28px 24px,
-      176.5px 150px,
-      50px 16px,
-      53px 16px,
-      201.5px 91px,
-      100px 19px,
-      103px 19px,
-      251.5px 121px,
-      125px 120px,
-      128px 120px,
-      276.5px 187px,
-      175px 235px,
-      178px 235px,
-      326.5px 384.5px,
-      0 0;
+@keyframes landing-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
   }
 
   to {
-    background-position:
-      0 6800px,
-      3px 6800px,
-      151.5px 6917.5px,
-      25px 13632px,
-      28px 13632px,
-      176.5px 13758px,
-      50px 5416px,
-      53px 5416px,
-      201.5px 5491px,
-      100px 5119px,
-      103px 5119px,
-      251.5px 5221px,
-      125px 8428px,
-      128px 8428px,
-      276.5px 8495px,
-      175px 13391px,
-      178px 13391px,
-      326.5px 13540.5px,
-      0 0;
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -969,8 +934,8 @@
 
   .hero-card-switcher {
     width: 100%;
-    max-width: 24rem;
-    height: 18.5rem;
+    max-width: 28rem;
+    height: 20rem;
     margin: 0 auto;
   }
 
@@ -993,10 +958,6 @@
 }
 
 @media (max-width: 640px), (prefers-reduced-motion: reduce) {
-  .landing-root::before {
-    animation: none;
-  }
-
   .hero-switch-panel,
   .switch-content,
   .switch-label,
@@ -1006,5 +967,61 @@
   .feature-card,
   .footer-col a {
     transition-duration: 0.01ms;
+  }
+
+  .landing-hero-copy,
+  .hero-card-switcher {
+    animation: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .landing-root::after {
+    background-size:
+      100% 100%,
+      100% 100%,
+      10px 10px;
+  }
+
+  .landing-hero {
+    gap: 1.4rem;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+  }
+
+  .landing-hero-buttons {
+    display: grid;
+  }
+
+  .landing-hero-buttons > * {
+    width: 100%;
+  }
+
+  .hero-card-switcher {
+    display: grid;
+    height: auto;
+    max-width: 100%;
+  }
+
+  .hero-switch-panel,
+  .hero-switch-panel:first-child,
+  .hero-switch-panel:hover {
+    min-height: 9rem;
+    flex: none;
+  }
+
+  .switch-label {
+    display: none;
+  }
+
+  .switch-content,
+  .hero-card-switcher:hover .hero-switch-panel:first-child:not(:hover) .switch-content {
+    min-width: 0;
+    opacity: 1;
+    transform: none;
+  }
+
+  .switch-content img {
+    width: 6rem;
   }
 }
