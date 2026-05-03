@@ -1128,20 +1128,20 @@ function App() {
               <div className="relative grid gap-6 p-6 xl:grid-cols-[minmax(0,1fr)_390px] xl:p-7">
                 <div className="flex min-w-0 flex-col justify-between gap-7">
                   <div>
-                    <div className="mb-4 flex flex-wrap items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-stone-500">
-                      <span className="rounded-full border border-teal-200 bg-white/60 px-3 py-1.5 text-teal-700">{selectedPassport.category}</span>
-                      <span className="rounded-full border border-stone-200 bg-white/60 px-3 py-1.5">{selectedPassport.city}</span>
-                      <span className="rounded-full border border-amber-200 bg-amber-50/70 px-3 py-1.5 text-amber-800">{selectedPassport.id}</span>
+                    <div className="mb-4 flex flex-wrap items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+                      <span className="rounded-full border border-teal-300/24 bg-teal-300/10 px-3 py-1.5 text-teal-200">{selectedPassport.category}</span>
+                      <span className="rounded-full border border-white/12 bg-white/7 px-3 py-1.5 text-slate-200">{selectedPassport.city}</span>
+                      <span className="rounded-full border border-amber-300/24 bg-amber-300/10 px-3 py-1.5 text-amber-200">{selectedPassport.id}</span>
                     </div>
                     <h3 className="max-w-4xl text-5xl font-black leading-[0.92] text-white md:text-7xl">
                       {selectedPassport.brand} {selectedPassport.model}
                     </h3>
                     <div className="mt-5 flex flex-wrap items-center gap-2">
-                      <span className="inline-flex min-h-8 items-center gap-2 rounded-full border border-teal-200 bg-teal-50/80 px-3 text-xs font-black text-teal-800">
+                      <span className="inline-flex min-h-8 items-center gap-2 rounded-full border border-teal-300/24 bg-teal-300/10 px-3 text-xs font-black text-teal-200">
                         <CheckCircle2 size={16} />
                         Verified passport
                       </span>
-                      <span className="inline-flex min-h-8 items-center gap-2 rounded-full border border-stone-200 bg-white/70 px-3 text-xs font-black text-stone-700">
+                      <span className="inline-flex min-h-8 items-center gap-2 rounded-full border border-white/12 bg-white/7 px-3 text-xs font-black text-slate-200">
                         <ShieldCheck size={16} />
                         Devnet audit trail
                       </span>
@@ -1168,10 +1168,10 @@ function App() {
 
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
               <div className={cx(ui.panel, 'p-5')}>
-                <div className="mb-4 flex items-center justify-between gap-4 border-b border-stone-200/80 pb-4">
+                <div className="mb-4 flex items-center justify-between gap-4 border-b border-white/10 pb-4">
                   <div>
                     <p className={ui.eyebrow}>Registry data</p>
-                    <h3 className="text-xl font-black text-stone-950">Identity & ownership</h3>
+                    <h3 className="text-xl font-black text-white">Identity & ownership</h3>
                   </div>
                   <button className={ui.secondaryButton} type="button" onClick={() => navigateTo('history')}>
                     <FileClock size={17} />
@@ -1188,23 +1188,23 @@ function App() {
                   <DetailRow label="Unknown before first verified" value={historyConfidence?.unknownBeforeFirstVerified ? 'Yes' : 'No'} />
                   <DetailRow label="Last transaction" value={selectedPassport.lastTxSignature ? shortWallet(selectedPassport.lastTxSignature) : 'Not recorded'} />
                 </div>
-                <div className="mt-5 grid gap-3 rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm font-semibold leading-6 text-stone-700">
+                <div className="mt-5 grid gap-3 rounded-2xl border border-amber-300/24 bg-amber-300/10 px-4 py-3 text-sm font-semibold leading-6 text-slate-200">
                   <div className="flex min-h-8 items-center gap-3">
-                    <ShieldCheck className="text-amber-700" size={18} />
+                    <ShieldCheck className="text-amber-200" size={18} />
                     <span>{historyConfidence?.summary}</span>
                   </div>
-                  <p className="m-0 text-xs font-bold leading-5 text-amber-900/80">
+                  <p className="m-0 text-xs font-bold leading-5 text-amber-100/80">
                     Reka membuktikan riwayat yang sudah diverifikasi, bukan menjamin semua kejadian sebelum first verified date tidak pernah terjadi.
                   </p>
                 </div>
-                <div className="mt-3 flex min-h-12 items-center gap-3 rounded-2xl border border-teal-200 bg-teal-50/80 px-4 py-3 text-sm font-semibold leading-6 text-stone-700">
-                  {isWritingChain ? <Loader2 className="animate-spin text-teal-700" size={18} /> : <ShieldCheck className="text-teal-700" size={18} />}
+                <div className="mt-3 flex min-h-12 items-center gap-3 rounded-2xl border border-teal-300/24 bg-teal-300/10 px-4 py-3 text-sm font-semibold leading-6 text-slate-200">
+                  {isWritingChain ? <Loader2 className="animate-spin text-teal-200" size={18} /> : <ShieldCheck className="text-teal-200" size={18} />}
                   <span>
                     {chainMessage ||
                       `${programStatusText}. ${unverifiedHistoryCount} riwayat belum terverifikasi.`}
                   </span>
                 </div>
-                <div className="mt-4 grid gap-3 rounded-2xl border border-stone-200 bg-white/64 p-4 lg:grid-cols-[1fr_1fr_auto]">
+                <div className="mt-4 grid gap-3 rounded-2xl border border-white/12 bg-slate-950/48 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] lg:grid-cols-[1fr_1fr_auto]">
                   <Metric
                     icon={ClipboardCheck}
                     label="Seller disclosure"
@@ -1221,7 +1221,7 @@ function App() {
                     <strong className="mt-1 block text-sm font-black">{buyerRisk?.level ?? 'High'}</strong>
                     <p className="m-0 mt-2 text-xs font-bold leading-5">{buyerRisk?.summary}</p>
                     <button
-                      className="mt-3 inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-current bg-white/70 px-3 text-xs font-black"
+                      className="mt-3 inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-rose-300/30 bg-rose-300/10 px-3 text-xs font-black text-rose-100 transition hover:bg-rose-300/18"
                       type="button"
                       onClick={addHiddenRepairDispute}
                     >
@@ -1236,13 +1236,13 @@ function App() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className={ui.eyebrow}>Public verify</p>
-                    <h3 className="text-xl font-black text-stone-950">Scan QR</h3>
+                    <h3 className="text-xl font-black text-white">Scan QR</h3>
                   </div>
                   <ScanLine className="text-teal-700" size={22} />
                 </div>
-                <div className="grid justify-items-center gap-4 rounded-2xl border border-stone-200 bg-white/60 p-4">
+                <div className="grid justify-items-center gap-4 rounded-2xl border border-white/12 bg-slate-950/48 p-4">
                   <QRCodeCanvas className="h-36! w-36! rounded-2xl bg-white" value={publicUrl} size={144} marginSize={2} />
-                  <span className="max-w-full break-words rounded-xl bg-stone-100/80 px-3 py-2 text-xs font-black text-stone-600">{selectedPassport.id}</span>
+                  <span className="max-w-full break-words rounded-xl border border-white/10 bg-white/7 px-3 py-2 text-xs font-black text-slate-200">{selectedPassport.id}</span>
                 </div>
                 <button className={cx(ui.primaryButton, 'w-full')} type="button" onClick={copyPublicUrl}>
                   <Copy size={17} />
@@ -1263,7 +1263,7 @@ function App() {
                 </div>
                 <Search className="text-teal-700" size={20} />
               </div>
-              <label className="flex h-11 items-center gap-2 rounded-xl border border-stone-200 bg-white/80 px-3 text-stone-500">
+              <label className="flex h-11 items-center gap-2 rounded-xl border border-white/12 bg-slate-950/72 px-3 text-slate-400">
                 <Search size={18} />
                 <input
                   className="h-full w-full border-0 bg-transparent px-0 text-sm outline-none focus:ring-0"
@@ -1279,23 +1279,23 @@ function App() {
                   return (
                     <button
                       className={cx(
-                        'grid min-h-16 w-full grid-cols-[42px_minmax(0,1fr)_42px] items-center gap-3 rounded-xl border p-3 text-left text-stone-950 transition',
+                        'grid min-h-16 w-full grid-cols-[42px_minmax(0,1fr)_42px] items-center gap-3 rounded-xl border p-3 text-left text-white transition',
                         passport.id === selectedPassport.id
-                          ? 'border-teal-200 bg-teal-50/80'
-                          : 'border-stone-200 bg-white/72 hover:border-teal-200 hover:bg-teal-50/70',
+                          ? 'border-teal-300/30 bg-teal-300/10'
+                          : 'border-white/12 bg-white/7 hover:border-teal-300/30 hover:bg-teal-300/10',
                       )}
                       key={passport.id}
                       type="button"
                       onClick={() => navigateTo('passport', passport.id)}
                     >
-                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-teal-50 text-teal-700">
+                        <span className="grid h-10 w-10 place-items-center rounded-xl border border-teal-300/20 bg-teal-300/10 text-teal-200">
                         <ListIcon size={18} />
                       </span>
                       <span>
                         <strong className="block overflow-hidden text-ellipsis whitespace-nowrap">{passport.brand} {passport.model}</strong>
-                        <small className="block overflow-hidden text-ellipsis whitespace-nowrap text-sm text-stone-500">{passport.ownerName} - {passport.city}</small>
+                        <small className="block overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-400">{passport.ownerName} - {passport.city}</small>
                       </span>
-                      <em className="grid h-9 place-items-center rounded-xl bg-emerald-50 text-sm font-black not-italic text-emerald-700">{passport.trustScore}</em>
+                      <em className="grid h-9 place-items-center rounded-xl border border-emerald-300/20 bg-emerald-300/10 text-sm font-black not-italic text-emerald-200">{passport.trustScore}</em>
                     </button>
                   )
                 })}
@@ -1432,7 +1432,7 @@ function App() {
                 </div>
                 <Wrench className="text-teal-700" size={20} />
               </div>
-              <div className="grid gap-3 rounded-2xl border border-stone-200 bg-white/64 p-4 md:grid-cols-3">
+              <div className="grid gap-3 rounded-2xl border border-white/12 bg-slate-950/48 p-4 md:grid-cols-3">
                 <Metric icon={ShieldCheck} label="History confidence" value={historyConfidence?.level ?? 'Low'} />
                 <Metric icon={FileClock} label="First verified" value={historyConfidence?.firstVerifiedDate ?? 'Not verified'} />
                 <Metric icon={Search} label="Unverified records" value={`${unverifiedHistoryCount}`} />
@@ -1445,14 +1445,14 @@ function App() {
                   const status = item.status ?? (item.txSignature ? 'Verified' : 'Pending')
                   const serviceDate = item.serviceDate ?? item.date
                   return (
-                    <article className="grid grid-cols-[42px_minmax(0,1fr)] gap-4 border-t border-stone-100 py-4 text-left first:border-t-0 first:pt-0" key={item.id}>
-                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-teal-50 text-teal-700">
+                    <article className="grid grid-cols-[42px_minmax(0,1fr)] gap-4 border-t border-white/8 py-4 text-left first:border-t-0 first:pt-0" key={item.id}>
+                      <span className="grid h-10 w-10 place-items-center rounded-xl border border-teal-300/20 bg-teal-300/10 text-teal-200">
                         <KindIcon size={17} />
                       </span>
                       <div>
                         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
-                          <strong className="min-w-0 text-base font-bold leading-snug text-stone-950">{item.title}</strong>
-                          <time className="shrink-0 text-xs font-bold text-stone-500">{serviceDate}</time>
+                          <strong className="min-w-0 text-base font-bold leading-snug text-white">{item.title}</strong>
+                          <time className="shrink-0 text-xs font-bold text-slate-400">{serviceDate}</time>
                         </div>
                         <div className="mt-2 flex flex-wrap gap-2">
                           <span className={attestationStatusClass(status)}>
@@ -1462,15 +1462,15 @@ function App() {
                             {source}
                           </span>
                           {item.date !== serviceDate ? (
-                            <span className="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-black text-stone-600">
+                            <span className="rounded-full border border-white/12 bg-white/7 px-2.5 py-1 text-[11px] font-black text-slate-300">
                               Attested {item.date}
                             </span>
                           ) : null}
                         </div>
-                        <p className="my-2 max-w-3xl text-sm leading-6 text-stone-600">{item.notes}</p>
+                        <p className="my-2 max-w-3xl text-sm leading-6 text-slate-300">{item.notes}</p>
                         {item.evidenceHash ? (
                           <a
-                            className="inline-flex w-fit text-sm font-bold text-teal-700 no-underline hover:text-teal-900"
+                            className="inline-flex w-fit text-sm font-bold text-teal-200 no-underline hover:text-teal-100"
                             href={item.evidenceUri}
                             target="_blank"
                             rel="noreferrer"
@@ -1478,7 +1478,7 @@ function App() {
                             Evidence {shortWallet(item.evidenceHash)}
                           </a>
                         ) : null}
-                        <small className="text-xs font-semibold text-stone-500">
+                        <small className="text-xs font-semibold text-slate-400">
                           {item.verifier}
                           {item.txSignature ? ` - ${shortWallet(item.txSignature)}` : ''}
                         </small>
@@ -1490,7 +1490,7 @@ function App() {
             </div>
 
             <div className={cx(ui.panel, 'sticky top-6 grid gap-4 self-start')}>
-              <div className="grid grid-cols-3 gap-2 rounded-xl border border-stone-200 bg-white/64 p-1">
+              <div className="grid grid-cols-3 gap-2 rounded-xl border border-white/12 bg-slate-950/48 p-1">
                 <button
                   className={historyActionTabClass(activeHistoryAction === 'disclosure')}
                   type="button"
@@ -1690,7 +1690,7 @@ function App() {
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {inspectionItems.map((item) => (
                     <label
-                      className="grid gap-1 text-xs font-bold text-stone-600"
+                      className="grid gap-1 text-xs font-bold text-slate-300"
                       key={item.key}
                     >
                       {item.label}
@@ -1886,11 +1886,11 @@ function LandingPage({
         </button>
       </nav>
 
-      <section className="mx-auto grid min-h-[calc(100vh-73px)] max-w-7xl grid-cols-1 items-center gap-10 px-6 py-12 lg:grid-cols-[0.9fr_1fr]" id="home">
-        <div>
+      <section className="mx-auto grid min-h-[680px] max-w-7xl grid-cols-1 items-center gap-10 px-8 py-16 md:px-10 lg:grid-cols-[0.9fr_1fr] lg:px-12" id="home">
+        <div className="lg:pl-6 xl:pl-8">
           <p className="m-0 text-[12px] font-black uppercase tracking-[0.34em] text-teal-300">Frontier Solana Hackathon</p>
           <h1 className="mb-5 mt-4 text-6xl font-black leading-none text-white md:text-8xl">Reka</h1>
-          <p className="m-0 max-w-2xl text-lg leading-8 text-slate-300 md:text-xl">
+          <p className="m-0 max-w-[760px] text-lg leading-8 text-slate-300 md:text-xl">
             Passport on-chain untuk laptop, HP, dan kamera second-hand, dibuat
             supaya mahasiswa bisa beli barang bekas dengan riwayat yang jelas.
           </p>
