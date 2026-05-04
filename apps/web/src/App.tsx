@@ -377,12 +377,12 @@ function cx(...classes: Array<string | false | null | undefined>) {
 const ui = {
   eyebrow: 'm-0 text-[11px] font-black uppercase tracking-[0.22em] text-teal-300',
   primaryButton:
-    'inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-teal-600 bg-teal-600 px-4 text-sm font-black text-white no-underline shadow-sm shadow-teal-900/15 transition hover:bg-teal-700 disabled:cursor-wait disabled:opacity-70',
+    'inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-teal-600 bg-teal-600 px-3 text-xs font-black text-white no-underline shadow-sm shadow-teal-900/15 transition hover:bg-teal-700 disabled:cursor-wait disabled:opacity-70',
   secondaryButton:
-    'inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/8 px-4 text-sm font-black text-slate-100 no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10',
+    'inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-white/12 bg-white/8 px-3 text-xs font-black text-slate-100 no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10',
   panel:
-    'rounded-2xl border border-white/12 bg-slate-900/72 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl',
-  panelHeading: 'mb-4 flex items-center justify-between gap-4',
+    'rounded-xl border border-white/12 bg-slate-900/72 p-3 shadow-[0_18px_52px_rgba(0,0,0,0.22)] backdrop-blur-xl',
+  panelHeading: 'mb-3 flex items-center justify-between gap-3',
   formGrid: 'grid grid-cols-1 gap-3 md:grid-cols-2',
   compactForm: 'grid gap-3',
   input:
@@ -1009,15 +1009,6 @@ function App() {
           : 'grid-cols-[88px_minmax(0,1fr)]',
       )}
     >
-      <div className="reka-spline-background" aria-hidden="true">
-        <iframe
-          src="https://my.spline.design/orbitalbluestar-nk9izVadCGbuGiVPQ48DG5Ef/"
-          title="Orbital blue star 3D background"
-          frameBorder="0"
-          width="100%"
-          height="100%"
-        />
-      </div>
       <div className="reka-dashboard-scrim" aria-hidden="true" />
 
       <aside
@@ -1110,11 +1101,11 @@ function App() {
         </div>
       </aside>
 
-      <section className="relative z-10 mx-auto w-full max-w-[1360px] px-6 py-6">
-        <header className="mb-5 grid grid-cols-1 items-end justify-between gap-4 xl:grid-cols-[minmax(0,1fr)_auto]">
+      <section className="relative z-10 mx-auto w-full max-w-[1180px] px-4 py-4">
+        <header className="mb-4 grid grid-cols-1 items-end justify-between gap-3 xl:grid-cols-[minmax(0,1fr)_auto]">
           <div>
             <p className={ui.eyebrow}>Reka dashboard</p>
-            <h2 className="mt-1 text-4xl font-black leading-none tracking-normal text-white">{getRouteTitle(activeRoute)}</h2>
+            <h2 className="mt-1 text-2xl font-black leading-none tracking-normal text-white sm:text-3xl">{getRouteTitle(activeRoute)}</h2>
           </div>
           <div className="flex flex-wrap justify-start gap-2 xl:justify-end">
             <button className={ui.secondaryButton} type="button" onClick={connectWallet}>
@@ -1155,33 +1146,33 @@ function App() {
         </header>
 
         {activeRoute === 'passport' ? (
-          <section className="grid gap-4">
-            <div className="passport-hero-panel relative overflow-hidden rounded-lg border border-white/12 bg-slate-950/68 shadow-[0_28px_90px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_8%_4%,rgba(45,212,191,0.18),transparent_32%),radial-gradient(circle_at_78%_14%,rgba(251,191,36,0.12),transparent_27%),linear-gradient(135deg,rgba(15,23,42,0.86),rgba(8,20,33,0.74)_45%,rgba(18,24,38,0.82))]" />
-              <div className="relative grid gap-5 p-4 sm:p-5 xl:p-6">
-                <div className="flex min-w-0 flex-col justify-between gap-7">
+          <section className="grid gap-3">
+            <div className="passport-hero-panel relative overflow-hidden rounded-lg border border-white/12 bg-slate-950/70 shadow-[0_20px_58px_rgba(0,0,0,0.24)] backdrop-blur-2xl">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_8%_4%,rgba(45,212,191,0.12),transparent_30%),linear-gradient(135deg,rgba(15,23,42,0.9),rgba(8,18,30,0.78)_48%,rgba(12,18,28,0.88))]" />
+              <div className="relative grid items-center gap-4 p-3 sm:p-4 xl:grid-cols-[minmax(0,1fr)_330px]">
+                <div className="flex min-w-0 flex-col justify-between gap-4">
                   <div>
-                    <div className="mb-4 flex flex-wrap items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
-                      <span className="rounded-full border border-teal-300/24 bg-teal-300/10 px-3 py-1.5 text-teal-200">{selectedPassport.category}</span>
-                      <span className="rounded-full border border-white/12 bg-white/7 px-3 py-1.5 text-slate-200">{selectedPassport.city}</span>
-                      <span className="rounded-full border border-amber-300/24 bg-amber-300/10 px-3 py-1.5 text-amber-200">{selectedPassport.id}</span>
+                    <div className="mb-3 flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                      <span className="rounded-full border border-teal-300/22 bg-teal-300/8 px-2.5 py-1 text-teal-100">{selectedPassport.category}</span>
+                      <span className="rounded-full border border-white/12 bg-white/7 px-2.5 py-1 text-slate-200">{selectedPassport.city}</span>
+                      <span className="rounded-full border border-white/12 bg-white/7 px-2.5 py-1 text-slate-300">{selectedPassport.id}</span>
                     </div>
-                    <h3 className="max-w-4xl text-[clamp(2.25rem,7vw,4.25rem)] font-black leading-[0.96] text-white">
+                    <h3 className="max-w-3xl text-[clamp(1.8rem,4vw,2.9rem)] font-black leading-[0.98] text-white">
                       {selectedPassport.brand} {selectedPassport.model}
                     </h3>
-                    <div className="mt-5 flex flex-wrap items-center gap-2">
-                      <span className="inline-flex min-h-8 items-center gap-2 rounded-full border border-teal-300/24 bg-teal-300/10 px-3 text-xs font-black text-teal-200">
-                        <CheckCircle2 size={16} />
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <span className="inline-flex min-h-7 items-center gap-2 rounded-full border border-teal-300/22 bg-teal-300/8 px-2.5 text-[11px] font-black text-teal-100">
+                        <CheckCircle2 size={14} />
                         Verified passport
                       </span>
-                      <span className="inline-flex min-h-8 items-center gap-2 rounded-full border border-white/12 bg-white/7 px-3 text-xs font-black text-slate-200">
-                        <ShieldCheck size={16} />
+                      <span className="inline-flex min-h-7 items-center gap-2 rounded-full border border-white/12 bg-white/7 px-2.5 text-[11px] font-black text-slate-200">
+                        <ShieldCheck size={14} />
                         Devnet audit trail
                       </span>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                  <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-5">
                     <StatTile label="Trust score" value={`${selectedPassport.trustScore}/100`} tone="teal" />
                     <StatTile label="Condition" value={selectedPassport.condition} tone="amber" />
                     <StatTile label="Verified logs" value={`${verifiedHistoryCount}/${selectedPassport.history.length}`} tone="indigo" />
@@ -1190,21 +1181,21 @@ function App() {
                   </div>
                 </div>
 
-                <div className="passport-device-panel relative min-h-[240px] overflow-hidden rounded-lg border border-white/12 bg-white/6 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] sm:min-h-[300px] sm:p-5">
+                <div className="passport-device-panel relative min-h-[170px] overflow-hidden rounded-lg border border-white/12 bg-white/5 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] sm:min-h-[210px] xl:min-h-[230px]">
                   <div className="absolute inset-0 bg-[linear-gradient(rgba(226,232,240,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(226,232,240,0.055)_1px,transparent_1px)] bg-[length:32px_32px]" />
-                  <div className="relative grid h-full min-h-[220px] place-items-center sm:min-h-[280px]">
+                  <div className="relative grid h-full min-h-[150px] place-items-center sm:min-h-[190px] xl:min-h-[210px]">
                     <HeroDeviceMockup passport={selectedPassport} />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-              <div className={cx(ui.panel, 'p-5')}>
-                <div className="mb-4 grid gap-3 border-b border-white/10 pb-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+            <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_280px]">
+              <div className={cx(ui.panel, 'p-4')}>
+                <div className="mb-3 grid gap-3 border-b border-white/10 pb-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                   <div>
                     <p className={ui.eyebrow}>Registry data</p>
-                    <h3 className="text-xl font-black text-white">Identity & ownership</h3>
+                    <h3 className="text-lg font-black text-white">Identity & ownership</h3>
                   </div>
                   <button className={ui.secondaryButton} type="button" onClick={() => navigateTo('history')}>
                     <FileClock size={17} />
@@ -1221,23 +1212,23 @@ function App() {
                   <DetailRow label="Unknown before first verified" value={historyConfidence?.unknownBeforeFirstVerified ? 'Yes' : 'No'} />
                   <DetailRow label="Last transaction" value={selectedPassport.lastTxSignature ? shortWallet(selectedPassport.lastTxSignature) : 'Not recorded'} />
                 </div>
-                <div className="mt-5 grid gap-3 rounded-2xl border border-amber-300/24 bg-amber-300/10 px-4 py-3 text-sm font-semibold leading-6 text-slate-200">
-                  <div className="flex min-h-8 items-center gap-3">
-                    <ShieldCheck className="text-amber-200" size={18} />
+                <div className="mt-4 grid gap-2 rounded-xl border border-white/12 bg-white/6 px-3 py-2.5 text-sm font-semibold leading-6 text-slate-200">
+                  <div className="flex min-h-7 items-center gap-2.5">
+                    <ShieldCheck className="text-teal-100" size={18} />
                     <span>{historyConfidence?.summary}</span>
                   </div>
-                  <p className="m-0 text-xs font-bold leading-5 text-amber-100/80">
+                  <p className="m-0 text-xs font-bold leading-5 text-slate-400">
                     Reka membuktikan riwayat yang sudah diverifikasi, bukan menjamin semua kejadian sebelum first verified date tidak pernah terjadi.
                   </p>
                 </div>
-                <div className="mt-3 flex min-h-12 items-center gap-3 rounded-2xl border border-teal-300/24 bg-teal-300/10 px-4 py-3 text-sm font-semibold leading-6 text-slate-200">
+                <div className="mt-3 flex min-h-10 items-center gap-2.5 rounded-xl border border-teal-300/18 bg-teal-300/7 px-3 py-2.5 text-sm font-semibold leading-6 text-slate-200">
                   {isWritingChain ? <Loader2 className="animate-spin text-teal-200" size={18} /> : <ShieldCheck className="text-teal-200" size={18} />}
                   <span>
                     {chainMessage ||
                       `${programStatusText}. ${unverifiedHistoryCount} riwayat belum terverifikasi.`}
                   </span>
                 </div>
-                <div className="mt-4 grid gap-3 rounded-lg border border-white/12 bg-slate-950/48 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] lg:grid-cols-[1fr_1fr_minmax(220px,0.9fr)]">
+                <div className="mt-3 grid gap-3 rounded-lg border border-white/12 bg-slate-950/48 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] lg:grid-cols-[1fr_1fr_minmax(200px,0.86fr)]">
                   <Metric
                     icon={ClipboardCheck}
                     label="Seller disclosure"
@@ -1248,13 +1239,13 @@ function App() {
                     label="Inspection checklist"
                     value={inspectionSummary?.label ?? 'Not checked'}
                   />
-                  <div className={cx('rounded-lg border p-4', buyerRiskClass(buyerRisk?.level ?? 'High'))}>
+                  <div className={cx('rounded-lg border p-3', buyerRiskClass(buyerRisk?.level ?? 'High'))}>
                     <ShieldCheck size={18} />
                     <span className="mt-2 block text-xs font-bold">Buyer risk</span>
                     <strong className="mt-1 block text-sm font-black">{buyerRisk?.level ?? 'High'}</strong>
                     <p className="m-0 mt-2 text-xs font-bold leading-5">{buyerRisk?.summary}</p>
                     <button
-                      className="mt-3 inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-rose-300/30 bg-rose-300/10 px-3 text-xs font-black text-rose-100 transition hover:bg-rose-300/18"
+                      className="mt-3 inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-white/14 bg-white/8 px-3 text-xs font-black text-slate-100 transition hover:border-teal-300/24 hover:bg-teal-300/8"
                       type="button"
                       onClick={addHiddenRepairDispute}
                     >
@@ -1265,16 +1256,16 @@ function App() {
                 </div>
               </div>
 
-              <aside className={cx(ui.panel, 'grid content-start gap-4 p-5 xl:sticky xl:top-6')}>
+              <aside className={cx(ui.panel, 'grid content-start gap-3 p-4 xl:sticky xl:top-4')}>
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className={ui.eyebrow}>Public verify</p>
-                    <h3 className="text-xl font-black text-white">Scan QR</h3>
+                    <h3 className="text-lg font-black text-white">Scan QR</h3>
                   </div>
                   <ScanLine className="text-teal-700" size={22} />
                 </div>
-                <div className="grid justify-items-center gap-4 rounded-lg border border-white/12 bg-slate-950/48 p-4">
-                  <QRCodeCanvas className="h-36! w-36! rounded-lg bg-white" value={publicUrl} size={144} marginSize={2} />
+                <div className="grid justify-items-center gap-3 rounded-lg border border-white/12 bg-slate-950/48 p-3">
+                  <QRCodeCanvas className="h-32! w-32! rounded-lg bg-white" value={publicUrl} size={128} marginSize={2} />
                   <span className="max-w-full break-words rounded-lg border border-white/10 bg-white/7 px-3 py-2 text-center text-xs font-black text-slate-200">{selectedPassport.id}</span>
                 </div>
                 <button className={cx(ui.primaryButton, 'w-full')} type="button" onClick={copyPublicUrl}>
@@ -1328,7 +1319,7 @@ function App() {
                         <strong className="block overflow-hidden text-ellipsis whitespace-nowrap">{passport.brand} {passport.model}</strong>
                         <small className="block overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-400">{passport.ownerName} - {passport.city}</small>
                       </span>
-                      <em className="grid h-9 place-items-center rounded-xl border border-emerald-300/20 bg-emerald-300/10 text-sm font-black not-italic text-emerald-200">{passport.trustScore}</em>
+                      <em className="grid h-9 place-items-center rounded-xl border border-teal-300/18 bg-teal-300/8 text-sm font-black not-italic text-teal-100">{passport.trustScore}</em>
                     </button>
                   )
                 })}
@@ -1892,18 +1883,18 @@ function App() {
 
 function HeroDeviceMockup({ passport }: { passport: Passport }) {
   return (
-    <div className="passport-device-mockup relative mx-auto aspect-[4/3] w-full max-w-[520px]">
-      <div className="absolute inset-x-[10%] bottom-[4%] h-[22%] rounded-full bg-teal-300/14 blur-3xl" />
-      <div className="absolute bottom-[7%] left-[8%] right-[6%] h-[32%] rounded-lg border border-white/14 bg-gradient-to-br from-slate-300 via-slate-500 to-slate-800 shadow-[0_30px_80px_rgba(0,0,0,0.48)] [transform:perspective(620px)_rotateX(63deg)_rotateZ(-10deg)]" />
-      <div className="absolute bottom-[32%] left-[18%] h-[38%] w-[55%] rounded-lg border border-white/16 bg-gradient-to-br from-slate-900 via-black to-slate-800 shadow-[0_28px_80px_rgba(0,0,0,0.55)] [transform:perspective(720px)_rotateY(-18deg)_rotateX(6deg)_rotateZ(2deg)]">
-        <div className="absolute inset-3 rounded-md border border-white/8 bg-[radial-gradient(circle_at_75%_28%,rgba(20,184,166,0.2),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.08),transparent_38%)]" />
+    <div className="passport-device-mockup relative mx-auto aspect-[4/3] w-full max-w-[360px]">
+      <div className="absolute inset-x-[10%] bottom-[4%] h-[22%] rounded-full bg-teal-300/10 blur-3xl" />
+      <div className="absolute bottom-[7%] left-[8%] right-[6%] h-[32%] rounded-lg border border-white/14 bg-gradient-to-br from-slate-400 via-slate-600 to-slate-900 shadow-[0_30px_80px_rgba(0,0,0,0.48)] [transform:perspective(620px)_rotateX(63deg)_rotateZ(-10deg)]" />
+      <div className="absolute bottom-[32%] left-[18%] h-[38%] w-[55%] rounded-lg border border-white/16 bg-gradient-to-br from-slate-950 via-black to-slate-900 shadow-[0_28px_80px_rgba(0,0,0,0.55)] [transform:perspective(720px)_rotateY(-18deg)_rotateX(6deg)_rotateZ(2deg)]">
+        <div className="absolute inset-3 rounded-md border border-white/8 bg-[radial-gradient(circle_at_75%_28%,rgba(45,212,191,0.11),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.07),transparent_38%)]" />
       </div>
-      <div className="absolute right-[7%] top-[10%] h-[70%] w-[34%] min-w-[112px] rotate-[-10deg] rounded-lg border border-white/30 bg-white/13 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-        <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-white/30 via-white/8 to-slate-900/24" />
+      <div className="absolute right-[7%] top-[10%] h-[70%] w-[34%] min-w-[88px] rotate-[-10deg] rounded-lg border border-white/24 bg-white/10 p-2.5 shadow-[0_20px_58px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-white/22 via-white/7 to-slate-950/30" />
         <div className="relative grid h-full content-start justify-items-center gap-3 text-center">
-          <span className="text-[11px] font-black uppercase tracking-[0.16em] text-white/86">Passport</span>
-          <div className="grid h-14 w-14 place-items-center rounded-full border border-white/30 bg-white/8 text-white/72">
-            <Fingerprint size={30} />
+          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-white/86">Passport</span>
+          <div className="grid h-11 w-11 place-items-center rounded-full border border-white/30 bg-white/8 text-white/72">
+            <Fingerprint size={24} />
           </div>
           <div className="grid w-full gap-2">
             <span className="mx-auto h-2 w-[78%] rounded-full bg-white/58" />
@@ -1929,9 +1920,9 @@ function Metric({
   value: string
 }) {
   return (
-    <div className="rounded-xl border border-white/12 bg-white/7 p-4">
-      <Icon className="text-teal-200" size={18} />
-      <span className="mt-2 block text-xs font-bold text-slate-400">{label}</span>
+    <div className="rounded-lg border border-white/12 bg-white/6 p-3">
+      <Icon className="text-teal-100" size={16} />
+      <span className="mt-1.5 block text-xs font-bold text-slate-400">{label}</span>
       <strong className="mt-1 block break-words text-sm font-bold text-white">{value}</strong>
     </div>
   )
@@ -1939,7 +1930,7 @@ function Metric({
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid grid-cols-1 gap-1 border-b border-white/8 py-3 md:grid-cols-[150px_minmax(0,1fr)] md:gap-5">
+    <div className="grid grid-cols-1 gap-1 border-b border-white/8 py-2.5 md:grid-cols-[130px_minmax(0,1fr)] md:gap-4">
       <span className="text-sm font-bold text-slate-400">{label}</span>
       <strong className="min-w-0 break-words text-sm font-black text-white">{value}</strong>
     </div>
@@ -1956,16 +1947,16 @@ function StatTile({
   tone: 'teal' | 'amber' | 'indigo' | 'rose'
 }) {
   const styles = {
-    teal: 'border-teal-300/24 bg-teal-300/10 text-teal-200',
-    amber: 'border-amber-300/24 bg-amber-300/10 text-amber-200',
-    indigo: 'border-indigo-300/24 bg-indigo-300/10 text-indigo-200',
-    rose: 'border-rose-300/24 bg-rose-300/10 text-rose-200',
+    teal: 'border-teal-300/22 bg-teal-300/8 text-teal-100',
+    amber: 'border-white/12 bg-white/6 text-slate-300',
+    indigo: 'border-white/12 bg-white/6 text-slate-300',
+    rose: 'border-white/12 bg-white/6 text-slate-300',
   }
 
   return (
-    <div className={cx('min-w-0 rounded-2xl border p-4 shadow-sm shadow-black/20', styles[tone])}>
-      <span className="block text-[11px] font-black uppercase tracking-[0.16em] opacity-70">{label}</span>
-      <strong className="mt-2 block break-words text-lg font-black leading-tight text-white">{value}</strong>
+    <div className={cx('min-w-0 rounded-xl border p-3 shadow-sm shadow-black/20', styles[tone])}>
+      <span className="block text-[10px] font-black uppercase tracking-[0.14em] opacity-70">{label}</span>
+      <strong className="mt-1.5 block break-words text-base font-black leading-tight text-white">{value}</strong>
     </div>
   )
 }
@@ -2084,9 +2075,9 @@ function getBuyerRisk(passport: Passport) {
 
 function buyerRiskClass(level: BuyerRiskLevel) {
   const styles: Record<BuyerRiskLevel, string> = {
-    Low: 'border-emerald-300/24 bg-emerald-300/10 text-emerald-200',
-    Medium: 'border-amber-300/24 bg-amber-300/10 text-amber-200',
-    High: 'border-rose-300/24 bg-rose-300/10 text-rose-200',
+    Low: 'border-teal-300/18 bg-teal-300/7 text-teal-100',
+    Medium: 'border-white/14 bg-white/7 text-slate-200',
+    High: 'border-rose-300/18 bg-rose-300/6 text-rose-100',
   }
   return styles[level]
 }
@@ -2114,17 +2105,17 @@ function historyConfidenceTone(level: HistoryConfidenceLevel) {
   const tones: Record<HistoryConfidenceLevel, 'teal' | 'amber' | 'indigo' | 'rose'> = {
     High: 'teal',
     Medium: 'amber',
-    Low: 'rose',
+    Low: 'indigo',
   }
   return tones[level]
 }
 
 function attestationStatusClass(status: AttestationStatus) {
   const styles: Record<AttestationStatus, string> = {
-    Verified: 'border-emerald-300/24 bg-emerald-300/10 text-emerald-200',
-    Pending: 'border-amber-300/24 bg-amber-300/10 text-amber-200',
-    Rejected: 'border-rose-300/24 bg-rose-300/10 text-rose-200',
-    Disputed: 'border-indigo-300/24 bg-indigo-300/10 text-indigo-200',
+    Verified: 'border-teal-300/20 bg-teal-300/8 text-teal-100',
+    Pending: 'border-white/14 bg-white/7 text-slate-300',
+    Rejected: 'border-rose-300/18 bg-rose-300/6 text-rose-100',
+    Disputed: 'border-white/14 bg-white/7 text-slate-300',
   }
 
   return cx('rounded-full border px-2.5 py-1 text-[11px] font-black', styles[status])
@@ -2132,9 +2123,9 @@ function attestationStatusClass(status: AttestationStatus) {
 
 function attestationSourceClass(source: AttestationSource) {
   const styles: Record<AttestationSource, string> = {
-    'On-chain service': 'border-teal-300/24 bg-teal-300/10 text-teal-200',
-    'Verified receipt': 'border-sky-300/24 bg-sky-300/10 text-sky-200',
-    'Owner claim': 'border-slate-300/18 bg-white/7 text-slate-300',
+    'On-chain service': 'border-teal-300/20 bg-teal-300/8 text-teal-100',
+    'Verified receipt': 'border-white/14 bg-white/7 text-slate-300',
+    'Owner claim': 'border-white/12 bg-white/6 text-slate-400',
   }
 
   return cx('rounded-full border px-2.5 py-1 text-[11px] font-black', styles[source])

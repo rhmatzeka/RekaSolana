@@ -120,19 +120,6 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
 
   return (
     <div className="landing-root">
-      <div className="landing-spline-background" aria-hidden="true">
-        <iframe
-          src="https://my.spline.design/orbitalbluestar-nk9izVadCGbuGiVPQ48DG5Ef/"
-          title="Orbital blue star 3D background"
-          frameBorder="0"
-          width="100%"
-          height="100%"
-        />
-      </div>
-      <div className="landing-spline-scrim" aria-hidden="true" />
-      <div className="landing-glow landing-glow--hero" />
-      <div className="landing-glow landing-glow--features" />
-
       <nav className={`landing-nav${navCompact ? ' is-compact' : ''}`}>
         <a href="/" className="landing-logo" aria-label="Reka home">
           <Fingerprint size={22} className="landing-logo-icon" />

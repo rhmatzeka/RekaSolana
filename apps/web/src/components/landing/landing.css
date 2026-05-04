@@ -16,7 +16,10 @@
   position: relative;
   min-height: 100vh;
   overflow-x: hidden;
-  background: #05080d;
+  background:
+    linear-gradient(135deg, rgba(34, 211, 238, 0.1) 0%, transparent 34%),
+    linear-gradient(215deg, rgba(251, 191, 36, 0.08) 0%, transparent 28%),
+    linear-gradient(180deg, #07101b 0%, #05080d 48%, #02050b 100%);
   color: #f8fafc;
   font-family: Manrope, ui-sans-serif, system-ui, sans-serif;
 }
@@ -27,8 +30,12 @@
   z-index: 0;
   pointer-events: none;
   content: "";
-  opacity: 0;
-  background: none;
+  opacity: 0.3;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black 0%, black 62%, transparent 100%);
   animation: none;
   will-change: auto;
 }
@@ -39,8 +46,10 @@
   z-index: 0;
   pointer-events: none;
   content: "";
-  background: none;
-  mask-image: none;
+  background:
+    linear-gradient(90deg, rgba(2, 6, 23, 0.18), transparent 42%, rgba(2, 6, 23, 0.28)),
+    linear-gradient(180deg, rgba(2, 6, 23, 0.08), rgba(2, 6, 23, 0.54));
+  mask-image: linear-gradient(to bottom, black 0%, black 76%, transparent 100%);
   animation: none;
   will-change: auto;
 }
@@ -49,57 +58,6 @@
   position: relative;
   z-index: 2;
   pointer-events: none;
-}
-
-.landing-spline-background {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: min(980px, 112svh);
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: auto;
-}
-
-.landing-spline-background iframe {
-  width: 112%;
-  height: 112%;
-  border: 0;
-  filter: brightness(1.08) contrast(1.02) saturate(0.92);
-  pointer-events: auto;
-  transform: translate(-5.5%, -11%) scale(1.22);
-  transform-origin: center center;
-}
-
-.landing-spline-scrim {
-  display: none;
-}
-
-.landing-glow {
-  position: absolute;
-  z-index: 1;
-  pointer-events: none;
-  border-radius: 999px;
-  filter: blur(54px);
-  opacity: 0;
-}
-
-.landing-glow--hero {
-  width: 42rem;
-  height: 42rem;
-  top: -10rem;
-  left: 50%;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.24), transparent 70%);
-  transform: translateX(-50%);
-}
-
-.landing-glow--features {
-  width: 48rem;
-  height: 30rem;
-  top: 82rem;
-  left: 22%;
-  background: radial-gradient(circle, rgba(45, 212, 191, 0.16), transparent 70%);
 }
 
 .landing-nav {
@@ -1177,16 +1135,6 @@
   .landing-cta-sm {
     min-height: 2.85rem;
     padding: 0.68rem 1rem;
-  }
-
-  .landing-spline-background {
-    height: 47rem;
-  }
-
-  .landing-spline-background iframe {
-    width: 118%;
-    height: 108%;
-    transform: translate(-9%, -8%) scale(1);
   }
 
   .landing-hero,
