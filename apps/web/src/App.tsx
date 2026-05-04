@@ -1009,6 +1009,17 @@ function App() {
           : 'grid-cols-[88px_minmax(0,1fr)]',
       )}
     >
+      <div className="reka-spline-background" aria-hidden="true">
+        <iframe
+          src="https://my.spline.design/orbitalbluestar-nk9izVadCGbuGiVPQ48DG5Ef/"
+          title="Orbital blue star 3D background"
+          frameBorder="0"
+          width="100%"
+          height="100%"
+        />
+      </div>
+      <div className="reka-dashboard-scrim" aria-hidden="true" />
+
       <aside
         className={
           activeRoute === 'passport'

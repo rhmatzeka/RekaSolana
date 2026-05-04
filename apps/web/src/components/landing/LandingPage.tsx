@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   BadgeCheck,
   Camera,
@@ -16,7 +16,6 @@ import {
   Wallet,
   Wrench,
 } from 'lucide-react'
-import heroAsset from '../../assets/hero.png'
 import './landing.css'
 
 const trustSignals = [
@@ -104,15 +103,37 @@ const footerColumns = [
 
 export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void }) {
   const [activeFlow, setActiveFlow] = useState(flowTabs[0].id)
+  const [navCompact, setNavCompact] = useState(false)
   const selectedFlow = flowTabs.find((flow) => flow.id === activeFlow) ?? flowTabs[0]
   const SelectedFlowIcon = selectedFlow.icon
 
+  useEffect(() => {
+    const onScroll = () => {
+      setNavCompact(window.scrollY > 24)
+    }
+
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <div className="landing-root">
+      <div className="landing-spline-background" aria-hidden="true">
+        <iframe
+          src="https://my.spline.design/orbitalbluestar-nk9izVadCGbuGiVPQ48DG5Ef/"
+          title="Orbital blue star 3D background"
+          frameBorder="0"
+          width="100%"
+          height="100%"
+        />
+      </div>
+      <div className="landing-spline-scrim" aria-hidden="true" />
       <div className="landing-glow landing-glow--hero" />
       <div className="landing-glow landing-glow--features" />
 
-      <nav className="landing-nav">
+      <nav className={`landing-nav${navCompact ? ' is-compact' : ''}`}>
         <a href="/" className="landing-logo" aria-label="Reka home">
           <Fingerprint size={22} className="landing-logo-icon" />
           <span>Reka</span>
@@ -155,44 +176,6 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
                 <span>{stat.label}</span>
               </div>
             ))}
-          </div>
-        </div>
-
-        <div className="hero-card-switcher" aria-label="Passport verification preview">
-          <div className="hero-scan-line" aria-hidden="true" />
-          <div className="hero-switch-panel is-passport">
-            <span className="switch-label">Passport</span>
-            <div className="switch-content">
-              <Fingerprint size={26} />
-              <strong>RK-24-MBP</strong>
-              <small>MacBook Pro M1 / verified</small>
-              <div className="hero-device-frame">
-                <img src={heroAsset} alt="" aria-hidden="true" />
-                <span>On-chain passport active</span>
-              </div>
-            </div>
-          </div>
-          <div className="hero-switch-panel is-history">
-            <span className="switch-label">History</span>
-            <div className="switch-content">
-              <FileClock size={26} />
-              <strong>2 verified logs</strong>
-              <small>Inspection and warranty trail</small>
-              <div className="mini-meter"><span /></div>
-            </div>
-          </div>
-          <div className="hero-switch-panel is-qr">
-            <span className="switch-label">QR Verify</span>
-            <div className="switch-content">
-              <ScanLine size={26} />
-              <strong>Scan before buy</strong>
-              <small>Public verification link</small>
-              <div className="qr-mark qr-mark-compact" aria-hidden="true">
-                {Array.from({ length: 25 }).map((_, index) => (
-                  <span key={index} />
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </header>
