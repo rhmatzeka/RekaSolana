@@ -1184,9 +1184,9 @@
   }
 
   .landing-spline-background iframe {
-    width: 150%;
-    height: 106%;
-    transform: translate(-23%, -5%) scale(1.05);
+    width: 118%;
+    height: 108%;
+    transform: translate(-9%, -8%) scale(1);
   }
 
   .landing-hero,
