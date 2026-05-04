@@ -1001,13 +1001,41 @@ function App() {
   }
 
   return (
-    <main className="reka-dashboard relative isolate grid min-h-screen grid-cols-[88px_minmax(0,1fr)] bg-[#050b12] text-slate-100">
-      <aside className="sticky top-0 z-10 grid h-screen grid-rows-[auto_1fr_auto] justify-items-center border-r border-white/10 bg-slate-950/62 px-4 py-5 shadow-[18px_0_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
-        <button className="group relative grid h-14 w-14 place-items-center rounded-3xl border border-teal-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.22),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] text-teal-100 shadow-[0_18px_42px_rgba(0,0,0,0.26)] transition hover:border-teal-300/40 hover:bg-teal-300/12" type="button" onClick={() => navigateTo('home')} aria-label="Reka home">
+    <main
+      className={cx(
+        'reka-dashboard relative isolate grid min-h-screen bg-[#050b12] text-slate-100',
+        activeRoute === 'passport'
+          ? 'reka-passport-page grid-cols-1 xl:grid-cols-[88px_minmax(0,1fr)]'
+          : 'grid-cols-[88px_minmax(0,1fr)]',
+      )}
+    >
+      <aside
+        className={
+          activeRoute === 'passport'
+            ? 'sticky top-0 z-40 grid min-h-16 w-full grid-cols-[auto_minmax(0,1fr)] items-center border-b border-white/10 bg-slate-950/86 px-3 py-3 shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-2xl xl:z-10 xl:h-screen xl:w-auto xl:grid-cols-1 xl:grid-rows-[auto_1fr_auto] xl:justify-items-center xl:border-b-0 xl:border-r xl:bg-slate-950/62 xl:px-4 xl:py-5 xl:shadow-[18px_0_60px_rgba(0,0,0,0.28)]'
+            : 'sticky top-0 z-10 grid h-screen grid-rows-[auto_1fr_auto] justify-items-center border-r border-white/10 bg-slate-950/62 px-4 py-5 shadow-[18px_0_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl'
+        }
+      >
+        <button
+          className={cx(
+            'group relative grid place-items-center border border-teal-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.22),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] text-teal-100 shadow-[0_18px_42px_rgba(0,0,0,0.26)] transition hover:border-teal-300/40 hover:bg-teal-300/12',
+            activeRoute === 'passport' ? 'h-11 w-11 rounded-lg xl:h-14 xl:w-14 xl:rounded-3xl' : 'h-14 w-14 rounded-3xl',
+          )}
+          type="button"
+          onClick={() => navigateTo('home')}
+          aria-label="Reka home"
+        >
           <Fingerprint size={26} strokeWidth={2.4} />
           <span className="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-teal-200 shadow-[0_0_12px_rgba(153,246,228,0.85)]" />
         </button>
-        <nav className="grid content-center gap-4" aria-label="Dashboard navigation">
+        <nav
+          className={
+            activeRoute === 'passport'
+              ? 'flex min-w-0 items-center justify-end gap-2 overflow-x-auto pl-3 xl:grid xl:content-center xl:gap-4 xl:overflow-visible xl:pl-0'
+              : 'grid content-center gap-4'
+          }
+          aria-label="Dashboard navigation"
+        >
           <button
             className={railButtonClass(activeRoute === 'passport')}
             type="button"
@@ -1063,7 +1091,7 @@ function App() {
             <Settings size={22} />
           </button>
         </nav>
-        <div className="grid justify-items-center gap-3 text-xs font-bold text-slate-400">
+        <div className={cx('grid justify-items-center gap-3 text-xs font-bold text-slate-400', activeRoute === 'passport' && 'hidden xl:grid')}>
           <span className="tracking-wide">Profile</span>
           <button className="relative h-8 w-14 rounded-full border border-white/12 bg-white/10 shadow-inner shadow-black/20" type="button" onClick={connectWallet} aria-label="Connect wallet">
             <span className="absolute right-1 top-1 h-6 w-6 rounded-full bg-teal-200 shadow-[0_0_18px_rgba(153,246,228,0.55)]" />
@@ -1117,9 +1145,9 @@ function App() {
 
         {activeRoute === 'passport' ? (
           <section className="grid gap-4">
-            <div className="relative overflow-hidden rounded-[28px] border border-white/12 bg-slate-950/68 shadow-[0_28px_90px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+            <div className="passport-hero-panel relative overflow-hidden rounded-lg border border-white/12 bg-slate-950/68 shadow-[0_28px_90px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_8%_4%,rgba(45,212,191,0.18),transparent_32%),radial-gradient(circle_at_78%_14%,rgba(251,191,36,0.12),transparent_27%),linear-gradient(135deg,rgba(15,23,42,0.86),rgba(8,20,33,0.74)_45%,rgba(18,24,38,0.82))]" />
-              <div className="relative grid gap-6 p-6 xl:grid-cols-[minmax(0,1fr)_390px] xl:p-7">
+              <div className="relative grid gap-5 p-4 sm:p-5 xl:p-6">
                 <div className="flex min-w-0 flex-col justify-between gap-7">
                   <div>
                     <div className="mb-4 flex flex-wrap items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
@@ -1127,7 +1155,7 @@ function App() {
                       <span className="rounded-full border border-white/12 bg-white/7 px-3 py-1.5 text-slate-200">{selectedPassport.city}</span>
                       <span className="rounded-full border border-amber-300/24 bg-amber-300/10 px-3 py-1.5 text-amber-200">{selectedPassport.id}</span>
                     </div>
-                    <h3 className="max-w-4xl text-5xl font-black leading-[0.92] text-white md:text-7xl">
+                    <h3 className="max-w-4xl text-[clamp(2.25rem,7vw,4.25rem)] font-black leading-[0.96] text-white">
                       {selectedPassport.brand} {selectedPassport.model}
                     </h3>
                     <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -1142,7 +1170,7 @@ function App() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
                     <StatTile label="Trust score" value={`${selectedPassport.trustScore}/100`} tone="teal" />
                     <StatTile label="Condition" value={selectedPassport.condition} tone="amber" />
                     <StatTile label="Verified logs" value={`${verifiedHistoryCount}/${selectedPassport.history.length}`} tone="indigo" />
@@ -1151,18 +1179,18 @@ function App() {
                   </div>
                 </div>
 
-                <div className="relative min-h-[320px] overflow-hidden rounded-[24px] border border-white/12 bg-white/6 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                <div className="passport-device-panel relative min-h-[240px] overflow-hidden rounded-lg border border-white/12 bg-white/6 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] sm:min-h-[300px] sm:p-5">
                   <div className="absolute inset-0 bg-[linear-gradient(rgba(226,232,240,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(226,232,240,0.055)_1px,transparent_1px)] bg-[length:32px_32px]" />
-                  <div className="relative grid h-full min-h-[280px] place-items-center">
+                  <div className="relative grid h-full min-h-[220px] place-items-center sm:min-h-[280px]">
                     <HeroDeviceMockup passport={selectedPassport} />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
               <div className={cx(ui.panel, 'p-5')}>
-                <div className="mb-4 flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+                <div className="mb-4 grid gap-3 border-b border-white/10 pb-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                   <div>
                     <p className={ui.eyebrow}>Registry data</p>
                     <h3 className="text-xl font-black text-white">Identity & ownership</h3>
@@ -1198,7 +1226,7 @@ function App() {
                       `${programStatusText}. ${unverifiedHistoryCount} riwayat belum terverifikasi.`}
                   </span>
                 </div>
-                <div className="mt-4 grid gap-3 rounded-2xl border border-white/12 bg-slate-950/48 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] lg:grid-cols-[1fr_1fr_auto]">
+                <div className="mt-4 grid gap-3 rounded-lg border border-white/12 bg-slate-950/48 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] lg:grid-cols-[1fr_1fr_minmax(220px,0.9fr)]">
                   <Metric
                     icon={ClipboardCheck}
                     label="Seller disclosure"
@@ -1209,7 +1237,7 @@ function App() {
                     label="Inspection checklist"
                     value={inspectionSummary?.label ?? 'Not checked'}
                   />
-                  <div className={cx('rounded-xl border p-4', buyerRiskClass(buyerRisk?.level ?? 'High'))}>
+                  <div className={cx('rounded-lg border p-4', buyerRiskClass(buyerRisk?.level ?? 'High'))}>
                     <ShieldCheck size={18} />
                     <span className="mt-2 block text-xs font-bold">Buyer risk</span>
                     <strong className="mt-1 block text-sm font-black">{buyerRisk?.level ?? 'High'}</strong>
@@ -1226,7 +1254,7 @@ function App() {
                 </div>
               </div>
 
-              <aside className={cx(ui.panel, 'grid content-start gap-4 p-5')}>
+              <aside className={cx(ui.panel, 'grid content-start gap-4 p-5 xl:sticky xl:top-6')}>
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className={ui.eyebrow}>Public verify</p>
@@ -1234,9 +1262,9 @@ function App() {
                   </div>
                   <ScanLine className="text-teal-700" size={22} />
                 </div>
-                <div className="grid justify-items-center gap-4 rounded-2xl border border-white/12 bg-slate-950/48 p-4">
-                  <QRCodeCanvas className="h-36! w-36! rounded-2xl bg-white" value={publicUrl} size={144} marginSize={2} />
-                  <span className="max-w-full break-words rounded-xl border border-white/10 bg-white/7 px-3 py-2 text-xs font-black text-slate-200">{selectedPassport.id}</span>
+                <div className="grid justify-items-center gap-4 rounded-lg border border-white/12 bg-slate-950/48 p-4">
+                  <QRCodeCanvas className="h-36! w-36! rounded-lg bg-white" value={publicUrl} size={144} marginSize={2} />
+                  <span className="max-w-full break-words rounded-lg border border-white/10 bg-white/7 px-3 py-2 text-center text-xs font-black text-slate-200">{selectedPassport.id}</span>
                 </div>
                 <button className={cx(ui.primaryButton, 'w-full')} type="button" onClick={copyPublicUrl}>
                   <Copy size={17} />
@@ -1853,25 +1881,25 @@ function App() {
 
 function HeroDeviceMockup({ passport }: { passport: Passport }) {
   return (
-    <div className="relative mx-auto h-[360px] max-w-[520px] lg:mr-0">
-      <div className="absolute inset-x-8 bottom-4 h-20 rounded-full bg-teal-300/14 blur-3xl" />
-      <div className="absolute bottom-8 left-8 right-4 h-36 rounded-[22px] border border-white/14 bg-gradient-to-br from-slate-300 via-slate-500 to-slate-800 shadow-[0_30px_80px_rgba(0,0,0,0.48)] [transform:perspective(620px)_rotateX(63deg)_rotateZ(-10deg)]" />
-      <div className="absolute bottom-24 left-24 h-44 w-72 rounded-[20px] border border-white/16 bg-gradient-to-br from-slate-900 via-black to-slate-800 shadow-[0_28px_80px_rgba(0,0,0,0.55)] [transform:perspective(720px)_rotateY(-18deg)_rotateX(6deg)_rotateZ(2deg)]">
-        <div className="absolute inset-3 rounded-xl border border-white/8 bg-[radial-gradient(circle_at_75%_28%,rgba(20,184,166,0.2),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.08),transparent_38%)]" />
+    <div className="passport-device-mockup relative mx-auto aspect-[4/3] w-full max-w-[520px]">
+      <div className="absolute inset-x-[10%] bottom-[4%] h-[22%] rounded-full bg-teal-300/14 blur-3xl" />
+      <div className="absolute bottom-[7%] left-[8%] right-[6%] h-[32%] rounded-lg border border-white/14 bg-gradient-to-br from-slate-300 via-slate-500 to-slate-800 shadow-[0_30px_80px_rgba(0,0,0,0.48)] [transform:perspective(620px)_rotateX(63deg)_rotateZ(-10deg)]" />
+      <div className="absolute bottom-[32%] left-[18%] h-[38%] w-[55%] rounded-lg border border-white/16 bg-gradient-to-br from-slate-900 via-black to-slate-800 shadow-[0_28px_80px_rgba(0,0,0,0.55)] [transform:perspective(720px)_rotateY(-18deg)_rotateX(6deg)_rotateZ(2deg)]">
+        <div className="absolute inset-3 rounded-md border border-white/8 bg-[radial-gradient(circle_at_75%_28%,rgba(20,184,166,0.2),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.08),transparent_38%)]" />
       </div>
-      <div className="absolute right-12 top-12 h-64 w-40 rotate-[-13deg] rounded-[24px] border border-white/34 bg-white/13 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-        <div className="absolute inset-0 rounded-[24px] bg-gradient-to-br from-white/30 via-white/8 to-slate-900/24" />
-        <div className="relative grid h-full content-start justify-items-center gap-4 text-center">
-          <span className="text-[13px] font-black uppercase tracking-[0.16em] text-white/86">Passport</span>
-          <div className="grid h-16 w-16 place-items-center rounded-full border border-white/30 bg-white/8 text-white/72">
-            <Fingerprint size={34} />
+      <div className="absolute right-[7%] top-[10%] h-[70%] w-[34%] min-w-[112px] rotate-[-10deg] rounded-lg border border-white/30 bg-white/13 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-white/30 via-white/8 to-slate-900/24" />
+        <div className="relative grid h-full content-start justify-items-center gap-3 text-center">
+          <span className="text-[11px] font-black uppercase tracking-[0.16em] text-white/86">Passport</span>
+          <div className="grid h-14 w-14 place-items-center rounded-full border border-white/30 bg-white/8 text-white/72">
+            <Fingerprint size={30} />
           </div>
           <div className="grid w-full gap-2">
-            <span className="mx-auto h-2 w-24 rounded-full bg-white/58" />
-            <span className="mx-auto h-2 w-20 rounded-full bg-white/42" />
-            <span className="mx-auto h-2 w-28 rounded-full bg-white/30" />
+            <span className="mx-auto h-2 w-[78%] rounded-full bg-white/58" />
+            <span className="mx-auto h-2 w-[64%] rounded-full bg-white/42" />
+            <span className="mx-auto h-2 w-[84%] rounded-full bg-white/30" />
           </div>
-          <span className="mt-auto rounded-md border border-white/18 bg-white/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white/70">
+          <span className="mt-auto max-w-full truncate rounded-md border border-white/18 bg-white/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white/70">
             {passport.id.slice(0, 8)}
           </span>
         </div>

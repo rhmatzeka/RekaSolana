@@ -203,6 +203,73 @@
     box-shadow: 0 12px 34px rgba(0, 0, 0, 0.18);
   }
 
+  .reka-passport-page::before {
+    background:
+      radial-gradient(circle at 14% 8%, rgba(34, 211, 238, 0.16), transparent 28rem),
+      radial-gradient(circle at 82% 12%, rgba(251, 191, 36, 0.09), transparent 24rem),
+      linear-gradient(180deg, #05080d 0%, #050b12 46%, #020711 100%);
+  }
+
+  .reka-passport-page::after {
+    opacity: 0.42;
+    background-size:
+      300px 235px,
+      44px 44px,
+      44px 44px;
+  }
+
+  .reka-passport-page > section {
+    max-width: 1120px;
+  }
+
+  .reka-passport-page .passport-hero-panel,
+  .reka-passport-page .rounded-2xl,
+  .reka-passport-page .rounded-\[24px\],
+  .reka-passport-page .rounded-\[28px\] {
+    border-radius: 8px !important;
+  }
+
+  .reka-passport-page .passport-hero-panel {
+    animation: reka-passport-hero-enter 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .reka-passport-page .passport-device-mockup {
+    min-height: 220px;
+    animation: reka-passport-device-enter 680ms 120ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .reka-passport-page .passport-hero-panel::after {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    background: linear-gradient(115deg, transparent 0%, rgba(34, 211, 238, 0.12) 45%, transparent 62%);
+    opacity: 0.7;
+    transform: translateX(-70%);
+    animation: reka-passport-sheen 4s 900ms ease-in-out infinite;
+  }
+
+  .reka-passport-page > aside nav button {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    border-radius: 8px;
+  }
+
+  .reka-passport-page > aside nav button::before {
+    display: none;
+  }
+
+  .reka-passport-page .passport-hero-panel > div:last-child {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .reka-passport-page .passport-device-panel {
+    max-width: 680px;
+    width: 100%;
+    margin-inline: auto;
+  }
+
   .reka-dashboard > aside {
     animation: reka-rail-enter 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
@@ -263,6 +330,48 @@
     }
   }
 
+  @keyframes reka-passport-hero-enter {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.99);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes reka-passport-device-enter {
+    from {
+      opacity: 0;
+      transform: translateY(18px) rotate(-1deg);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) rotate(0);
+    }
+  }
+
+  @keyframes reka-passport-sheen {
+    0%,
+    52% {
+      opacity: 0;
+      transform: translateX(-70%);
+    }
+
+    64% {
+      opacity: 0.6;
+    }
+
+    82%,
+    100% {
+      opacity: 0;
+      transform: translateX(70%);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -272,8 +381,127 @@
     .reka-dashboard > section,
     .reka-dashboard > section > header,
     .reka-dashboard > section > section,
-    .reka-dashboard > section > div {
+    .reka-dashboard > section > div,
+    .reka-passport-page .passport-hero-panel,
+    .reka-passport-page .passport-device-mockup,
+    .reka-passport-page .passport-hero-panel::after {
       animation: none;
+    }
+  }
+
+  @media (max-width: 1180px) {
+    .reka-passport-page > section {
+      max-width: 100%;
+    }
+  }
+
+  .reka-passport-page > aside {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto;
+    width: 100%;
+    height: auto;
+    min-height: 64px;
+    align-items: center;
+    justify-items: stretch;
+    padding: 0.65rem 0.85rem;
+    border-right: 0;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.12);
+    background: rgba(3, 6, 9, 0.86);
+    backdrop-filter: blur(18px);
+  }
+
+  .reka-passport-page > section {
+    padding: 1rem;
+  }
+
+  .reka-passport-page > section > header {
+    margin-bottom: 1rem;
+    align-items: start;
+  }
+
+  .reka-passport-page > section > header h2 {
+    font-size: clamp(2.25rem, 7vw, 3.25rem);
+    line-height: 0.98;
+  }
+
+  .reka-passport-page > section > header > div:last-child {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 0.55rem;
+  }
+
+  .reka-passport-page > section > header > div:last-child > * {
+    width: 100%;
+    min-width: 0;
+    min-height: 2.6rem;
+    padding-inline: 0.7rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    line-height: 1.15;
+  }
+
+  @media (min-width: 1180px) {
+    .reka-passport-page .passport-hero-panel > div:last-child {
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.72fr);
+    }
+
+    .reka-passport-page > section > header {
+      grid-template-columns: minmax(260px, 0.55fr) minmax(620px, 1fr);
+      align-items: end;
+    }
+
+    .reka-passport-page > section > header > div:last-child {
+      display: flex;
+      width: auto;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      gap: 0.6rem;
+    }
+
+    .reka-passport-page > section > header > div:last-child > * {
+      width: auto;
+      flex: 0 0 auto;
+      min-height: 3rem;
+      padding-inline: 1rem;
+      font-size: 0.86rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .reka-passport-page > aside {
+      width: auto;
+      height: 100vh;
+      min-height: 100vh;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      align-items: initial;
+      justify-items: center;
+      border-right: 1px solid rgba(226, 232, 240, 0.12);
+      border-bottom: 0;
+    }
+
+    .reka-passport-page > aside nav {
+      display: grid;
+      align-content: center;
+      justify-content: initial;
+      gap: 1rem;
+      overflow: visible;
+      padding-left: 0;
+    }
+
+    .reka-passport-page > aside nav button {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 1rem;
+    }
+
+    .reka-passport-page > aside nav button::before {
+      display: block;
     }
   }
 
@@ -315,6 +543,33 @@
 
     .reka-dashboard > section {
       padding: 1rem;
+    }
+
+  }
+
+  @media (max-width: 560px) {
+    .reka-passport-page > section {
+      padding: 0.85rem;
+    }
+
+    .reka-passport-page > section > header > div:last-child {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .reka-passport-page > section > header > div:last-child > * {
+      justify-content: center;
+    }
+
+    .reka-passport-page .passport-hero-panel > div:last-child {
+      padding: 0.9rem;
+    }
+
+    .reka-passport-page .passport-hero-panel h3 {
+      font-size: clamp(2rem, 11vw, 2.75rem);
+    }
+
+    .reka-passport-page .passport-device-mockup {
+      min-height: 200px;
     }
   }
 }

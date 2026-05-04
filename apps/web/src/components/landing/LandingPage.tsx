@@ -32,6 +32,12 @@ const deviceTypes = [
   { name: 'Camera', detail: 'serial, shutter count, sensor', icon: Camera },
 ]
 
+const heroStats = [
+  { label: 'Trust score', value: '91%' },
+  { label: 'Verified logs', value: '2' },
+  { label: 'Owner trail', value: 'Signed' },
+]
+
 const featureCards = [
   {
     title: 'HASHED DEVICE IDENTITY',
@@ -142,16 +148,28 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
               Lihat Demo Flow <ChevronRight size={16} />
             </a>
           </div>
+          <div className="landing-hero-stats" aria-label="Reka passport preview stats">
+            {heroStats.map((stat) => (
+              <div className="hero-stat" key={stat.label}>
+                <strong>{stat.value}</strong>
+                <span>{stat.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="hero-card-switcher">
+        <div className="hero-card-switcher" aria-label="Passport verification preview">
+          <div className="hero-scan-line" aria-hidden="true" />
           <div className="hero-switch-panel is-passport">
             <span className="switch-label">Passport</span>
             <div className="switch-content">
               <Fingerprint size={26} />
               <strong>RK-24-MBP</strong>
               <small>MacBook Pro M1 / verified</small>
-              <img src={heroAsset} alt="" aria-hidden="true" />
+              <div className="hero-device-frame">
+                <img src={heroAsset} alt="" aria-hidden="true" />
+                <span>On-chain passport active</span>
+              </div>
             </div>
           </div>
           <div className="hero-switch-panel is-history">
