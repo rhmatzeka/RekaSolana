@@ -375,11 +375,11 @@ function cx(...classes: Array<string | false | null | undefined>) {
 }
 
 const ui = {
-  eyebrow: 'm-0 text-[11px] font-black uppercase tracking-[0.22em] text-teal-300',
+  eyebrow: 'm-0 text-[11px] font-extrabold uppercase tracking-[0.18em] text-teal-300',
   primaryButton:
-    'inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-teal-600 bg-teal-600 px-3 text-xs font-black text-white no-underline shadow-sm shadow-teal-900/15 transition hover:bg-teal-700 disabled:cursor-wait disabled:opacity-70',
+    'inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-teal-600 bg-teal-600 px-3 text-xs font-extrabold text-white no-underline shadow-sm shadow-teal-900/15 transition hover:bg-teal-700 disabled:cursor-wait disabled:opacity-70',
   secondaryButton:
-    'inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-white/12 bg-white/8 px-3 text-xs font-black text-slate-100 no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10',
+    'inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-white/12 bg-white/8 px-3 text-xs font-extrabold text-slate-100 no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10',
   panel:
     'rounded-xl border border-white/12 bg-slate-900/72 p-3 shadow-[0_18px_52px_rgba(0,0,0,0.22)] backdrop-blur-xl',
   panelHeading: 'mb-3 flex items-center justify-between gap-3',
@@ -404,7 +404,7 @@ function railButtonClass(active: boolean) {
 
 function historyActionTabClass(active: boolean) {
   return cx(
-    'inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-black transition',
+    'inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-extrabold transition',
     active
       ? 'bg-teal-600 text-white shadow-sm shadow-teal-900/15'
       : 'text-slate-400 hover:bg-teal-300/10 hover:text-teal-100',
@@ -1105,7 +1105,7 @@ function App() {
         <header className="mb-4 grid grid-cols-1 items-end justify-between gap-3 xl:grid-cols-[minmax(0,1fr)_auto]">
           <div>
             <p className={ui.eyebrow}>Reka dashboard</p>
-            <h2 className="mt-1 text-2xl font-black leading-none tracking-normal text-white sm:text-3xl">{getRouteTitle(activeRoute)}</h2>
+            <h2 className="mt-1 text-2xl font-bold leading-none tracking-normal text-white sm:text-3xl">{getRouteTitle(activeRoute)}</h2>
           </div>
           <div className="flex flex-wrap justify-start gap-2 xl:justify-end">
             <button className={ui.secondaryButton} type="button" onClick={connectWallet}>
@@ -1152,20 +1152,20 @@ function App() {
               <div className="relative grid items-center gap-4 p-3 sm:p-4 xl:grid-cols-[minmax(0,1fr)_330px]">
                 <div className="flex min-w-0 flex-col justify-between gap-4">
                   <div>
-                    <div className="mb-3 flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                    <div className="mb-3 flex flex-wrap items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">
                       <span className="rounded-full border border-teal-300/22 bg-teal-300/8 px-2.5 py-1 text-teal-100">{selectedPassport.category}</span>
                       <span className="rounded-full border border-white/12 bg-white/7 px-2.5 py-1 text-slate-200">{selectedPassport.city}</span>
                       <span className="rounded-full border border-white/12 bg-white/7 px-2.5 py-1 text-slate-300">{selectedPassport.id}</span>
                     </div>
-                    <h3 className="max-w-3xl text-[clamp(1.8rem,4vw,2.9rem)] font-black leading-[0.98] text-white">
+                    <h3 className="max-w-3xl text-[clamp(1.8rem,4vw,2.9rem)] font-bold leading-[1.02] text-white">
                       {selectedPassport.brand} {selectedPassport.model}
                     </h3>
                     <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <span className="inline-flex min-h-7 items-center gap-2 rounded-full border border-teal-300/22 bg-teal-300/8 px-2.5 text-[11px] font-black text-teal-100">
+                      <span className="inline-flex min-h-7 items-center gap-2 rounded-full border border-teal-300/22 bg-teal-300/8 px-2.5 text-[11px] font-extrabold text-teal-100">
                         <CheckCircle2 size={14} />
                         Verified passport
                       </span>
-                      <span className="inline-flex min-h-7 items-center gap-2 rounded-full border border-white/12 bg-white/7 px-2.5 text-[11px] font-black text-slate-200">
+                      <span className="inline-flex min-h-7 items-center gap-2 rounded-full border border-white/12 bg-white/7 px-2.5 text-[11px] font-extrabold text-slate-200">
                         <ShieldCheck size={14} />
                         Devnet audit trail
                       </span>
@@ -1195,7 +1195,7 @@ function App() {
                 <div className="mb-3 grid gap-3 border-b border-white/10 pb-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                   <div>
                     <p className={ui.eyebrow}>Registry data</p>
-                    <h3 className="text-lg font-black text-white">Identity & ownership</h3>
+                    <h3 className="text-lg font-bold text-white">Identity & ownership</h3>
                   </div>
                   <button className={ui.secondaryButton} type="button" onClick={() => navigateTo('history')}>
                     <FileClock size={17} />
@@ -1242,10 +1242,10 @@ function App() {
                   <div className={cx('rounded-lg border p-3', buyerRiskClass(buyerRisk?.level ?? 'High'))}>
                     <ShieldCheck size={18} />
                     <span className="mt-2 block text-xs font-bold">Buyer risk</span>
-                    <strong className="mt-1 block text-sm font-black">{buyerRisk?.level ?? 'High'}</strong>
+                    <strong className="mt-1 block text-sm font-bold">{buyerRisk?.level ?? 'High'}</strong>
                     <p className="m-0 mt-2 text-xs font-bold leading-5">{buyerRisk?.summary}</p>
                     <button
-                      className="mt-3 inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-white/14 bg-white/8 px-3 text-xs font-black text-slate-100 transition hover:border-teal-300/24 hover:bg-teal-300/8"
+                      className="mt-3 inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-white/14 bg-white/8 px-3 text-xs font-extrabold text-slate-100 transition hover:border-teal-300/24 hover:bg-teal-300/8"
                       type="button"
                       onClick={addHiddenRepairDispute}
                     >
@@ -1260,13 +1260,13 @@ function App() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className={ui.eyebrow}>Public verify</p>
-                    <h3 className="text-lg font-black text-white">Scan QR</h3>
+                    <h3 className="text-lg font-bold text-white">Scan QR</h3>
                   </div>
                   <ScanLine className="text-teal-700" size={22} />
                 </div>
                 <div className="grid justify-items-center gap-3 rounded-lg border border-white/12 bg-slate-950/48 p-3">
                   <QRCodeCanvas className="h-32! w-32! rounded-lg bg-white" value={publicUrl} size={128} marginSize={2} />
-                  <span className="max-w-full break-words rounded-lg border border-white/10 bg-white/7 px-3 py-2 text-center text-xs font-black text-slate-200">{selectedPassport.id}</span>
+                  <span className="max-w-full break-words rounded-lg border border-white/10 bg-white/7 px-3 py-2 text-center text-xs font-extrabold text-slate-200">{selectedPassport.id}</span>
                 </div>
                 <button className={cx(ui.primaryButton, 'w-full')} type="button" onClick={copyPublicUrl}>
                   <Copy size={17} />
@@ -1319,7 +1319,7 @@ function App() {
                         <strong className="block overflow-hidden text-ellipsis whitespace-nowrap">{passport.brand} {passport.model}</strong>
                         <small className="block overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-400">{passport.ownerName} - {passport.city}</small>
                       </span>
-                      <em className="grid h-9 place-items-center rounded-xl border border-teal-300/18 bg-teal-300/8 text-sm font-black not-italic text-teal-100">{passport.trustScore}</em>
+                      <em className="grid h-9 place-items-center rounded-xl border border-teal-300/18 bg-teal-300/8 text-sm font-extrabold not-italic text-teal-100">{passport.trustScore}</em>
                     </button>
                   )
                 })}
@@ -1486,7 +1486,7 @@ function App() {
                             {source}
                           </span>
                           {item.date !== serviceDate ? (
-                            <span className="rounded-full border border-white/12 bg-white/7 px-2.5 py-1 text-[11px] font-black text-slate-300">
+                            <span className="rounded-full border border-white/12 bg-white/7 px-2.5 py-1 text-[11px] font-extrabold text-slate-300">
                               Attested {item.date}
                             </span>
                           ) : null}
@@ -1892,7 +1892,7 @@ function HeroDeviceMockup({ passport }: { passport: Passport }) {
       <div className="absolute right-[7%] top-[10%] h-[70%] w-[34%] min-w-[88px] rotate-[-10deg] rounded-lg border border-white/24 bg-white/10 p-2.5 shadow-[0_20px_58px_rgba(0,0,0,0.4)] backdrop-blur-xl">
         <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-white/22 via-white/7 to-slate-950/30" />
         <div className="relative grid h-full content-start justify-items-center gap-3 text-center">
-          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-white/86">Passport</span>
+          <span className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-white/86">Passport</span>
           <div className="grid h-11 w-11 place-items-center rounded-full border border-white/30 bg-white/8 text-white/72">
             <Fingerprint size={24} />
           </div>
@@ -1901,7 +1901,7 @@ function HeroDeviceMockup({ passport }: { passport: Passport }) {
             <span className="mx-auto h-2 w-[64%] rounded-full bg-white/42" />
             <span className="mx-auto h-2 w-[84%] rounded-full bg-white/30" />
           </div>
-          <span className="mt-auto max-w-full truncate rounded-md border border-white/18 bg-white/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white/70">
+          <span className="mt-auto max-w-full truncate rounded-md border border-white/18 bg-white/10 px-2 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-white/70">
             {passport.id.slice(0, 8)}
           </span>
         </div>
@@ -1932,7 +1932,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="grid grid-cols-1 gap-1 border-b border-white/8 py-2.5 md:grid-cols-[130px_minmax(0,1fr)] md:gap-4">
       <span className="text-sm font-bold text-slate-400">{label}</span>
-      <strong className="min-w-0 break-words text-sm font-black text-white">{value}</strong>
+      <strong className="min-w-0 break-words text-sm font-bold text-white">{value}</strong>
     </div>
   )
 }
@@ -1955,8 +1955,8 @@ function StatTile({
 
   return (
     <div className={cx('min-w-0 rounded-xl border p-3 shadow-sm shadow-black/20', styles[tone])}>
-      <span className="block text-[10px] font-black uppercase tracking-[0.14em] opacity-70">{label}</span>
-      <strong className="mt-1.5 block break-words text-base font-black leading-tight text-white">{value}</strong>
+      <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] opacity-70">{label}</span>
+      <strong className="mt-1.5 block break-words text-base font-bold leading-tight text-white">{value}</strong>
     </div>
   )
 }
@@ -2118,7 +2118,7 @@ function attestationStatusClass(status: AttestationStatus) {
     Disputed: 'border-white/14 bg-white/7 text-slate-300',
   }
 
-  return cx('rounded-full border px-2.5 py-1 text-[11px] font-black', styles[status])
+  return cx('rounded-full border px-2.5 py-1 text-[11px] font-extrabold', styles[status])
 }
 
 function attestationSourceClass(source: AttestationSource) {
@@ -2128,7 +2128,7 @@ function attestationSourceClass(source: AttestationSource) {
     'Owner claim': 'border-white/12 bg-white/6 text-slate-400',
   }
 
-  return cx('rounded-full border px-2.5 py-1 text-[11px] font-black', styles[source])
+  return cx('rounded-full border px-2.5 py-1 text-[11px] font-extrabold', styles[source])
 }
 
 async function parseWalletOrFallback(value: string, fallback: PublicKey) {
