@@ -397,7 +397,7 @@ function railButtonClass(active: boolean) {
   return cx(
     'relative grid h-12 w-12 place-items-center rounded-2xl border transition',
     active
-      ? 'border-teal-300/42 bg-teal-300/14 text-teal-100 shadow-[0_16px_36px_rgba(20,184,166,0.16)] before:absolute before:-left-4 before:h-7 before:w-1 before:rounded-r before:bg-teal-300 before:content-[\'\']'
+      ? 'border-teal-300/42 bg-teal-300/14 text-teal-100 shadow-[0_16px_36px_rgba(20,184,166,0.16)] before:absolute before:-top-3 before:left-1/2 before:h-1 before:w-7 before:-translate-x-1/2 before:rounded-b before:bg-teal-300 before:content-[\'\'] xl:before:-left-4 xl:before:top-1/2 xl:before:h-7 xl:before:w-1 xl:before:-translate-x-0 xl:before:-translate-y-1/2 xl:before:rounded-r'
       : 'border-transparent text-slate-400 hover:border-white/12 hover:bg-white/7 hover:text-teal-100',
   )
 }
@@ -1003,26 +1003,17 @@ function App() {
   return (
     <main
       className={cx(
-        'reka-dashboard relative isolate grid min-h-screen bg-[#050b12] text-slate-100',
-        activeRoute === 'passport'
-          ? 'reka-passport-page grid-cols-1 xl:grid-cols-[88px_minmax(0,1fr)]'
-          : 'grid-cols-[88px_minmax(0,1fr)]',
+        'reka-dashboard relative isolate grid min-h-screen grid-cols-1 bg-[#050b12] text-slate-100 xl:grid-cols-[88px_minmax(0,1fr)]',
+        activeRoute === 'passport' && 'reka-passport-page',
       )}
     >
       <div className="reka-dashboard-scrim" aria-hidden="true" />
 
       <aside
-        className={
-          activeRoute === 'passport'
-            ? 'sticky top-0 z-40 grid min-h-16 w-full grid-cols-[auto_minmax(0,1fr)] items-center border-b border-white/10 bg-slate-950/86 px-3 py-3 shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-2xl xl:z-10 xl:h-screen xl:w-auto xl:grid-cols-1 xl:grid-rows-[auto_1fr_auto] xl:justify-items-center xl:border-b-0 xl:border-r xl:bg-slate-950/62 xl:px-4 xl:py-5 xl:shadow-[18px_0_60px_rgba(0,0,0,0.28)]'
-            : 'sticky top-0 z-10 grid h-screen grid-rows-[auto_1fr_auto] justify-items-center border-r border-white/10 bg-slate-950/62 px-4 py-5 shadow-[18px_0_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl'
-        }
+        className="fixed inset-x-0 bottom-0 z-50 grid min-h-16 grid-cols-[auto_minmax(0,1fr)] items-center border-t border-white/10 bg-slate-950/92 px-3 py-3 shadow-[0_-18px_50px_rgba(0,0,0,0.28)] backdrop-blur-2xl xl:sticky xl:inset-auto xl:top-0 xl:z-10 xl:h-screen xl:w-auto xl:grid-cols-1 xl:grid-rows-[auto_1fr_auto] xl:justify-items-center xl:border-t-0 xl:border-r xl:bg-slate-950/62 xl:px-4 xl:py-5 xl:shadow-[18px_0_60px_rgba(0,0,0,0.28)]"
       >
         <button
-          className={cx(
-            'group relative grid place-items-center border border-teal-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.22),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] text-teal-100 shadow-[0_18px_42px_rgba(0,0,0,0.26)] transition hover:border-teal-300/40 hover:bg-teal-300/12',
-            activeRoute === 'passport' ? 'h-11 w-11 rounded-lg xl:h-14 xl:w-14 xl:rounded-3xl' : 'h-14 w-14 rounded-3xl',
-          )}
+          className="group relative grid h-11 w-11 place-items-center rounded-lg border border-teal-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.22),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] text-teal-100 shadow-[0_18px_42px_rgba(0,0,0,0.26)] transition hover:border-teal-300/40 hover:bg-teal-300/12 xl:h-14 xl:w-14 xl:rounded-3xl"
           type="button"
           onClick={() => navigateTo('home')}
           aria-label="Reka home"
@@ -1031,11 +1022,7 @@ function App() {
           <span className="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-teal-200 shadow-[0_0_12px_rgba(153,246,228,0.85)]" />
         </button>
         <nav
-          className={
-            activeRoute === 'passport'
-              ? 'flex min-w-0 items-center justify-end gap-2 overflow-x-auto pl-3 xl:grid xl:content-center xl:gap-4 xl:overflow-visible xl:pl-0'
-              : 'grid content-center gap-4'
-          }
+          className="flex min-w-0 items-center justify-end gap-2 overflow-x-auto pl-3 xl:grid xl:content-center xl:gap-4 xl:overflow-visible xl:pl-0"
           aria-label="Dashboard navigation"
         >
           <button
@@ -1093,7 +1080,7 @@ function App() {
             <Settings size={22} />
           </button>
         </nav>
-        <div className={cx('grid justify-items-center gap-3 text-xs font-bold text-slate-400', activeRoute === 'passport' && 'hidden xl:grid')}>
+        <div className="hidden justify-items-center gap-3 text-xs font-bold text-slate-400 xl:grid">
           <span className="tracking-wide">Profile</span>
           <button className="relative h-8 w-14 rounded-full border border-white/12 bg-white/10 shadow-inner shadow-black/20" type="button" onClick={connectWallet} aria-label="Connect wallet">
             <span className="absolute right-1 top-1 h-6 w-6 rounded-full bg-teal-200 shadow-[0_0_18px_rgba(153,246,228,0.55)]" />
@@ -1101,7 +1088,7 @@ function App() {
         </div>
       </aside>
 
-      <section className="relative z-10 mx-auto w-full max-w-[1180px] px-4 py-4">
+      <section className="relative z-10 mx-auto w-full max-w-[1180px] px-4 pb-24 pt-4 xl:py-4">
         <header className="mb-4 grid grid-cols-1 items-end justify-between gap-3 xl:grid-cols-[minmax(0,1fr)_auto]">
           <div>
             <p className={ui.eyebrow}>Reka dashboard</p>
