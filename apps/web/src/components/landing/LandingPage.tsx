@@ -104,6 +104,7 @@ const footerColumns = [
 export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void }) {
   const [activeFlow, setActiveFlow] = useState(flowTabs[0].id)
   const [navCompact, setNavCompact] = useState(false)
+  const [splineReady, setSplineReady] = useState(false)
   const selectedFlow = flowTabs.find((flow) => flow.id === activeFlow) ?? flowTabs[0]
   const SelectedFlowIcon = selectedFlow.icon
 
@@ -162,13 +163,29 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
 
       <header className="landing-hero">
 
-        <div className="landing-spline-layer" aria-hidden="true">
+        <div
+          className={`landing-spline-layer${splineReady ? ' is-loaded' : ''}`}
+          aria-hidden="true"
+        >
+          <div className="spline-loader">
+            <div className="spline-loader-core">
+              <span className="spline-loader-ring" />
+              <span className="spline-loader-orbit" />
+              <span className="spline-loader-dot" />
+            </div>
+            <div className="spline-loader-bars">
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
           <iframe
             src="https://my.spline.design/solanaplanet-VKQMp0fXRjAW7z08NmG8yKlt/"
             frameBorder="0"
             width="100%"
             height="100%"
             title="Reka landing background"
+            onLoad={() => setSplineReady(true)}
           />
         </div>
         <div className="landing-hero-copy">
