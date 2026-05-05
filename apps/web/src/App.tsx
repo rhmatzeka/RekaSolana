@@ -1009,11 +1009,9 @@ function App() {
     >
       <div className="reka-dashboard-scrim" aria-hidden="true" />
 
-      <aside
-        className="fixed inset-x-0 bottom-0 z-50 grid min-h-16 grid-cols-[auto_minmax(0,1fr)] items-center border-t border-white/10 bg-slate-950/92 px-3 py-3 shadow-[0_-18px_50px_rgba(0,0,0,0.28)] backdrop-blur-2xl xl:sticky xl:inset-auto xl:top-0 xl:z-10 xl:h-screen xl:w-auto xl:grid-cols-1 xl:grid-rows-[auto_1fr_auto] xl:justify-items-center xl:border-t-0 xl:border-r xl:bg-slate-950/62 xl:px-4 xl:py-5 xl:shadow-[18px_0_60px_rgba(0,0,0,0.28)]"
-      >
+      <aside className="sticky top-0 z-10 hidden h-screen grid-rows-[auto_1fr_auto] justify-items-center border-r border-white/10 bg-slate-950/62 px-4 py-5 shadow-[18px_0_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl xl:grid">
         <button
-          className="group relative grid h-11 w-11 place-items-center rounded-lg border border-teal-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.22),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] text-teal-100 shadow-[0_18px_42px_rgba(0,0,0,0.26)] transition hover:border-teal-300/40 hover:bg-teal-300/12 xl:h-14 xl:w-14 xl:rounded-3xl"
+          className="group relative grid h-14 w-14 place-items-center rounded-3xl border border-teal-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.22),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] text-teal-100 shadow-[0_18px_42px_rgba(0,0,0,0.26)] transition hover:border-teal-300/40 hover:bg-teal-300/12"
           type="button"
           onClick={() => navigateTo('home')}
           aria-label="Reka home"
@@ -1022,7 +1020,7 @@ function App() {
           <span className="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-teal-200 shadow-[0_0_12px_rgba(153,246,228,0.85)]" />
         </button>
         <nav
-          className="flex min-w-0 items-center justify-end gap-2 overflow-x-auto pl-3 xl:grid xl:content-center xl:gap-4 xl:overflow-visible xl:pl-0"
+          className="grid content-center gap-4"
           aria-label="Dashboard navigation"
         >
           <button
@@ -1080,13 +1078,81 @@ function App() {
             <Settings size={22} />
           </button>
         </nav>
-        <div className="hidden justify-items-center gap-3 text-xs font-bold text-slate-400 xl:grid">
+        <div className="grid justify-items-center gap-3 text-xs font-bold text-slate-400">
           <span className="tracking-wide">Profile</span>
           <button className="relative h-8 w-14 rounded-full border border-white/12 bg-white/10 shadow-inner shadow-black/20" type="button" onClick={connectWallet} aria-label="Connect wallet">
             <span className="absolute right-1 top-1 h-6 w-6 rounded-full bg-teal-200 shadow-[0_0_18px_rgba(153,246,228,0.55)]" />
           </button>
         </div>
       </aside>
+
+      <nav
+        className="fixed inset-x-0 bottom-0 z-50 flex min-h-16 items-center gap-2 overflow-x-auto border-t border-white/10 bg-slate-950/92 px-3 py-3 shadow-[0_-18px_50px_rgba(0,0,0,0.28)] backdrop-blur-2xl xl:hidden"
+        aria-label="Mobile dashboard navigation"
+      >
+        <button
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-teal-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.22),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] text-teal-100 shadow-[0_14px_34px_rgba(0,0,0,0.24)]"
+          type="button"
+          onClick={() => navigateTo('home')}
+          aria-label="Reka home"
+        >
+          <Fingerprint size={24} strokeWidth={2.4} />
+        </button>
+        <button
+          className={cx(railButtonClass(activeRoute === 'passport'), 'shrink-0')}
+          type="button"
+          aria-label="Passport"
+          aria-current={activeRoute === 'passport' ? 'page' : undefined}
+          onClick={() => handleRouteAction('passport')}
+        >
+          <Wallet size={22} />
+        </button>
+        <button
+          className={cx(railButtonClass(activeRoute === 'devices'), 'shrink-0')}
+          type="button"
+          aria-label="Devices"
+          aria-current={activeRoute === 'devices' ? 'page' : undefined}
+          onClick={() => handleRouteAction('devices')}
+        >
+          <Laptop size={22} />
+        </button>
+        <button
+          className={cx(railButtonClass(activeRoute === 'history'), 'shrink-0')}
+          type="button"
+          aria-label="History"
+          aria-current={activeRoute === 'history' ? 'page' : undefined}
+          onClick={() => handleRouteAction('history')}
+        >
+          <FileClock size={22} />
+        </button>
+        <button
+          className={cx(railButtonClass(activeRoute === 'verifier'), 'shrink-0')}
+          type="button"
+          aria-label="Verifier"
+          aria-current={activeRoute === 'verifier' ? 'page' : undefined}
+          onClick={() => handleRouteAction('verifier')}
+        >
+          <ShieldCheck size={22} />
+        </button>
+        <button
+          className={cx(railButtonClass(activeRoute === 'transfer'), 'shrink-0')}
+          type="button"
+          aria-label="Transfer"
+          aria-current={activeRoute === 'transfer' ? 'page' : undefined}
+          onClick={() => handleRouteAction('transfer')}
+        >
+          <UserRoundCheck size={22} />
+        </button>
+        <button
+          className={cx(railButtonClass(activeRoute === 'settings'), 'shrink-0')}
+          type="button"
+          aria-label="Settings"
+          aria-current={activeRoute === 'settings' ? 'page' : undefined}
+          onClick={() => handleRouteAction('settings')}
+        >
+          <Settings size={22} />
+        </button>
+      </nav>
 
       <section className="relative z-10 mx-auto w-full max-w-[1180px] px-4 pb-24 pt-4 xl:py-4">
         <header className="mb-4 grid grid-cols-1 items-end justify-between gap-3 xl:grid-cols-[minmax(0,1fr)_auto]">
