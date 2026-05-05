@@ -1385,8 +1385,7 @@ function App() {
                 <Search className="text-teal-700" size={20} />
               </div>
               <div className="mb-3 rounded-xl border border-teal-300/14 bg-teal-300/6 px-3 py-2 text-xs font-bold text-slate-300">
-                Registry publik seharusnya dicari, difilter, dan dipaginasi. Judul device tetap untuk
-                keterbacaan, tetapi identitas uniknya memakai passport ID dan hash suffix, bukan IMEI mentah.
+                Registry browser: cari passport, pilih satu record aktif, lalu buka detail penuh bila perlu.
               </div>
               <label className="flex h-11 items-center gap-2 rounded-xl border border-white/12 bg-slate-950/72 px-3 text-slate-400">
                 <Search size={18} />
@@ -1436,7 +1435,25 @@ function App() {
                   Page {devicePage}/{devicePageCount}
                 </span>
               </div>
-              <div className="mt-4 grid gap-3">
+              <div className="mt-3 grid grid-cols-2 gap-2 xl:grid-cols-4">
+                <div className="rounded-xl border border-white/12 bg-white/6 p-3">
+                  <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Total</span>
+                  <strong className="mt-1 block text-lg font-bold text-white">{passports.length}</strong>
+                </div>
+                <div className="rounded-xl border border-teal-300/18 bg-teal-300/7 p-3">
+                  <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-teal-100/70">Avg trust</span>
+                  <strong className="mt-1 block text-lg font-bold text-teal-100">{registryStats.averageTrust}</strong>
+                </div>
+                <div className="rounded-xl border border-white/12 bg-white/6 p-3">
+                  <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Verified</span>
+                  <strong className="mt-1 block text-lg font-bold text-white">{registryStats.verifiedLogs}</strong>
+                </div>
+                <div className="rounded-xl border border-white/12 bg-white/6 p-3">
+                  <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Needs review</span>
+                  <strong className="mt-1 block text-lg font-bold text-white">{registryStats.highRiskCount}</strong>
+                </div>
+              </div>
+              <div className="mt-4 grid gap-3 xl:grid-cols-[minmax(0,1.08fr)_minmax(280px,0.62fr)]">
                 {registryPassport ? (
                   <article className="rounded-[22px] border border-teal-300/20 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.12),transparent_28%),linear-gradient(180deg,rgba(8,19,34,0.96),rgba(7,14,27,0.96))] p-4 shadow-[0_20px_48px_rgba(0,0,0,0.22)]">
                     <div className="flex items-start justify-between gap-3">
@@ -1462,7 +1479,7 @@ function App() {
                         {registryPassport.trustScore}
                       </div>
                     </div>
-                    <div className="mt-4 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2 xl:grid-cols-4">
+                    <div className="mt-4 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
                       <div className="min-w-0 rounded-xl border border-white/10 bg-white/6 p-3">
                         <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
                           Owner
@@ -1496,10 +1513,7 @@ function App() {
                         </strong>
                       </div>
                     </div>
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                      <p className="m-0 text-xs font-bold text-slate-400">
-                        Registry browser menampilkan satu passport aktif, bukan list panjang tanpa batas.
-                      </p>
+                    <div className="mt-4 flex items-center justify-end gap-3">
                       <button
                         className={ui.primaryButton}
                         type="button"
@@ -1515,7 +1529,7 @@ function App() {
                   </div>
                 )}
                 {paginatedPassports.length > 0 ? (
-                  <div className="grid gap-3 rounded-xl border border-white/12 bg-slate-950/42 p-3">
+                  <div className="grid content-start gap-3 rounded-xl border border-white/12 bg-slate-950/42 p-3">
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <p className={ui.eyebrow}>Result window</p>
@@ -1525,13 +1539,13 @@ function App() {
                         {paginatedPassports.length} cards / page
                       </span>
                     </div>
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-2">
                       {paginatedPassports.map((passport) => {
                         const ListIcon = deviceIcons[passport.category]
                         return (
                           <button
                             className={cx(
-                              'grid min-h-16 w-full grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border p-3 text-left transition',
+                              'grid min-h-14 w-full grid-cols-[34px_minmax(0,1fr)_auto] items-center gap-2 rounded-xl border p-2.5 text-left transition',
                               registryPassport?.id === passport.id
                                 ? 'border-teal-300/30 bg-teal-300/10 text-white'
                                 : 'border-white/12 bg-white/6 text-slate-200 hover:border-teal-300/24 hover:bg-teal-300/8',
@@ -1540,8 +1554,8 @@ function App() {
                             type="button"
                             onClick={() => setSelectedId(passport.id)}
                           >
-                            <span className="grid h-9 w-9 place-items-center rounded-lg border border-teal-300/18 bg-teal-300/8 text-teal-200">
-                              <ListIcon size={17} />
+                            <span className="grid h-8 w-8 place-items-center rounded-lg border border-teal-300/18 bg-teal-300/8 text-teal-200">
+                              <ListIcon size={15} />
                             </span>
                             <span className="min-w-0">
                               <strong className="block overflow-hidden text-ellipsis whitespace-nowrap text-sm">
@@ -1580,57 +1594,6 @@ function App() {
                     </div>
                   </div>
                 ) : null}
-              </div>
-              <div className="mt-4 grid gap-3 rounded-xl border border-white/12 bg-slate-950/42 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className={ui.eyebrow}>Registry health</p>
-                    <h4 className="mt-1 text-sm font-bold text-white">Ringkasan passport</h4>
-                  </div>
-                  <ShieldCheck className="text-teal-100" size={18} />
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="rounded-lg border border-white/12 bg-white/6 p-3">
-                    <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Total</span>
-                    <strong className="mt-1 block text-lg font-bold text-white">{passports.length}</strong>
-                  </div>
-                  <div className="rounded-lg border border-teal-300/18 bg-teal-300/7 p-3">
-                    <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-teal-100/70">Avg trust</span>
-                    <strong className="mt-1 block text-lg font-bold text-teal-100">{registryStats.averageTrust}</strong>
-                  </div>
-                  <div className="rounded-lg border border-white/12 bg-white/6 p-3">
-                    <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Verified</span>
-                    <strong className="mt-1 block text-lg font-bold text-white">{registryStats.verifiedLogs}</strong>
-                  </div>
-                </div>
-                <div className="grid gap-2">
-                  {(['Laptop', 'Phone', 'Camera'] as DeviceCategory[]).map((category) => {
-                    const Icon = deviceIcons[category]
-                    const count = registryStats.categoryCounts[category]
-                    const percent = passports.length > 0 ? Math.round((count / passports.length) * 100) : 0
-
-                    return (
-                      <div className="grid grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-3" key={category}>
-                        <span className="grid h-7 w-7 place-items-center rounded-lg border border-white/12 bg-white/6 text-slate-300">
-                          <Icon size={15} />
-                        </span>
-                        <span className="h-2 overflow-hidden rounded-full bg-white/8">
-                          <span
-                            className="block h-full rounded-full bg-teal-200/70"
-                            style={{ width: `${percent}%` }}
-                          />
-                        </span>
-                        <span className="min-w-16 text-right text-xs font-bold text-slate-400">
-                          {category} {count}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
-                <div className="flex items-center justify-between gap-3 rounded-lg border border-white/12 bg-white/6 px-3 py-2 text-xs font-bold text-slate-300">
-                  <span>Needs review</span>
-                  <strong className="text-white">{registryStats.highRiskCount} passport</strong>
-                </div>
               </div>
             </div>
 
