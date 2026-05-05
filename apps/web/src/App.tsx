@@ -1435,7 +1435,7 @@ function App() {
                   Page {devicePage}/{devicePageCount}
                 </span>
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-2 xl:grid-cols-4">
+              <div className="mt-3 grid grid-cols-2 gap-2 2xl:grid-cols-4">
                 <div className="rounded-xl border border-white/12 bg-white/6 p-3">
                   <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Total</span>
                   <strong className="mt-1 block text-lg font-bold text-white">{passports.length}</strong>
@@ -1453,7 +1453,7 @@ function App() {
                   <strong className="mt-1 block text-lg font-bold text-white">{registryStats.highRiskCount}</strong>
                 </div>
               </div>
-              <div className="mt-4 grid gap-3 xl:grid-cols-[minmax(0,1.08fr)_minmax(280px,0.62fr)]">
+              <div className="mt-4 grid gap-3 2xl:grid-cols-[minmax(0,1.08fr)_minmax(280px,0.62fr)]">
                 {registryPassport ? (
                   <article className="rounded-[22px] border border-teal-300/20 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.12),transparent_28%),linear-gradient(180deg,rgba(8,19,34,0.96),rgba(7,14,27,0.96))] p-4 shadow-[0_20px_48px_rgba(0,0,0,0.22)]">
                     <div className="flex items-start justify-between gap-3">
@@ -1479,7 +1479,7 @@ function App() {
                         {registryPassport.trustScore}
                       </div>
                     </div>
-                    <div className="mt-4 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+                    <div className="mt-4 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-2">
                       <div className="min-w-0 rounded-xl border border-white/10 bg-white/6 p-3">
                         <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
                           Owner
