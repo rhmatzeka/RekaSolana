@@ -397,7 +397,7 @@ function railButtonClass(active: boolean) {
   return cx(
     'relative grid h-12 w-12 place-items-center rounded-2xl border transition',
     active
-      ? 'border-teal-300/42 bg-teal-300/14 text-teal-100 shadow-[0_16px_36px_rgba(20,184,166,0.16)] before:absolute before:-top-3 before:left-1/2 before:h-1 before:w-7 before:-translate-x-1/2 before:rounded-b before:bg-teal-300 before:content-[\'\'] xl:before:-left-4 xl:before:top-1/2 xl:before:h-7 xl:before:w-1 xl:before:-translate-x-0 xl:before:-translate-y-1/2 xl:before:rounded-r'
+      ? 'border-teal-300/42 bg-teal-300/14 text-teal-100 shadow-[0_16px_36px_rgba(20,184,166,0.16)] xl:before:absolute xl:before:-left-4 xl:before:top-1/2 xl:before:h-7 xl:before:w-1 xl:before:-translate-y-1/2 xl:before:rounded-r xl:before:bg-teal-300 xl:before:content-[\'\']'
       : 'border-transparent text-slate-400 hover:border-white/12 hover:bg-white/7 hover:text-teal-100',
   )
 }
