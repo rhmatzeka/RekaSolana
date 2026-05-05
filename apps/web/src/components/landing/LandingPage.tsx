@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   BadgeCheck,
   Camera,
@@ -104,18 +104,99 @@ const footerColumns = [
 export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void }) {
   const [activeFlow, setActiveFlow] = useState(flowTabs[0].id)
   const [navCompact, setNavCompact] = useState(false)
+  const heroRef = useRef<HTMLElement>(null)
+  const currentY = useRef(0)
+  const targetY = useRef(0)
+  const loopId = useRef(0)
   const selectedFlow = flowTabs.find((flow) => flow.id === activeFlow) ?? flowTabs[0]
   const SelectedFlowIcon = selectedFlow.icon
 
+  // GSAP-style lerp: smooth interpolation for buttery motion
+  const lerp = useCallback((a: number, b: number, t: number) => a + (b - a) * t, [])
+
   useEffect(() => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const isMobile = window.innerWidth <= 560
+    const isTablet = window.innerWidth <= 760
+
+    // Parallax multipliers — lighter on smaller screens
+    const bgSpeed = isMobile ? 0 : isTablet ? 0.08 : 0.18
+    const copySpeed = isMobile ? 0 : isTablet ? -0.04 : -0.08
+    const statSpeed = isMobile ? 0 : isTablet ? -0.06 : -0.12
+    const scaleMax = isMobile ? 0 : isTablet ? 0.015 : 0.03
+    const easeFactor = 0.065 // Lower = smoother lag (GSAP-like)
+
     const onScroll = () => {
       setNavCompact(window.scrollY > 24)
+      targetY.current = window.scrollY
     }
 
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
 
-    return () => window.removeEventListener('scroll', onScroll)
+    // Skip parallax loop for reduced-motion or very small mobile
+    if (prefersReduced || isMobile) {
+      return () => window.removeEventListener('scroll', onScroll)
+    }
+
+    const loop = () => {
+      const hero = heroRef.current
+      if (!hero) {
+        loopId.current = requestAnimationFrame(loop)
+        return
+      }
+
+      // Lerp toward target for buttery 60fps motion
+      currentY.current = lerp(currentY.current, targetY.current, easeFactor)
+
+      // Snap when very close to prevent infinite micro-updates
+      if (Math.abs(currentY.current - targetY.current) < 0.5) {
+        currentY.current = targetY.current
+      }
+
+      const heroH = hero.offsetHeight || 1
+      const clamped = Math.min(Math.max(currentY.current, 0), heroH)
+      const ratio = clamped / heroH // 0→1
+
+      hero.style.setProperty('--px-bg', `${clamped * bgSpeed}px`)
+      hero.style.setProperty('--px-copy', `${clamped * copySpeed}px`)
+      hero.style.setProperty('--px-stat', `${clamped * statSpeed}px`)
+      hero.style.setProperty('--px-scale', `${1 + ratio * scaleMax}`)
+      hero.style.setProperty('--px-fade', `${Math.max(1 - ratio * 0.65, 0)}`)
+
+      loopId.current = requestAnimationFrame(loop)
+    }
+
+    loopId.current = requestAnimationFrame(loop)
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(loopId.current)
+    }
+  }, [lerp])
+
+  // IntersectionObserver for section reveal animations
+  useEffect(() => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) return
+
+    const reveals = document.querySelectorAll('[data-reveal]')
+    if (!reveals.length) return
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            ;(e.target as HTMLElement).classList.add('is-revealed')
+            io.unobserve(e.target)
+          }
+        })
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
+    )
+
+    reveals.forEach((el) => io.observe(el))
+    return () => io.disconnect()
   }, [])
 
   return (
@@ -137,7 +218,8 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
         </button>
       </nav>
 
-      <header className="landing-hero">
+      <header className="landing-hero" ref={heroRef}>
+
         <div className="landing-spline-layer" aria-hidden="true">
           <iframe
             src="https://my.spline.design/solanaplanet-VKQMp0fXRjAW7z08NmG8yKlt/"
@@ -176,7 +258,7 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
         </div>
       </header>
 
-      <section className="landing-partners" id="problem">
+      <section className="landing-partners" id="problem" data-reveal>
         <p className="section-micro-label">YANG DICEK SEBELUM BELI DEVICE BEKAS</p>
         <div className="partners-grid">
           {trustSignals.map(({ name, value, icon: Icon }) => (
@@ -189,7 +271,7 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
         </div>
       </section>
 
-      <section className="landing-features" id="features">
+      <section className="landing-features" id="features" data-reveal>
         <div className="features-header">
           <span className="pill-label">REKA MVP</span>
           <h2>Passport publik untuk riwayat perangkat.</h2>
@@ -237,7 +319,7 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
         </div>
       </section>
 
-      <section className="landing-courses" id="flow">
+      <section className="landing-courses" id="flow" data-reveal>
         <div className="courses-header">
           <span className="section-micro-label">DEMO FLOW HACKATHON</span>
           <h2>Buat passport, tambah evidence, transfer owner.</h2>

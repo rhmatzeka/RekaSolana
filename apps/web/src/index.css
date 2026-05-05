@@ -118,10 +118,29 @@
     font-family: Manrope, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
+  .reka-dashboard,
+  .reka-dashboard * {
+    min-width: 0;
+  }
+
+  .reka-dashboard {
+    overflow-x: clip;
+  }
+
   .reka-dashboard h2,
   .reka-dashboard h3 {
     font-family: "Space Grotesk", Manrope, ui-sans-serif, system-ui, sans-serif;
     letter-spacing: 0;
+  }
+
+  .dashboard-content {
+    width: min(100%, 1440px);
+  }
+
+  .dashboard-actions > * {
+    min-width: 0;
+    width: 100%;
+    white-space: nowrap;
   }
 
   .reka-dashboard-scrim {
@@ -218,6 +237,16 @@
   .reka-dashboard small,
   .reka-dashboard time {
     color: rgb(203, 213, 225);
+  }
+
+  .reka-dashboard h2,
+  .reka-dashboard h3,
+  .reka-dashboard h4,
+  .reka-dashboard p,
+  .reka-dashboard small,
+  .reka-dashboard strong,
+  .reka-dashboard span {
+    overflow-wrap: anywhere;
   }
 
   .reka-dashboard a,
@@ -532,44 +561,52 @@
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .reka-dashboard > aside {
-      position: sticky;
-      top: 0;
-      grid-template-columns: auto 1fr auto;
-      grid-template-rows: 1fr;
-      width: 100%;
-      height: auto;
-      min-height: 72px;
-      padding: 0.75rem;
-      border-right: 0;
-      border-bottom: 1px solid rgba(226, 232, 240, 0.12);
-    }
-
-    .reka-dashboard > aside nav {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      overflow-x: auto;
-    }
-
-    .reka-dashboard > aside nav button {
-      width: 44px;
-      height: 44px;
-      flex: 0 0 auto;
-    }
-
-    .reka-dashboard > aside > div:last-child {
-      display: none;
-    }
-
     .reka-dashboard > section {
-      padding: 1rem;
+      padding: 0.85rem 0.85rem calc(env(safe-area-inset-bottom) + 6rem);
+    }
+
+    .dashboard-header h2 {
+      font-size: clamp(1.65rem, 9vw, 2.25rem);
+      line-height: 0.98;
+    }
+
+    .dashboard-actions {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dashboard-actions > * {
+      min-height: 2.5rem;
+      justify-content: center;
+      padding-inline: 0.7rem;
+      font-size: 0.78rem;
+      line-height: 1.15;
+    }
+
+    .reka-dashboard nav[aria-label="Mobile dashboard navigation"] {
+      min-height: 66px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      padding-inline: max(0.45rem, env(safe-area-inset-left));
+      padding-right: max(0.45rem, env(safe-area-inset-right));
+    }
+
+    .reka-dashboard nav[aria-label="Mobile dashboard navigation"] button {
+      width: 100%;
+      max-width: 46px;
+      justify-self: center;
     }
 
   }
 
   @media (max-width: 560px) {
+    .reka-dashboard .passport-hero-panel h3 {
+      font-size: clamp(1.7rem, 10vw, 2.35rem);
+      line-height: 1.02;
+    }
+
+    .reka-dashboard [class*="rounded-"] {
+      border-radius: 0.75rem;
+    }
+
     .reka-passport-page > section {
       padding: 0.85rem;
     }

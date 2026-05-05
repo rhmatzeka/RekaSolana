@@ -78,6 +78,35 @@ type Passport = {
   history: PassportHistory[]
 }
 
+type SharedPassportPayload = {
+  i: string
+  c: DeviceCategory
+  b: string
+  m: string
+  sh: string
+  co: string
+  bh: string
+  ev: string
+  ci: string
+  on: string
+  ow: string
+  vf: string
+  ca: string
+  ts: number
+  hs: Array<{
+    i: string
+    k: HistoryKind
+    t: string
+    n: string
+    v: string
+    d: string
+    sd?: string
+    so?: AttestationSource
+    st?: AttestationStatus
+    tx?: string
+  }>
+}
+
 type SellerDisclosure = {
   status: SellerDisclosureStatus
   sellerName: string
@@ -271,6 +300,9 @@ const kindIcons = {
 
 const storageKey = 'reka-passports-v1'
 const defaultRekaProgramId = 'AkRsKmDKtdwE6A4fU3M56L5mh1UxspS4MqMCCY4sG1Mg'
+const publicSnapshotParam = 'verify'
+const publicViewParam = 'public'
+const publicBaseUrl = import.meta.env.VITE_PUBLIC_BASE_URL?.trim() || ''
 
 function readStoredPassports() {
   try {
@@ -415,11 +447,15 @@ function historyActionTabClass(active: boolean) {
 
 function App() {
   const [boot] = useState(() => {
+    const sharedPassport = readSharedPassportFromLocation()
     const storedPassports = readStoredPassports()
+    const mergedPassports = sharedPassport
+      ? [sharedPassport, ...storedPassports.filter((passport) => passport.id !== sharedPassport.id)]
+      : storedPassports
     return {
-      passports: storedPassports,
-      selectedId: readInitialSelectedId(storedPassports),
-      initialRoute: readInitialRoute(storedPassports),
+      passports: mergedPassports,
+      selectedId: readInitialSelectedId(mergedPassports),
+      initialRoute: readInitialRoute(mergedPassports),
     }
   })
   const [passports, setPassports] = useState<Passport[]>(boot.passports)
@@ -606,9 +642,7 @@ function App() {
     ? getBuyerRisk(selectedPassport)
     : undefined
 
-  const publicUrl = selectedPassport
-    ? `${window.location.origin}/passport/${encodeURIComponent(selectedPassport.id)}`
-    : window.location.href
+  const publicUrl = selectedPassport ? buildPublicPassportUrl(selectedPassport) : window.location.href
   const programStatusText = getProgramStatusText(programStatus)
 
   function navigateTo(route: AppRoute, nextSelectedId = selectedPassport?.id) {
@@ -1071,7 +1105,7 @@ function App() {
   return (
     <main
       className={cx(
-        'reka-dashboard relative isolate grid min-h-screen grid-cols-1 bg-[#050b12] text-slate-100 xl:grid-cols-[88px_minmax(0,1fr)]',
+        'reka-dashboard relative isolate grid min-h-screen grid-cols-1 overflow-x-hidden bg-[#050b12] text-slate-100 xl:grid-cols-[88px_minmax(0,1fr)]',
         activeRoute === 'passport' && 'reka-passport-page',
       )}
     >
@@ -1198,13 +1232,13 @@ function App() {
         </button>
       </nav>
 
-      <section className="relative z-10 mx-auto w-full max-w-[1180px] px-4 pb-24 pt-4 xl:py-4">
-        <header className="mb-4 grid grid-cols-1 items-end justify-between gap-3 xl:grid-cols-[minmax(0,1fr)_auto]">
+      <section className="dashboard-content relative z-10 mx-auto w-full max-w-[1440px] px-3 pb-24 pt-3 sm:px-4 lg:px-5 xl:py-4 2xl:px-6">
+        <header className="dashboard-header mb-4 grid grid-cols-1 items-end justify-between gap-3 xl:grid-cols-[minmax(0,1fr)_auto]">
           <div>
             <p className={ui.eyebrow}>Reka dashboard</p>
             <h2 className="mt-1 text-2xl font-bold leading-none tracking-normal text-white sm:text-3xl">{getRouteTitle(activeRoute)}</h2>
           </div>
-          <div className="flex flex-wrap justify-start gap-2 xl:justify-end">
+          <div className="dashboard-actions grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-start xl:justify-end">
             <button className={ui.secondaryButton} type="button" onClick={connectWallet}>
               <Wallet size={17} />
               {walletAddress ? shortWallet(walletAddress) : 'Connect wallet'}
@@ -1269,7 +1303,7 @@ function App() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-5">
+                  <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
                     <StatTile label="Trust score" value={`${selectedPassport.trustScore}/100`} tone="teal" />
                     <StatTile label="Condition" value={selectedPassport.condition} tone="amber" />
                     <StatTile label="Verified logs" value={`${verifiedHistoryCount}/${selectedPassport.history.length}`} tone="indigo" />
@@ -1362,7 +1396,12 @@ function App() {
                   <ScanLine className="text-teal-700" size={22} />
                 </div>
                 <div className="grid justify-items-center gap-3 rounded-lg border border-white/12 bg-slate-950/48 p-3">
-                  <QRCodeCanvas className="h-32! w-32! rounded-lg bg-white" value={publicUrl} size={128} marginSize={2} />
+                  <QRCodeCanvas
+                    className="h-44! w-44! rounded-lg bg-white p-2"
+                    value={publicUrl}
+                    size={176}
+                    marginSize={2}
+                  />
                   <span className="max-w-full break-words rounded-lg border border-white/10 bg-white/7 px-3 py-2 text-center text-xs font-extrabold text-slate-200">{selectedPassport.id}</span>
                 </div>
                 <button className={cx(ui.primaryButton, 'w-full')} type="button" onClick={copyPublicUrl}>
@@ -1375,7 +1414,7 @@ function App() {
         ) : null}
 
         {activeRoute === 'devices' ? (
-          <section className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(310px,0.72fr)_minmax(0,1fr)]">
+          <section className="grid grid-cols-1 items-start gap-4 2xl:grid-cols-[minmax(420px,0.78fr)_minmax(0,1fr)]">
             <div className={ui.panel}>
               <div className={ui.panelHeading}>
                 <div>
@@ -1453,11 +1492,11 @@ function App() {
                   <strong className="mt-1 block text-lg font-bold text-white">{registryStats.highRiskCount}</strong>
                 </div>
               </div>
-              <div className="mt-4 grid gap-3 2xl:grid-cols-[minmax(0,1.08fr)_minmax(280px,0.62fr)]">
+              <div className="mt-4 grid gap-3 2xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.72fr)]">
                 {registryPassport ? (
                   <article className="rounded-[22px] border border-teal-300/20 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.12),transparent_28%),linear-gradient(180deg,rgba(8,19,34,0.96),rgba(7,14,27,0.96))] p-4 shadow-[0_20px_48px_rgba(0,0,0,0.22)]">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="grid gap-3">
+                      <div className="grid min-w-0 gap-3">
                         <div className="flex flex-wrap gap-2">
                           <span className="rounded-full border border-teal-300/20 bg-teal-300/10 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-teal-100">
                             {registryPassport.category}
@@ -1475,52 +1514,41 @@ function App() {
                           </p>
                         </div>
                       </div>
-                      <div className="grid h-14 w-14 place-items-center rounded-2xl border border-teal-300/18 bg-teal-300/8 text-lg font-extrabold text-teal-100">
-                        {registryPassport.trustScore}
+                      <div className="grid shrink-0 gap-2 justify-items-end">
+                        <div className="grid h-14 w-14 place-items-center rounded-2xl border border-teal-300/18 bg-teal-300/8 text-lg font-extrabold text-teal-100">
+                          {registryPassport.trustScore}
+                        </div>
+                        <button
+                          className={ui.primaryButton}
+                          type="button"
+                          onClick={() => navigateTo('passport', registryPassport.id)}
+                        >
+                          Open passport
+                        </button>
                       </div>
                     </div>
-                    <div className="mt-4 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-2">
-                      <div className="min-w-0 rounded-xl border border-white/10 bg-white/6 p-3">
-                        <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
-                          Owner
-                        </span>
-                        <strong className="mt-1 block text-base leading-tight text-white">
-                          {registryPassport.ownerName}
-                        </strong>
-                      </div>
-                      <div className="min-w-0 rounded-xl border border-white/10 bg-white/6 p-3">
-                        <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
-                          Wallet
-                        </span>
-                        <strong className="mt-1 block text-base leading-tight text-white">
-                          {shortWallet(registryPassport.ownerWallet)}
-                        </strong>
-                      </div>
-                      <div className="min-w-0 rounded-xl border border-white/10 bg-white/6 p-3">
-                        <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
-                          Verifier
-                        </span>
-                        <strong className="mt-1 block text-base leading-tight text-white">
-                          {registryPassport.verifier}
-                        </strong>
-                      </div>
-                      <div className="min-w-0 rounded-xl border border-white/10 bg-white/6 p-3">
-                        <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
-                          Created
-                        </span>
-                        <strong className="mt-1 block text-base leading-tight text-white">
-                          {registryPassport.createdAt}
-                        </strong>
-                      </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {[
+                        ['Owner', registryPassport.ownerName],
+                        ['Wallet', shortWallet(registryPassport.ownerWallet)],
+                        ['Verifier', registryPassport.verifier],
+                        ['Created', registryPassport.createdAt],
+                      ].map(([label, value]) => (
+                        <div
+                          key={label}
+                          className="min-w-0 rounded-full border border-white/10 bg-white/6 px-3 py-2"
+                        >
+                          <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
+                            {label}
+                          </span>
+                          <strong className="mt-0.5 block text-sm leading-tight text-white">
+                            {value}
+                          </strong>
+                        </div>
+                      ))}
                     </div>
-                    <div className="mt-4 flex items-center justify-end gap-3">
-                      <button
-                        className={ui.primaryButton}
-                        type="button"
-                        onClick={() => navigateTo('passport', registryPassport.id)}
-                      >
-                        Open passport
-                      </button>
+                    <div className="mt-3 text-xs font-bold text-slate-400">
+                      Pilih passport aktif di result window, lalu buka detail penuh hanya saat dibutuhkan.
                     </div>
                   </article>
                 ) : (
@@ -1535,11 +1563,31 @@ function App() {
                         <p className={ui.eyebrow}>Result window</p>
                         <h4 className="mt-1 text-sm font-bold text-white">Pilih passport aktif</h4>
                       </div>
-                      <span className="text-xs font-bold text-slate-400">
-                        {paginatedPassports.length} cards / page
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-slate-400">
+                          {paginatedPassports.length} cards / page
+                        </span>
+                        <button
+                          className={ui.secondaryButton}
+                          type="button"
+                          disabled={devicePage <= 1}
+                          onClick={() => setDevicePage((current) => Math.max(1, current - 1))}
+                        >
+                          Prev
+                        </button>
+                        <button
+                          className={ui.secondaryButton}
+                          type="button"
+                          disabled={devicePage >= devicePageCount}
+                          onClick={() =>
+                            setDevicePage((current) => Math.min(devicePageCount, current + 1))
+                          }
+                        >
+                          Next
+                        </button>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-1 gap-2">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3">
                       {paginatedPassports.map((passport) => {
                         const ListIcon = deviceIcons[passport.category]
                         return (
@@ -1571,26 +1619,6 @@ function App() {
                           </button>
                         )
                       })}
-                    </div>
-                    <div className="flex items-center justify-between gap-3">
-                      <button
-                        className={ui.secondaryButton}
-                        type="button"
-                        disabled={devicePage <= 1}
-                        onClick={() => setDevicePage((current) => Math.max(1, current - 1))}
-                      >
-                        Prev
-                      </button>
-                      <button
-                        className={ui.secondaryButton}
-                        type="button"
-                        disabled={devicePage >= devicePageCount}
-                        onClick={() =>
-                          setDevicePage((current) => Math.min(devicePageCount, current + 1))
-                        }
-                      >
-                        Next
-                      </button>
                     </div>
                   </div>
                 ) : null}
@@ -1784,7 +1812,7 @@ function App() {
               </div>
             </div>
 
-            <div className={cx(ui.panel, 'sticky top-6 grid gap-4 self-start')}>
+            <div className={cx(ui.panel, 'grid gap-4 self-start xl:sticky xl:top-6')}>
               <div className="grid grid-cols-3 gap-2 rounded-xl border border-white/12 bg-slate-950/48 p-1">
                 <button
                   className={historyActionTabClass(activeHistoryAction === 'disclosure')}
@@ -2274,6 +2302,25 @@ function getHistoryConfidence(passport: Passport) {
   }
 }
 
+function readSharedPassportFromLocation() {
+  try {
+    const params = new URLSearchParams(window.location.search)
+    const snapshot = params.get(publicSnapshotParam)
+    if (!snapshot) return undefined
+
+    const decoded = decodeBase64Url(snapshot)
+    const parsed = JSON.parse(decoded) as SharedPassportPayload
+
+    if (!parsed?.i || !parsed?.b || !parsed?.m || !Array.isArray(parsed.hs)) {
+      return undefined
+    }
+
+    return deserializeSharedPassport(parsed)
+  } catch {
+    return undefined
+  }
+}
+
 function getSellerDisclosure(passport: Passport): SellerDisclosure {
   return (
     passport.sellerDisclosure ?? {
@@ -2511,6 +2558,96 @@ function getSerialHashSuffix(value: string) {
   if (!value) return 'Hash unavailable'
   const normalized = value.startsWith('sha256:') ? value.slice(7) : value
   return `Hash ...${normalized.slice(-6)}`
+}
+
+function buildPublicPassportUrl(passport: Passport) {
+  const base = (publicBaseUrl || window.location.origin).replace(/\/+$/, '')
+  const url = new URL(`${base}/passport/${encodeURIComponent(passport.id)}`)
+  url.searchParams.set(publicViewParam, '1')
+  url.searchParams.set(
+    publicSnapshotParam,
+    encodeBase64Url(JSON.stringify(serializeSharedPassport(passport))),
+  )
+  return url.toString()
+}
+
+function serializeSharedPassport(passport: Passport): SharedPassportPayload {
+  return {
+    i: passport.id,
+    c: passport.category,
+    b: passport.brand,
+    m: passport.model,
+    sh: passport.serialHash,
+    co: passport.condition,
+    bh: passport.batteryHealth,
+    ev: passport.estimatedValue,
+    ci: passport.city,
+    on: passport.ownerName,
+    ow: passport.ownerWallet,
+    vf: passport.verifier,
+    ca: passport.createdAt,
+    ts: passport.trustScore,
+    hs: passport.history.slice(0, 4).map((item) => ({
+      i: item.id,
+      k: item.kind,
+      t: item.title.slice(0, 72),
+      n: item.notes.slice(0, 120),
+      v: item.verifier,
+      d: item.date,
+      sd: item.serviceDate,
+      so: item.source,
+      st: item.status,
+      tx: item.txSignature,
+    })),
+  }
+}
+
+function deserializeSharedPassport(payload: SharedPassportPayload): Passport {
+  return {
+    id: payload.i,
+    category: payload.c,
+    brand: payload.b,
+    model: payload.m,
+    serialHash: payload.sh,
+    condition: payload.co,
+    batteryHealth: payload.bh,
+    estimatedValue: payload.ev,
+    city: payload.ci,
+    ownerName: payload.on,
+    ownerWallet: payload.ow,
+    verifier: payload.vf,
+    createdAt: payload.ca,
+    trustScore: payload.ts,
+    history: payload.hs.map((item) => ({
+      id: item.i,
+      kind: item.k,
+      title: item.t,
+      notes: item.n,
+      verifier: item.v,
+      date: item.d,
+      serviceDate: item.sd,
+      source: item.so,
+      status: item.st,
+      txSignature: item.tx,
+    })),
+  }
+}
+
+function encodeBase64Url(value: string) {
+  const bytes = new TextEncoder().encode(value)
+  let binary = ''
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte)
+  })
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+}
+
+function decodeBase64Url(value: string) {
+  const normalized = value.replace(/-/g, '+').replace(/_/g, '/')
+  const padding = normalized.length % 4 === 0 ? '' : '='.repeat(4 - (normalized.length % 4))
+  const binary = atob(`${normalized}${padding}`)
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0))
+  return new TextDecoder().decode(bytes)
 }
 
 function getProgramStatusText(status: ProgramStatus) {
