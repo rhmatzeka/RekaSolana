@@ -24,10 +24,11 @@
 
 .landing-spline-layer {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: -10rem;
+  bottom: -5rem;
   left: 50%;
-  width: 100vw;
+  width: 132vw;
+  min-width: 110rem;
   transform: translateX(-50%);
   z-index: 0;
   overflow: hidden;
@@ -53,8 +54,8 @@
   width: 100%;
   height: 100%;
   border: 0;
-  transform: translateY(-7%) scale(1.04);
-  transform-origin: center;
+  transform: translateY(-6%) scale(1.02);
+  transform-origin: center 37%;
   filter: saturate(1.18) brightness(0.96) contrast(1.08);
 }
 
@@ -259,9 +260,9 @@
   justify-items: center;
   gap: 0;
   max-width: 72rem;
-  min-height: calc(100svh - 7.5rem);
+  min-height: calc(100svh - 5rem);
   margin: 0 auto;
-  padding: clamp(7rem, 12vh, 8.5rem) 2rem 4rem;
+  padding: clamp(7rem, 12vh, 8.5rem) 2rem 6rem;
   overflow: visible;
 }
 
