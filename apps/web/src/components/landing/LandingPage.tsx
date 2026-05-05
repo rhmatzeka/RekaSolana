@@ -140,7 +140,7 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
       <header className="landing-hero">
         <div className="landing-spline-layer" aria-hidden="true">
           <iframe
-            src="https://my.spline.design/particles-S7iH5PcR811jbjOUVq0Qn3C8/"
+            src="https://my.spline.design/solanaplanet-VKQMp0fXRjAW7z08NmG8yKlt/"
             frameBorder="0"
             width="100%"
             height="100%"

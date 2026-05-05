@@ -24,6 +24,7 @@ The product is designed for the RWA and Consumer Apps tracks:
 ## MVP Features
 
 - Landing page for the product story, problem, solution, and demo entry point.
+- Interactive landing hero with Spline 3D background.
 - Dashboard for device passports.
 - Create a passport for a laptop, phone, or camera.
 - Hash serial number or IMEI locally before storing it.
@@ -37,6 +38,8 @@ The product is designed for the RWA and Consumer Apps tracks:
 - Let buyers flag possible hidden repair history as a disputed timeline entry.
 - Transfer passport ownership after resale.
 - Generate a public QR verification link.
+- Open a public verify route from the QR link, even when the viewer does not
+  already have local browser state for that passport.
 - Write create, update, and transfer transactions to the Reka Anchor program on Solana Devnet.
 
 ## Smart Contract
@@ -119,6 +122,16 @@ anchor deploy --provider.cluster devnet
 8. Try the hidden-repair dispute action to show how missing history is flagged.
 9. Transfer the passport to a new owner.
 10. Scan or share the QR verification link.
+
+## Current UI Notes
+
+- The landing hero uses an interactive Spline scene as the background layer.
+- The device registry is search-first and selection-based, not an infinite
+  public list of every device.
+- Registry cards use passport ID and hash suffix as public identifiers instead
+  of exposing raw IMEI values.
+- Mobile navigation is reduced to the core app sections to avoid crowded bottom
+  navigation.
 
 ## Local Development
 
