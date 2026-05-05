@@ -275,11 +275,11 @@
 .landing-hero::after {
   position: absolute;
   right: auto;
-  bottom: -8rem;
+  bottom: -13rem;
   left: 50%;
   z-index: 1;
   width: 100vw;
-  height: clamp(18rem, 34vh, 28rem);
+  height: clamp(24rem, 42vh, 34rem);
   pointer-events: none;
   content: "";
   transform: translateX(-50%);
@@ -289,9 +289,9 @@
     linear-gradient(
       180deg,
       rgba(5, 8, 13, 0) 0%,
-      rgba(5, 8, 13, 0.18) 20%,
-      rgba(5, 8, 13, 0.56) 50%,
-      rgba(4, 8, 14, 0.88) 78%,
+      rgba(5, 8, 13, 0.22) 16%,
+      rgba(5, 8, 13, 0.62) 46%,
+      rgba(4, 8, 14, 0.92) 76%,
       #03070d 100%
     );
 }
@@ -635,13 +635,38 @@
 
 .landing-partners {
   position: relative;
-  padding: 3.4rem 2.5rem 3rem;
+  isolation: isolate;
+  margin-top: -1px;
+  padding: 4.9rem 2.5rem 3rem;
   text-align: center;
-  border-top: 1px solid rgba(226, 232, 240, 0.08);
+  border-top: 0;
   border-bottom: 1px solid var(--border);
   background:
-    linear-gradient(180deg, rgba(3, 7, 13, 0.12), rgba(3, 6, 9, 0.34) 44%, rgba(3, 6, 9, 0.28)),
-    radial-gradient(ellipse at 50% 0%, rgba(34, 211, 238, 0.06), transparent 52%);
+    linear-gradient(180deg, rgba(3, 7, 13, 0.52), rgba(3, 6, 9, 0.36) 46%, rgba(3, 6, 9, 0.28)),
+    radial-gradient(ellipse at 50% 0%, rgba(34, 211, 238, 0.08), transparent 58%);
+}
+
+.landing-partners::before {
+  position: absolute;
+  top: -18rem;
+  left: 50%;
+  z-index: -1;
+  width: 100vw;
+  height: 22rem;
+  pointer-events: none;
+  content: "";
+  transform: translateX(-50%);
+  background:
+    radial-gradient(ellipse at 50% 28%, rgba(81, 41, 175, 0.18), transparent 44%),
+    radial-gradient(ellipse at 50% 56%, rgba(34, 211, 238, 0.09), transparent 54%),
+    linear-gradient(
+      180deg,
+      rgba(3, 7, 13, 0) 0%,
+      rgba(3, 7, 13, 0.34) 24%,
+      rgba(3, 7, 13, 0.78) 58%,
+      rgba(3, 7, 13, 0.96) 82%,
+      rgba(3, 7, 13, 1) 100%
+    );
 }
 
 .section-micro-label {
