@@ -113,6 +113,8 @@ type FormState = {
   verifier: string
 }
 
+type DeviceRegistrySort = 'recent' | 'trust' | 'brand'
+
 type SolanaProvider = {
   isPhantom?: boolean
   publicKey?: PublicKey
@@ -425,6 +427,9 @@ function App() {
   const [activeRoute, setActiveRoute] = useState<AppRoute>(boot.initialRoute)
   const [activeHistoryAction, setActiveHistoryAction] = useState<HistoryActionTab>('disclosure')
   const [query, setQuery] = useState('')
+  const [deviceCategoryFilter, setDeviceCategoryFilter] = useState<'All' | DeviceCategory>('All')
+  const [deviceSort, setDeviceSort] = useState<DeviceRegistrySort>('recent')
+  const [devicePage, setDevicePage] = useState(1)
   const [form, setForm] = useState<FormState>(blankForm)
   const [historyForm, setHistoryForm] = useState({
     kind: 'Inspection' as HistoryKind,
@@ -499,24 +504,87 @@ function App() {
 
   const filteredPassports = useMemo(() => {
     const term = query.trim().toLowerCase()
-    if (!term) return passports
-    return passports.filter((passport) =>
-      [
-        passport.id,
-        passport.brand,
-        passport.model,
-        passport.city,
-        passport.ownerName,
-        passport.serialHash,
-      ]
-        .join(' ')
-        .toLowerCase()
-        .includes(term),
+    const matches = passports.filter((passport) => {
+      const matchesCategory =
+        deviceCategoryFilter === 'All' || passport.category === deviceCategoryFilter
+      const matchesQuery =
+        !term ||
+        [
+          passport.id,
+          passport.brand,
+          passport.model,
+          passport.city,
+          passport.ownerName,
+          passport.ownerWallet,
+          passport.serialHash,
+          passport.verifier,
+        ]
+          .join(' ')
+          .toLowerCase()
+          .includes(term)
+
+      return matchesCategory && matchesQuery
+    })
+
+    return [...matches].sort((left, right) => {
+      if (deviceSort === 'trust') return right.trustScore - left.trustScore
+      if (deviceSort === 'brand') {
+        return `${left.brand} ${left.model}`.localeCompare(`${right.brand} ${right.model}`)
+      }
+      return right.createdAt.localeCompare(left.createdAt)
+    })
+  }, [deviceCategoryFilter, deviceSort, passports, query])
+
+  const devicesPerPage = 4
+  const devicePageCount = Math.max(1, Math.ceil(filteredPassports.length / devicesPerPage))
+  const paginatedPassports = useMemo(() => {
+    const start = (devicePage - 1) * devicesPerPage
+    return filteredPassports.slice(start, start + devicesPerPage)
+  }, [devicePage, filteredPassports])
+
+  useEffect(() => {
+    setDevicePage(1)
+  }, [deviceCategoryFilter, deviceSort, query])
+
+  useEffect(() => {
+    if (devicePage > devicePageCount) {
+      setDevicePage(devicePageCount)
+    }
+  }, [devicePage, devicePageCount])
+
+  const registryStats = useMemo(() => {
+    const categoryCounts = passports.reduce<Record<DeviceCategory, number>>(
+      (counts, passport) => ({
+        ...counts,
+        [passport.category]: counts[passport.category] + 1,
+      }),
+      { Laptop: 0, Phone: 0, Camera: 0 },
     )
-  }, [passports, query])
+    const verifiedLogs = passports.reduce(
+      (count, passport) =>
+        count +
+        passport.history.filter((item) => getAttestationStatus(item) === 'Verified').length,
+      0,
+    )
+    const averageTrust =
+      passports.length > 0
+        ? Math.round(
+            passports.reduce((total, passport) => total + passport.trustScore, 0) /
+              passports.length,
+          )
+        : 0
+    const highRiskCount = passports.filter((passport) => getBuyerRisk(passport).level === 'High')
+      .length
+
+    return { averageTrust, categoryCounts, highRiskCount, verifiedLogs }
+  }, [passports])
 
   const selectedPassport =
     passports.find((passport) => passport.id === selectedId) ?? passports[0]
+  const registryPassport =
+    filteredPassports.find((passport) => passport.id === selectedId) ??
+    paginatedPassports[0] ??
+    passports[0]
   const verifiedHistoryCount = selectedPassport
     ? selectedPassport.history.filter(
         (item) => (item.status ?? (item.txSignature ? 'Verified' : 'Pending')) === 'Verified',
@@ -1078,20 +1146,14 @@ function App() {
             <Settings size={22} />
           </button>
         </nav>
-        <div className="grid justify-items-center gap-3 text-xs font-bold text-slate-400">
-          <span className="tracking-wide">Profile</span>
-          <button className="relative h-8 w-14 rounded-full border border-white/12 bg-white/10 shadow-inner shadow-black/20" type="button" onClick={connectWallet} aria-label="Connect wallet">
-            <span className="absolute right-1 top-1 h-6 w-6 rounded-full bg-teal-200 shadow-[0_0_18px_rgba(153,246,228,0.55)]" />
-          </button>
-        </div>
       </aside>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-50 flex min-h-16 items-center gap-2 overflow-x-auto border-t border-white/10 bg-slate-950/92 px-3 py-3 shadow-[0_-18px_50px_rgba(0,0,0,0.28)] backdrop-blur-2xl xl:hidden"
+        className="fixed inset-x-0 bottom-0 z-50 grid min-h-[72px] grid-cols-5 items-center justify-items-center gap-1.5 border-t border-white/10 bg-slate-950/92 px-2 py-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] shadow-[0_-18px_50px_rgba(0,0,0,0.28)] backdrop-blur-2xl xl:hidden"
         aria-label="Mobile dashboard navigation"
       >
         <button
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-teal-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.22),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] text-teal-100 shadow-[0_14px_34px_rgba(0,0,0,0.24)]"
+          className="grid h-11 w-full max-w-[46px] min-w-0 place-items-center rounded-xl border border-teal-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(94,234,212,0.22),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] text-teal-100 shadow-[0_14px_34px_rgba(0,0,0,0.24)]"
           type="button"
           onClick={() => navigateTo('home')}
           aria-label="Reka home"
@@ -1099,7 +1161,7 @@ function App() {
           <Fingerprint size={24} strokeWidth={2.4} />
         </button>
         <button
-          className={cx(railButtonClass(activeRoute === 'passport'), 'shrink-0')}
+          className={cx(railButtonClass(activeRoute === 'passport'), 'h-11 w-full max-w-[46px] min-w-0 justify-self-center rounded-xl')}
           type="button"
           aria-label="Passport"
           aria-current={activeRoute === 'passport' ? 'page' : undefined}
@@ -1108,7 +1170,7 @@ function App() {
           <Wallet size={22} />
         </button>
         <button
-          className={cx(railButtonClass(activeRoute === 'devices'), 'shrink-0')}
+          className={cx(railButtonClass(activeRoute === 'devices'), 'h-11 w-full max-w-[46px] min-w-0 justify-self-center rounded-xl')}
           type="button"
           aria-label="Devices"
           aria-current={activeRoute === 'devices' ? 'page' : undefined}
@@ -1117,7 +1179,7 @@ function App() {
           <Laptop size={22} />
         </button>
         <button
-          className={cx(railButtonClass(activeRoute === 'history'), 'shrink-0')}
+          className={cx(railButtonClass(activeRoute === 'history'), 'h-11 w-full max-w-[46px] min-w-0 justify-self-center rounded-xl')}
           type="button"
           aria-label="History"
           aria-current={activeRoute === 'history' ? 'page' : undefined}
@@ -1126,31 +1188,13 @@ function App() {
           <FileClock size={22} />
         </button>
         <button
-          className={cx(railButtonClass(activeRoute === 'verifier'), 'shrink-0')}
-          type="button"
-          aria-label="Verifier"
-          aria-current={activeRoute === 'verifier' ? 'page' : undefined}
-          onClick={() => handleRouteAction('verifier')}
-        >
-          <ShieldCheck size={22} />
-        </button>
-        <button
-          className={cx(railButtonClass(activeRoute === 'transfer'), 'shrink-0')}
+          className={cx(railButtonClass(activeRoute === 'transfer'), 'h-11 w-full max-w-[46px] min-w-0 justify-self-center rounded-xl')}
           type="button"
           aria-label="Transfer"
           aria-current={activeRoute === 'transfer' ? 'page' : undefined}
           onClick={() => handleRouteAction('transfer')}
         >
           <UserRoundCheck size={22} />
-        </button>
-        <button
-          className={cx(railButtonClass(activeRoute === 'settings'), 'shrink-0')}
-          type="button"
-          aria-label="Settings"
-          aria-current={activeRoute === 'settings' ? 'page' : undefined}
-          onClick={() => handleRouteAction('settings')}
-        >
-          <Settings size={22} />
         </button>
       </nav>
 
@@ -1336,9 +1380,13 @@ function App() {
               <div className={ui.panelHeading}>
                 <div>
                   <p className={ui.eyebrow}>Device registry</p>
-                  <h3>Passport tersimpan</h3>
+                  <h3>Searchable passport registry</h3>
                 </div>
                 <Search className="text-teal-700" size={20} />
+              </div>
+              <div className="mb-3 rounded-xl border border-teal-300/14 bg-teal-300/6 px-3 py-2 text-xs font-bold text-slate-300">
+                Registry publik seharusnya dicari, difilter, dan dipaginasi. Judul device tetap untuk
+                keterbacaan, tetapi identitas uniknya memakai passport ID dan hash suffix, bukan IMEI mentah.
               </div>
               <label className="flex h-11 items-center gap-2 rounded-xl border border-white/12 bg-slate-950/72 px-3 text-slate-400">
                 <Search size={18} />
@@ -1347,35 +1395,242 @@ function App() {
                   ref={searchInputRef}
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Cari device, owner, kota"
+                  placeholder="Cari passport ID, hash, owner, verifier, kota"
                 />
               </label>
+              <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                <label className="grid gap-2 text-[11px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
+                  Category
+                  <select
+                    className={ui.input}
+                    value={deviceCategoryFilter}
+                    onChange={(event) =>
+                      setDeviceCategoryFilter(event.target.value as 'All' | DeviceCategory)
+                    }
+                  >
+                    <option>All</option>
+                    <option>Laptop</option>
+                    <option>Phone</option>
+                    <option>Camera</option>
+                  </select>
+                </label>
+                <label className="grid gap-2 text-[11px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
+                  Sort
+                  <select
+                    className={ui.input}
+                    value={deviceSort}
+                    onChange={(event) => setDeviceSort(event.target.value as DeviceRegistrySort)}
+                  >
+                    <option value="recent">Most recent</option>
+                    <option value="trust">Highest trust</option>
+                    <option value="brand">Brand / model</option>
+                  </select>
+                </label>
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-white/12 bg-slate-950/42 px-3 py-2 text-xs font-bold text-slate-300">
+                <span>
+                  Showing {filteredPassports.length === 0 ? 0 : (devicePage - 1) * devicesPerPage + 1}-
+                  {Math.min(devicePage * devicesPerPage, filteredPassports.length)} of {filteredPassports.length}
+                </span>
+                <span>
+                  Page {devicePage}/{devicePageCount}
+                </span>
+              </div>
               <div className="mt-4 grid gap-3">
-                {filteredPassports.map((passport) => {
-                  const ListIcon = deviceIcons[passport.category]
-                  return (
-                    <button
-                      className={cx(
-                        'grid min-h-16 w-full grid-cols-[42px_minmax(0,1fr)_42px] items-center gap-3 rounded-xl border p-3 text-left text-white transition',
-                        passport.id === selectedPassport.id
-                          ? 'border-teal-300/30 bg-teal-300/10'
-                          : 'border-white/12 bg-white/7 hover:border-teal-300/30 hover:bg-teal-300/10',
-                      )}
-                      key={passport.id}
-                      type="button"
-                      onClick={() => navigateTo('passport', passport.id)}
-                    >
-                        <span className="grid h-10 w-10 place-items-center rounded-xl border border-teal-300/20 bg-teal-300/10 text-teal-200">
-                        <ListIcon size={18} />
+                {registryPassport ? (
+                  <article className="rounded-[22px] border border-teal-300/20 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.12),transparent_28%),linear-gradient(180deg,rgba(8,19,34,0.96),rgba(7,14,27,0.96))] p-4 shadow-[0_20px_48px_rgba(0,0,0,0.22)]">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="grid gap-3">
+                        <div className="flex flex-wrap gap-2">
+                          <span className="rounded-full border border-teal-300/20 bg-teal-300/10 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-teal-100">
+                            {registryPassport.category}
+                          </span>
+                          <span className="rounded-full border border-white/12 bg-white/7 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-slate-300">
+                            {registryPassport.id}
+                          </span>
+                        </div>
+                        <div>
+                          <h4 className="m-0 text-xl font-bold text-white">
+                            {registryPassport.brand} {registryPassport.model}
+                          </h4>
+                          <p className="m-0 mt-1 text-sm font-semibold text-slate-400">
+                            {getSerialHashSuffix(registryPassport.serialHash)} • {registryPassport.city}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="grid h-14 w-14 place-items-center rounded-2xl border border-teal-300/18 bg-teal-300/8 text-lg font-extrabold text-teal-100">
+                        {registryPassport.trustScore}
+                      </div>
+                    </div>
+                    <div className="mt-4 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2 xl:grid-cols-4">
+                      <div className="min-w-0 rounded-xl border border-white/10 bg-white/6 p-3">
+                        <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
+                          Owner
+                        </span>
+                        <strong className="mt-1 block text-base leading-tight text-white">
+                          {registryPassport.ownerName}
+                        </strong>
+                      </div>
+                      <div className="min-w-0 rounded-xl border border-white/10 bg-white/6 p-3">
+                        <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
+                          Wallet
+                        </span>
+                        <strong className="mt-1 block text-base leading-tight text-white">
+                          {shortWallet(registryPassport.ownerWallet)}
+                        </strong>
+                      </div>
+                      <div className="min-w-0 rounded-xl border border-white/10 bg-white/6 p-3">
+                        <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
+                          Verifier
+                        </span>
+                        <strong className="mt-1 block text-base leading-tight text-white">
+                          {registryPassport.verifier}
+                        </strong>
+                      </div>
+                      <div className="min-w-0 rounded-xl border border-white/10 bg-white/6 p-3">
+                        <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
+                          Created
+                        </span>
+                        <strong className="mt-1 block text-base leading-tight text-white">
+                          {registryPassport.createdAt}
+                        </strong>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                      <p className="m-0 text-xs font-bold text-slate-400">
+                        Registry browser menampilkan satu passport aktif, bukan list panjang tanpa batas.
+                      </p>
+                      <button
+                        className={ui.primaryButton}
+                        type="button"
+                        onClick={() => navigateTo('passport', registryPassport.id)}
+                      >
+                        Open passport
+                      </button>
+                    </div>
+                  </article>
+                ) : (
+                  <div className="rounded-xl border border-dashed border-white/12 bg-slate-950/42 p-4 text-sm font-semibold text-slate-400">
+                    Tidak ada passport yang cocok dengan filter saat ini.
+                  </div>
+                )}
+                {paginatedPassports.length > 0 ? (
+                  <div className="grid gap-3 rounded-xl border border-white/12 bg-slate-950/42 p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className={ui.eyebrow}>Result window</p>
+                        <h4 className="mt-1 text-sm font-bold text-white">Pilih passport aktif</h4>
+                      </div>
+                      <span className="text-xs font-bold text-slate-400">
+                        {paginatedPassports.length} cards / page
                       </span>
-                      <span>
-                        <strong className="block overflow-hidden text-ellipsis whitespace-nowrap">{passport.brand} {passport.model}</strong>
-                        <small className="block overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-400">{passport.ownerName} - {passport.city}</small>
-                      </span>
-                      <em className="grid h-9 place-items-center rounded-xl border border-teal-300/18 bg-teal-300/8 text-sm font-extrabold not-italic text-teal-100">{passport.trustScore}</em>
-                    </button>
-                  )
-                })}
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {paginatedPassports.map((passport) => {
+                        const ListIcon = deviceIcons[passport.category]
+                        return (
+                          <button
+                            className={cx(
+                              'grid min-h-16 w-full grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border p-3 text-left transition',
+                              registryPassport?.id === passport.id
+                                ? 'border-teal-300/30 bg-teal-300/10 text-white'
+                                : 'border-white/12 bg-white/6 text-slate-200 hover:border-teal-300/24 hover:bg-teal-300/8',
+                            )}
+                            key={passport.id}
+                            type="button"
+                            onClick={() => setSelectedId(passport.id)}
+                          >
+                            <span className="grid h-9 w-9 place-items-center rounded-lg border border-teal-300/18 bg-teal-300/8 text-teal-200">
+                              <ListIcon size={17} />
+                            </span>
+                            <span className="min-w-0">
+                              <strong className="block overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+                                {passport.id}
+                              </strong>
+                              <small className="block overflow-hidden text-ellipsis whitespace-nowrap text-xs text-slate-400">
+                                {passport.brand} {passport.model}
+                              </small>
+                            </span>
+                            <em className="not-italic text-xs font-extrabold text-teal-100">
+                              {passport.trustScore}
+                            </em>
+                          </button>
+                        )
+                      })}
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <button
+                        className={ui.secondaryButton}
+                        type="button"
+                        disabled={devicePage <= 1}
+                        onClick={() => setDevicePage((current) => Math.max(1, current - 1))}
+                      >
+                        Prev
+                      </button>
+                      <button
+                        className={ui.secondaryButton}
+                        type="button"
+                        disabled={devicePage >= devicePageCount}
+                        onClick={() =>
+                          setDevicePage((current) => Math.min(devicePageCount, current + 1))
+                        }
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+              <div className="mt-4 grid gap-3 rounded-xl border border-white/12 bg-slate-950/42 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className={ui.eyebrow}>Registry health</p>
+                    <h4 className="mt-1 text-sm font-bold text-white">Ringkasan passport</h4>
+                  </div>
+                  <ShieldCheck className="text-teal-100" size={18} />
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="rounded-lg border border-white/12 bg-white/6 p-3">
+                    <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Total</span>
+                    <strong className="mt-1 block text-lg font-bold text-white">{passports.length}</strong>
+                  </div>
+                  <div className="rounded-lg border border-teal-300/18 bg-teal-300/7 p-3">
+                    <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-teal-100/70">Avg trust</span>
+                    <strong className="mt-1 block text-lg font-bold text-teal-100">{registryStats.averageTrust}</strong>
+                  </div>
+                  <div className="rounded-lg border border-white/12 bg-white/6 p-3">
+                    <span className="block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Verified</span>
+                    <strong className="mt-1 block text-lg font-bold text-white">{registryStats.verifiedLogs}</strong>
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  {(['Laptop', 'Phone', 'Camera'] as DeviceCategory[]).map((category) => {
+                    const Icon = deviceIcons[category]
+                    const count = registryStats.categoryCounts[category]
+                    const percent = passports.length > 0 ? Math.round((count / passports.length) * 100) : 0
+
+                    return (
+                      <div className="grid grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-3" key={category}>
+                        <span className="grid h-7 w-7 place-items-center rounded-lg border border-white/12 bg-white/6 text-slate-300">
+                          <Icon size={15} />
+                        </span>
+                        <span className="h-2 overflow-hidden rounded-full bg-white/8">
+                          <span
+                            className="block h-full rounded-full bg-teal-200/70"
+                            style={{ width: `${percent}%` }}
+                          />
+                        </span>
+                        <span className="min-w-16 text-right text-xs font-bold text-slate-400">
+                          {category} {count}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-white/12 bg-white/6 px-3 py-2 text-xs font-bold text-slate-300">
+                  <span>Needs review</span>
+                  <strong className="text-white">{registryStats.highRiskCount} passport</strong>
+                </div>
               </div>
             </div>
 
@@ -2287,6 +2542,12 @@ function shortWallet(value: string) {
   if (!value) return ''
   if (value.length <= 10) return value
   return `${value.slice(0, 4)}...${value.slice(-4)}`
+}
+
+function getSerialHashSuffix(value: string) {
+  if (!value) return 'Hash unavailable'
+  const normalized = value.startsWith('sha256:') ? value.slice(7) : value
+  return `Hash ...${normalized.slice(-6)}`
 }
 
 function getProgramStatusText(status: ProgramStatus) {

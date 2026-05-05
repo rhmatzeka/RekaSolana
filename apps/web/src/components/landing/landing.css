@@ -1111,10 +1111,18 @@
 
 @media (max-width: 760px) {
   .landing-nav {
-    top: 0.65rem;
-    width: min(100% - 1rem, 30rem);
-    padding: 0.78rem 0.86rem;
-    border-radius: 1.4rem;
+    top: 0.7rem;
+    width: min(100% - 1rem, 31rem);
+    gap: 0.72rem;
+    padding: 0.8rem 0.92rem;
+    border-radius: 1.25rem;
+  }
+
+  .landing-nav.is-compact {
+    width: min(100% - 1rem, 31rem);
+    padding: 0.72rem 0.86rem;
+    border-radius: 1.15rem;
+    transform: translateX(-50%);
   }
 
   .landing-nav-links {
@@ -1123,6 +1131,7 @@
 
   .landing-logo {
     font-size: 1rem;
+    gap: 0.45rem;
   }
 
   .landing-logo-icon {
@@ -1132,7 +1141,9 @@
 
   .landing-cta-sm {
     min-height: 2.85rem;
+    min-width: 9.6rem;
     padding: 0.68rem 1rem;
+    white-space: nowrap;
   }
 
   .landing-hero,
@@ -1206,6 +1217,32 @@
 }
 
 @media (max-width: 560px) {
+  .landing-nav {
+    top: 0.7rem;
+    width: calc(100% - 1rem);
+    gap: 0.6rem;
+    padding: 0.72rem 0.8rem;
+    border-radius: 1.1rem;
+  }
+
+  .landing-nav.is-compact {
+    width: calc(100% - 1rem);
+    padding: 0.66rem 0.76rem;
+    border-radius: 1.1rem;
+  }
+
+  .landing-logo {
+    min-width: 0;
+    font-size: 0.96rem;
+  }
+
+  .landing-cta-sm {
+    min-height: 2.9rem;
+    min-width: 9.2rem;
+    padding: 0.66rem 0.9rem;
+    font-size: 0.82rem;
+  }
+
   .landing-root::after {
     background-size:
       100% 100%,
@@ -1216,14 +1253,25 @@
   .landing-hero {
     min-height: 43rem;
     gap: 0;
-    padding-top: 8.1rem;
+    padding-top: 7.5rem;
     padding-bottom: 2.3rem;
+  }
+
+  .landing-hero-copy {
+    max-width: 22rem;
   }
 
   .landing-badge {
     margin-bottom: 0.8rem;
     padding: 0.38rem 0.64rem;
     font-size: 0.62rem;
+  }
+
+  .landing-headline {
+    max-width: 19rem;
+    font-size: clamp(2.75rem, 14vw, 3.75rem);
+    line-height: 0.94;
+    letter-spacing: -0.055em;
   }
 
   .landing-subheadline {
@@ -1234,14 +1282,20 @@
   }
 
   .landing-hero-buttons {
-    display: grid;
-    width: min(100%, 15.2rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
     gap: 0.72rem;
     margin-top: 1.45rem;
+    margin-right: auto;
+    margin-left: auto;
   }
 
   .landing-hero-buttons > * {
-    width: 100%;
+    display: inline-flex;
+    width: min(100%, 16rem);
+    max-width: 16rem;
     min-height: 3.9rem;
     border-radius: 0.82rem;
   }
