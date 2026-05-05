@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   BadgeCheck,
   Camera,
@@ -104,76 +104,18 @@ const footerColumns = [
 export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void }) {
   const [activeFlow, setActiveFlow] = useState(flowTabs[0].id)
   const [navCompact, setNavCompact] = useState(false)
-  const heroRef = useRef<HTMLElement>(null)
-  const currentY = useRef(0)
-  const targetY = useRef(0)
-  const loopId = useRef(0)
   const selectedFlow = flowTabs.find((flow) => flow.id === activeFlow) ?? flowTabs[0]
   const SelectedFlowIcon = selectedFlow.icon
 
-  // GSAP-style lerp: smooth interpolation for buttery motion
-  const lerp = useCallback((a: number, b: number, t: number) => a + (b - a) * t, [])
-
   useEffect(() => {
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const isMobile = window.innerWidth <= 560
-    const isTablet = window.innerWidth <= 760
-
-    // Parallax multipliers — lighter on smaller screens
-    const bgSpeed = isMobile ? 0 : isTablet ? 0.08 : 0.18
-    const copySpeed = isMobile ? 0 : isTablet ? -0.04 : -0.08
-    const statSpeed = isMobile ? 0 : isTablet ? -0.06 : -0.12
-    const scaleMax = isMobile ? 0 : isTablet ? 0.015 : 0.03
-    const easeFactor = 0.065 // Lower = smoother lag (GSAP-like)
-
     const onScroll = () => {
       setNavCompact(window.scrollY > 24)
-      targetY.current = window.scrollY
     }
 
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
-
-    // Skip parallax loop for reduced-motion or very small mobile
-    if (prefersReduced || isMobile) {
-      return () => window.removeEventListener('scroll', onScroll)
-    }
-
-    const loop = () => {
-      const hero = heroRef.current
-      if (!hero) {
-        loopId.current = requestAnimationFrame(loop)
-        return
-      }
-
-      // Lerp toward target for buttery 60fps motion
-      currentY.current = lerp(currentY.current, targetY.current, easeFactor)
-
-      // Snap when very close to prevent infinite micro-updates
-      if (Math.abs(currentY.current - targetY.current) < 0.5) {
-        currentY.current = targetY.current
-      }
-
-      const heroH = hero.offsetHeight || 1
-      const clamped = Math.min(Math.max(currentY.current, 0), heroH)
-      const ratio = clamped / heroH // 0→1
-
-      hero.style.setProperty('--px-bg', `${clamped * bgSpeed}px`)
-      hero.style.setProperty('--px-copy', `${clamped * copySpeed}px`)
-      hero.style.setProperty('--px-stat', `${clamped * statSpeed}px`)
-      hero.style.setProperty('--px-scale', `${1 + ratio * scaleMax}`)
-      hero.style.setProperty('--px-fade', `${Math.max(1 - ratio * 0.65, 0)}`)
-
-      loopId.current = requestAnimationFrame(loop)
-    }
-
-    loopId.current = requestAnimationFrame(loop)
-
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      cancelAnimationFrame(loopId.current)
-    }
-  }, [lerp])
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   // IntersectionObserver for section reveal animations
   useEffect(() => {
@@ -218,7 +160,7 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
         </button>
       </nav>
 
-      <header className="landing-hero" ref={heroRef}>
+      <header className="landing-hero">
 
         <div className="landing-spline-layer" aria-hidden="true">
           <iframe
