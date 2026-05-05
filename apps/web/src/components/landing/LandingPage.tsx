@@ -138,6 +138,15 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
       </nav>
 
       <header className="landing-hero">
+        <div className="landing-spline-layer" aria-hidden="true">
+          <iframe
+            src="https://my.spline.design/particles-S7iH5PcR811jbjOUVq0Qn3C8/"
+            frameBorder="0"
+            width="100%"
+            height="100%"
+            title="Reka landing background"
+          />
+        </div>
         <div className="landing-hero-copy">
           <p className="landing-badge">
             <ShieldCheck size={14} /> Reka Passport
