@@ -181,4 +181,4 @@ bun run check:program
 
 ## Project Status
 
-Reka is currently a hackathon-ready MVP moving toward beta production. The app is useful for demo, validation, and early testing, but a real production launch should include a deployed program, security review, monitoring, and a clearer verifier onboarding process.
+Reka is currently a hackathon-ready MVP moving toward beta production. The app is useful for demo, validation, and early testing, but a real production launch should include a deployed program, security review, monitoring, and a clearer verifier onboarding process..
