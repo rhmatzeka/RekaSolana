@@ -105,6 +105,7 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
   const [activeFlow, setActiveFlow] = useState(flowTabs[0].id)
   const [navCompact, setNavCompact] = useState(false)
   const [splineReady, setSplineReady] = useState(false)
+  const [enable3D, setEnable3D] = useState(false) // Lazy load 3D spline
   const selectedFlow = flowTabs.find((flow) => flow.id === activeFlow) ?? flowTabs[0]
   const SelectedFlowIcon = selectedFlow.icon
 
@@ -116,6 +117,17 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Auto-enable 3D background only on desktop after a short delay to keep initial load lightweight
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768 || navigator.userAgent.toLowerCase().includes('mobile')
+    if (!isMobile) {
+      const timer = setTimeout(() => {
+        setEnable3D(true)
+      }, 1500)
+      return () => clearTimeout(timer)
+    }
   }, [])
 
   // IntersectionObserver for section reveal animations
@@ -167,26 +179,32 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
           className={`landing-spline-layer${splineReady ? ' is-loaded' : ''}`}
           aria-hidden="true"
         >
-          <div className="spline-loader">
-            <div className="spline-loader-core">
-              <span className="spline-loader-ring" />
-              <span className="spline-loader-orbit" />
-              <span className="spline-loader-dot" />
+          {!splineReady && (
+            <div className="spline-loader">
+              <div className="spline-loader-core">
+                <span className="spline-loader-ring" />
+                <span className="spline-loader-orbit" />
+                <span className="spline-loader-dot" />
+              </div>
+              <div className="spline-loader-bars">
+                <span />
+                <span />
+                <span />
+              </div>
             </div>
-            <div className="spline-loader-bars">
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
-          <iframe
-            src="https://my.spline.design/solanaplanet-VKQMp0fXRjAW7z08NmG8yKlt/"
-            frameBorder="0"
-            width="100%"
-            height="100%"
-            title="Reka landing background"
-            onLoad={() => setSplineReady(true)}
-          />
+          )}
+          {enable3D ? (
+            <iframe
+              src="https://my.spline.design/solanaplanet-VKQMp0fXRjAW7z08NmG8yKlt/"
+              frameBorder="0"
+              width="100%"
+              height="100%"
+              title="Reka landing background"
+              onLoad={() => setSplineReady(true)}
+            />
+          ) : (
+            <div className="spline-fallback-mesh" />
+          )}
         </div>
         <div className="landing-hero-copy">
           <p className="landing-badge">

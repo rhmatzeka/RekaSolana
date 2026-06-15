@@ -573,20 +573,33 @@ function App() {
 
   const devicesPerPage = 4
   const devicePageCount = Math.max(1, Math.ceil(filteredPassports.length / devicesPerPage))
+  
+  // Calculate current page safely without triggering synchronous cascading state updates in useEffect
+  const safeDevicePage = Math.min(devicePage, devicePageCount)
+  
   const paginatedPassports = useMemo(() => {
-    const start = (devicePage - 1) * devicesPerPage
+    const start = (safeDevicePage - 1) * devicesPerPage
     return filteredPassports.slice(start, start + devicesPerPage)
-  }, [devicePage, filteredPassports])
+  }, [safeDevicePage, filteredPassports])
 
-  useEffect(() => {
+  // Reset pagination state when filters change, but avoid direct state updating within useEffect.
+  // Instead, handle page resets in input/filter change handlers if possible, or adjust variables during render.
+  // We can track the previous query/filter parameters or just reset page count when they change in the UI handlers.
+  // For safety and robustness, we will let App handle filters. We can reset page to 1 when filters are set:
+  const handleDeviceCategoryChange = (cat: 'All' | DeviceCategory) => {
+    setDeviceCategoryFilter(cat)
     setDevicePage(1)
-  }, [deviceCategoryFilter, deviceSort, query])
+  }
 
-  useEffect(() => {
-    if (devicePage > devicePageCount) {
-      setDevicePage(devicePageCount)
-    }
-  }, [devicePage, devicePageCount])
+  const handleDeviceSortChange = (sort: DeviceRegistrySort) => {
+    setDeviceSort(sort)
+    setDevicePage(1)
+  }
+
+  const handleQueryChange = (val: string) => {
+    setQuery(val)
+    setDevicePage(1)
+  }
 
   const registryStats = useMemo(() => {
     const categoryCounts = passports.reduce<Record<DeviceCategory, number>>(
@@ -1432,7 +1445,7 @@ function App() {
                   className="h-full w-full border-0 bg-transparent px-0 text-sm outline-none focus:ring-0"
                   ref={searchInputRef}
                   value={query}
-                  onChange={(event) => setQuery(event.target.value)}
+                  onChange={(event) => handleQueryChange(event.target.value)}
                   placeholder="Cari passport ID, hash, owner, verifier, kota"
                 />
               </label>
@@ -1443,7 +1456,7 @@ function App() {
                     className={ui.input}
                     value={deviceCategoryFilter}
                     onChange={(event) =>
-                      setDeviceCategoryFilter(event.target.value as 'All' | DeviceCategory)
+                      handleDeviceCategoryChange(event.target.value as 'All' | DeviceCategory)
                     }
                   >
                     <option>All</option>
@@ -1457,7 +1470,7 @@ function App() {
                   <select
                     className={ui.input}
                     value={deviceSort}
-                    onChange={(event) => setDeviceSort(event.target.value as DeviceRegistrySort)}
+                    onChange={(event) => handleDeviceSortChange(event.target.value as DeviceRegistrySort)}
                   >
                     <option value="recent">Most recent</option>
                     <option value="trust">Highest trust</option>
