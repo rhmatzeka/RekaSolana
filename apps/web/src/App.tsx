@@ -1608,14 +1608,14 @@ function App() {
                             className={cx(
                               'grid min-h-14 w-full grid-cols-[34px_minmax(0,1fr)_auto] items-center gap-2 rounded-xl border p-2.5 text-left transition',
                               registryPassport?.id === passport.id
-                                ? 'border-teal-300/30 bg-teal-300/10 text-white'
-                                : 'border-white/12 bg-white/6 text-slate-200 hover:border-teal-300/24 hover:bg-teal-300/8',
+                                ? 'border-[#00d4a4]/30 bg-[#00d4a4]/10 text-white'
+                                : 'border-white/12 bg-white/6 text-slate-200 hover:border-[#00d4a4]/24 hover:bg-[#00d4a4]/8',
                             )}
                             key={passport.id}
                             type="button"
                             onClick={() => setSelectedId(passport.id)}
                           >
-                            <span className="grid h-8 w-8 place-items-center rounded-lg border border-teal-300/18 bg-teal-300/8 text-teal-200">
+                            <span className="grid h-8 w-8 place-items-center rounded-lg border border-[#00d4a4]/18 bg-[#00d4a4]/8 text-[#00d4a4]">
                               <ListIcon size={15} />
                             </span>
                             <span className="min-w-0">
@@ -1626,7 +1626,7 @@ function App() {
                                 {passport.brand} {passport.model}
                               </small>
                             </span>
-                            <em className="not-italic text-xs font-extrabold text-teal-100">
+                            <em className="not-italic text-xs font-extrabold text-[#00d4a4]">
                               {passport.trustScore}
                             </em>
                           </button>
