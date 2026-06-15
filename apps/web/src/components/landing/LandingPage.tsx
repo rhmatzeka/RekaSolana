@@ -353,16 +353,22 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
 function FeatureMockup({ kind }: { kind: string }) {
   if (kind === 'identity') {
     return (
-      <div className="fc-mockup">
-        <div className="fc-mock-title">PASSPORT IDENTITY</div>
+      <div className="fc-mockup doc-style">
+        <div className="fc-mock-title flex items-center justify-between">
+          <span>API REFERENCE</span>
+          <span className="badge-api-type">GET</span>
+        </div>
         {[
-          ['Category', 'Laptop'],
-          ['Model', 'ThinkPad X1 Carbon'],
-          ['Serial / IMEI', 'Stored as local hash'],
-        ].map(([label, value]) => (
-          <div className="fc-data-row" key={label}>
-            <span>{label}</span>
-            <strong>{value}</strong>
+          ['category', 'string', 'Laptop'],
+          ['model', 'string', 'MacBook Pro M1'],
+          ['serialHash', 'sha256', '84b1e2c915d7...'],
+        ].map(([label, type, value]) => (
+          <div className="fc-property-row" key={label}>
+            <div className="flex items-center gap-2">
+              <code className="fc-code-prop">{label}</code>
+              <span className="fc-code-type">{type}</span>
+            </div>
+            <strong className="fc-prop-val">{value}</strong>
           </div>
         ))}
       </div>
@@ -371,20 +377,22 @@ function FeatureMockup({ kind }: { kind: string }) {
 
   if (kind === 'history') {
     return (
-      <div className="fc-mockup">
-        <div className="fc-mock-title">LIFECYCLE LOG</div>
-        <div className="fc-timeline">
-          <span />
-          <div>
-            <strong>Battery and display inspection</strong>
-            <small>Verified receipt / 2026-04-21</small>
+      <div className="fc-mockup doc-style">
+        <div className="fc-mock-title">LIFECYCLE ATTESTATIONS</div>
+        <div className="fc-timeline-clean">
+          <div className="fc-timeline-dot active" />
+          <div className="fc-timeline-content">
+            <strong className="text-white text-xs font-bold block leading-none">Battery Replacement</strong>
+            <span className="fc-tag-onchain">On-chain Service</span>
+            <small className="block mt-1 text-[10px] text-slate-400">Verifier: RuangService ITB • 2026-04-19</small>
           </div>
         </div>
-        <div className="fc-timeline">
-          <span />
-          <div>
-            <strong>30-day campus store warranty</strong>
-            <small>On-chain service / verified</small>
+        <div className="fc-timeline-clean">
+          <div className="fc-timeline-dot" />
+          <div className="fc-timeline-content">
+            <strong className="text-white text-xs font-bold block leading-none">Display Inspection</strong>
+            <span className="fc-tag-receipt">Verified Receipt</span>
+            <small className="block mt-1 text-[10px] text-slate-400">Verifier: Jogja Gadget Lab • 2026-04-21</small>
           </div>
         </div>
       </div>
@@ -393,16 +401,16 @@ function FeatureMockup({ kind }: { kind: string }) {
 
   if (kind === 'risk') {
     return (
-      <div className="fc-mockup">
-        <div className="fc-mock-title">BUYER RISK</div>
+      <div className="fc-mockup doc-style">
+        <div className="fc-mock-title">BUYER RISK CONTROLS</div>
         {[
-          ['Seller disclosure', 'Pending'],
-          ['Display', 'Pass'],
-          ['Opened / tampered', 'Watch'],
-        ].map(([label, value]) => (
-          <div className="fc-check-row" key={label}>
+          ['Seller Disclosure', 'Disclosed', 'badge-risk-low'],
+          ['Display Inspection', 'Pass', 'badge-risk-low'],
+          ['Chassis condition', 'Watch (Dent)', 'badge-risk-warn'],
+        ].map(([label, value, badgeClass]) => (
+          <div className="fc-check-row-clean" key={label}>
             <span>{label}</span>
-            <strong>{value}</strong>
+            <strong className={badgeClass}>{value}</strong>
           </div>
         ))}
       </div>
@@ -410,16 +418,18 @@ function FeatureMockup({ kind }: { kind: string }) {
   }
 
   return (
-    <div className="fc-mockup qr-mockup">
-      <div className="qr-mark qr-mark-small" aria-hidden="true">
-        {Array.from({ length: 25 }).map((_, index) => (
-          <span key={index} />
-        ))}
+    <div className="fc-mockup doc-style qr-mockup-clean">
+      <div className="qr-box-clean">
+        <div className="qr-box-pattern">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <span key={i} />
+          ))}
+        </div>
       </div>
-      <div>
-        <div className="fc-mock-title">PUBLIC LINK</div>
-        <strong>reka.dev/passport/RK-24-MBP-7F3A</strong>
-        <small>Scan before COD or campus meetup.</small>
+      <div className="min-w-0 flex-1">
+        <div className="fc-mock-title">SECURE VERIFICATION</div>
+        <strong className="text-[#00d4a4] text-xs font-mono block truncate">reka.dev/verify/RK-24-MBP-7F3A</strong>
+        <p className="m-0 mt-1.5 text-[10px] leading-relaxed text-slate-400">Scan QR link before purchase to verify ownership trail instantly.</p>
       </div>
     </div>
   )
