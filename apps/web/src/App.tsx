@@ -409,39 +409,39 @@ function cx(...classes: Array<string | false | null | undefined>) {
 }
 
 const ui = {
-  eyebrow: 'm-0 text-[11px] font-extrabold uppercase tracking-[0.18em] text-teal-300',
+  eyebrow: 'm-0 text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#00d4a4]',
   primaryButton:
-    'inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-teal-600 bg-teal-600 px-3 text-xs font-extrabold text-white no-underline shadow-sm shadow-teal-900/15 transition hover:bg-teal-700 disabled:cursor-wait disabled:opacity-70',
+    'inline-flex min-h-9 items-center justify-center gap-2 rounded-full border border-[#00d4a4] bg-[#00d4a4] px-4 text-xs font-extrabold text-[#0a0a0a] no-underline shadow-sm transition hover:bg-[#00b48a] disabled:cursor-wait disabled:opacity-70',
   secondaryButton:
-    'inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-white/12 bg-white/8 px-3 text-xs font-extrabold text-slate-100 no-underline shadow-sm shadow-black/20 transition hover:border-teal-300/40 hover:bg-teal-300/10',
+    'inline-flex min-h-9 items-center justify-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 text-xs font-extrabold text-slate-100 no-underline shadow-sm shadow-black/20 transition hover:border-[#00d4a4]/40 hover:bg-[#00d4a4]/10',
   panel:
-    'rounded-xl border border-white/12 bg-slate-900/72 p-3 shadow-[0_18px_52px_rgba(0,0,0,0.22)] backdrop-blur-xl',
-  panelHeading: 'mb-3 flex items-center justify-between gap-3',
-  formGrid: 'grid grid-cols-1 gap-3 md:grid-cols-2',
-  compactForm: 'grid gap-3',
+    'rounded-xl border border-white/8 bg-[#0a0a0af0] p-4 shadow-[0_18px_52px_rgba(0,0,0,0.32)] backdrop-blur-xl',
+  panelHeading: 'mb-4 flex items-center justify-between gap-3',
+  formGrid: 'grid grid-cols-1 gap-4 md:grid-cols-2',
+  compactForm: 'grid gap-3.5',
   input:
-    'h-11 w-full min-w-0 rounded-xl border border-white/12 bg-slate-950/72 px-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-teal-300/60 focus:ring-4 focus:ring-teal-300/10',
+    'h-11 w-full min-w-0 rounded-lg border border-white/12 bg-slate-950/72 px-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-[#00d4a4]/60 focus:ring-4 focus:ring-[#00d4a4]/10',
   textarea:
-    'min-h-28 w-full min-w-0 resize-y rounded-xl border border-white/12 bg-slate-950/72 px-3 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-teal-300/60 focus:ring-4 focus:ring-teal-300/10',
+    'min-h-28 w-full min-w-0 resize-y rounded-lg border border-white/12 bg-slate-950/72 px-3 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-[#00d4a4]/60 focus:ring-4 focus:ring-[#00d4a4]/10',
   label: 'grid gap-2 text-xs font-bold text-slate-300',
   wide: 'col-span-full',
 }
 
 function railButtonClass(active: boolean) {
   return cx(
-    'relative grid h-12 w-12 place-items-center rounded-2xl border transition',
+    'relative grid h-12 w-12 place-items-center rounded-full border transition',
     active
-      ? 'border-teal-300/42 bg-teal-300/14 text-teal-100 shadow-[0_16px_36px_rgba(20,184,166,0.16)] xl:before:absolute xl:before:-left-4 xl:before:top-1/2 xl:before:h-7 xl:before:w-1 xl:before:-translate-y-1/2 xl:before:rounded-r xl:before:bg-teal-300 xl:before:content-[\'\']'
-      : 'border-transparent text-slate-400 hover:border-white/12 hover:bg-white/7 hover:text-teal-100',
+      ? 'border-[#00d4a4]/42 bg-[#00d4a4]/14 text-[#00d4a4] shadow-[0_16px_36px_rgba(0,212,164,0.16)] xl:before:absolute xl:before:-left-4 xl:before:top-1/2 xl:before:h-7 xl:before:w-1 xl:before:-translate-y-1/2 xl:before:rounded-r xl:before:bg-[#00d4a4] xl:before:content-[\'\']'
+      : 'border-transparent text-slate-400 hover:border-white/12 hover:bg-white/7 hover:text-[#00d4a4]',
   )
 }
 
 function historyActionTabClass(active: boolean) {
   return cx(
-    'inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-extrabold transition',
+    'inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full px-4.5 text-xs font-extrabold transition',
     active
-      ? 'bg-teal-600 text-white shadow-sm shadow-teal-900/15'
-      : 'text-slate-400 hover:bg-teal-300/10 hover:text-teal-100',
+      ? 'bg-[#00d4a4] text-[#0a0a0a] shadow-sm shadow-[#00d4a4]/15'
+      : 'text-slate-400 hover:bg-[#00d4a4]/10 hover:text-[#00d4a4]',
   )
 }
 
@@ -1297,7 +1297,7 @@ function App() {
                 <div className="flex min-w-0 flex-col justify-between gap-4">
                   <div>
                     <div className="mb-3 flex flex-wrap items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">
-                      <span className="rounded-full border border-teal-300/22 bg-teal-300/8 px-2.5 py-1 text-teal-100">{selectedPassport.category}</span>
+                      <span className="rounded-full border border-[#00d4a4]/22 bg-[#00d4a4]/8 px-2.5 py-1 text-[#00d4a4]">{selectedPassport.category}</span>
                       <span className="rounded-full border border-white/12 bg-white/7 px-2.5 py-1 text-slate-200">{selectedPassport.city}</span>
                       <span className="rounded-full border border-white/12 bg-white/7 px-2.5 py-1 text-slate-300">{selectedPassport.id}</span>
                     </div>
@@ -1305,7 +1305,7 @@ function App() {
                       {selectedPassport.brand} {selectedPassport.model}
                     </h3>
                     <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <span className="inline-flex min-h-7 items-center gap-2 rounded-full border border-teal-300/22 bg-teal-300/8 px-2.5 text-[11px] font-extrabold text-teal-100">
+                      <span className="inline-flex min-h-7 items-center gap-2 rounded-full border border-[#00d4a4]/22 bg-[#00d4a4]/8 px-2.5 text-[11px] font-extrabold text-[#00d4a4]">
                         <CheckCircle2 size={14} />
                         Verified passport
                       </span>
@@ -1365,8 +1365,8 @@ function App() {
                     Reka membuktikan riwayat yang sudah diverifikasi, bukan menjamin semua kejadian sebelum first verified date tidak pernah terjadi.
                   </p>
                 </div>
-                <div className="mt-3 flex min-h-10 items-center gap-2.5 rounded-xl border border-teal-300/18 bg-teal-300/7 px-3 py-2.5 text-sm font-semibold leading-6 text-slate-200">
-                  {isWritingChain ? <Loader2 className="animate-spin text-teal-200" size={18} /> : <ShieldCheck className="text-teal-200" size={18} />}
+                <div className="mt-3 flex min-h-10 items-center gap-2.5 rounded-xl border border-[#00d4a4]/18 bg-[#00d4a4]/7 px-3 py-2.5 text-sm font-semibold leading-6 text-slate-200">
+                  {isWritingChain ? <Loader2 className="animate-spin text-[#00d4a4]" size={18} /> : <ShieldCheck className="text-[#00d4a4]" size={18} />}
                   <span>
                     {chainMessage ||
                       `${programStatusText}. ${unverifiedHistoryCount} riwayat belum terverifikasi.`}
@@ -1389,7 +1389,7 @@ function App() {
                     <strong className="mt-1 block text-sm font-bold">{buyerRisk?.level ?? 'High'}</strong>
                     <p className="m-0 mt-2 text-xs font-bold leading-5">{buyerRisk?.summary}</p>
                     <button
-                      className="mt-3 inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-white/14 bg-white/8 px-3 text-xs font-extrabold text-slate-100 transition hover:border-teal-300/24 hover:bg-teal-300/8"
+                      className="mt-3 inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-full border border-white/14 bg-white/8 px-4 text-xs font-extrabold text-slate-100 transition hover:border-[#00d4a4]/24 hover:bg-[#00d4a4]/8"
                       type="button"
                       onClick={addHiddenRepairDispute}
                     >
@@ -1507,11 +1507,11 @@ function App() {
               </div>
               <div className="mt-4 grid gap-3 2xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.72fr)]">
                 {registryPassport ? (
-                  <article className="rounded-[22px] border border-teal-300/20 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.12),transparent_28%),linear-gradient(180deg,rgba(8,19,34,0.96),rgba(7,14,27,0.96))] p-4 shadow-[0_20px_48px_rgba(0,0,0,0.22)]">
+                  <article className="rounded-xl border border-[#00d4a4]/20 bg-[radial-gradient(circle_at_top_left,rgba(0,212,164,0.12),transparent_28%),linear-gradient(180deg,rgba(10,10,10,0.96),rgba(8,8,8,0.96))] p-4 shadow-[0_20px_48px_rgba(0,0,0,0.22)]">
                     <div className="flex items-start justify-between gap-3">
                       <div className="grid min-w-0 gap-3">
                         <div className="flex flex-wrap gap-2">
-                          <span className="rounded-full border border-teal-300/20 bg-teal-300/10 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-teal-100">
+                          <span className="rounded-full border border-[#00d4a4]/20 bg-[#00d4a4]/10 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#00d4a4]">
                             {registryPassport.category}
                           </span>
                           <span className="rounded-full border border-white/12 bg-white/7 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-slate-300">
@@ -1528,7 +1528,7 @@ function App() {
                         </div>
                       </div>
                       <div className="grid shrink-0 gap-2 justify-items-end">
-                        <div className="grid h-14 w-14 place-items-center rounded-2xl border border-teal-300/18 bg-teal-300/8 text-lg font-extrabold text-teal-100">
+                        <div className="grid h-14 w-14 place-items-center rounded-xl border border-[#00d4a4]/18 bg-[#00d4a4]/8 text-lg font-extrabold text-[#00d4a4]">
                           {registryPassport.trustScore}
                         </div>
                         <button
