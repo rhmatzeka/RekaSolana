@@ -10,6 +10,7 @@ import {
   Laptop,
   Link2,
   ScanLine,
+  Search as SearchIcon,
   ShieldCheck,
   Smartphone,
   UserRoundCheck,
@@ -231,6 +232,73 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
                 <span>{stat.label}</span>
               </div>
             ))}
+          </div>
+
+          {/* Mintlify-style Hero Product Mockup peeking from the bottom */}
+          <div className="hero-product-mockup">
+            <div className="mockup-header-bar">
+              <div className="mockup-header-left">
+                <Fingerprint size={16} className="text-[#00d4a4]" />
+                <span className="mockup-logo-text">Reka Docs</span>
+              </div>
+              <div className="mockup-tabs">
+                <span className="mockup-tab active">Guides</span>
+                <span className="mockup-tab">API Reference</span>
+                <span className="mockup-tab">Changelog</span>
+              </div>
+              <div className="mockup-search-pill">
+                <SearchIcon size={12} className="text-slate-400" />
+                <span>Search or ask AI...</span>
+                <kbd className="mockup-kbd">⌘K</kbd>
+              </div>
+            </div>
+            <div className="mockup-body-area">
+              <aside className="mockup-sidebar">
+                <div className="mockup-sidebar-group">GETTING STARTED</div>
+                <div className="mockup-sidebar-item active">
+                  <span className="mockup-dot active" />
+                  <span>Introduction</span>
+                </div>
+                <div className="mockup-sidebar-item">
+                  <span className="mockup-dot" />
+                  <span>Device Verification</span>
+                </div>
+                <div className="mockup-sidebar-item">
+                  <span className="mockup-dot" />
+                  <span>Solana Devnet Audit</span>
+                </div>
+                <div className="mockup-sidebar-group">PROGRAM API</div>
+                <div className="mockup-sidebar-item">
+                  <span className="mockup-dot" />
+                  <span>create_passport</span>
+                </div>
+                <div className="mockup-sidebar-item">
+                  <span className="mockup-dot" />
+                  <span>add_history</span>
+                </div>
+              </aside>
+              <main className="mockup-content-prose">
+                <div className="mockup-prose-header">
+                  <span className="mockup-breadcrumb">Getting Started / Intro</span>
+                  <h2 className="mockup-title">Reka Asset Passport</h2>
+                  <p className="mockup-desc">
+                    Membantu mahasiswa dan pembeli kampus memverifikasi keaslian, riwayat servis, serta kepemilikan laptop, ponsel, atau kamera bekas secara on-chain di Solana Devnet sebelum transaksi.
+                  </p>
+                </div>
+                <div className="mockup-perks-grid">
+                  <div className="mockup-perk-card">
+                    <Fingerprint size={18} className="text-[#00d4a4]" />
+                    <h4>Hashed Identity</h4>
+                    <p>Serial atau IMEI di-hash lokal sebelum disimpan ke program PDA Solana.</p>
+                  </div>
+                  <div className="mockup-perk-card">
+                    <ShieldCheck size={18} className="text-[#00d4a4]" />
+                    <h4>Confidence Level</h4>
+                    <p>Memisahkan riwayat service bergaransi verifier dari sekadar klaim seller.</p>
+                  </div>
+                </div>
+              </main>
+            </div>
           </div>
         </div>
       </header>
