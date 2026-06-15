@@ -445,9 +445,9 @@
   height: 28rem;
   border: 1px solid rgba(226, 232, 240, 0.08);
   border-radius: 12px; /* rounded.lg */
-  background: #0a0a0af0;
+  background: rgba(10, 10, 10, 0.65); /* Made transparent to show spline logo through it */
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(16px); /* Adjusted blur for better readability with transparency */
   pointer-events: auto;
   overflow: hidden;
   text-align: left;
@@ -539,7 +539,7 @@
 
 .mockup-sidebar {
   border-right: 1px solid rgba(226, 232, 240, 0.06);
-  background: rgba(10, 10, 10, 0.15);
+  background: rgba(10, 10, 10, 0.1);
   padding: 1.25rem 0.85rem;
   display: flex;
   flex-direction: column;
@@ -624,8 +624,8 @@
 
 .mockup-perk-card {
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(226, 232, 240, 0.05);
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(226, 232, 240, 0.04);
   border-radius: 8px;
 }
 
