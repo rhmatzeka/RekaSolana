@@ -32,12 +32,6 @@ const deviceTypes = [
   { name: 'Camera', detail: 'serial, shutter count, sensor', icon: Camera },
 ]
 
-const heroStats = [
-  { label: 'Trust score', value: '91%' },
-  { label: 'Verified logs', value: '2' },
-  { label: 'Owner trail', value: 'Signed' },
-]
-
 const featureCards = [
   {
     title: 'HASHED DEVICE IDENTITY',
@@ -224,14 +218,6 @@ export default function LandingPage({ onLaunchApp }: { onLaunchApp?: () => void 
             <a className="btn-ghost" href="#flow">
               Lihat Demo Flow <ChevronRight size={16} />
             </a>
-          </div>
-          <div className="landing-hero-stats" aria-label="Reka passport preview stats">
-            {heroStats.map((stat) => (
-              <div className="hero-stat" key={stat.label}>
-                <strong>{stat.value}</strong>
-                <span>{stat.label}</span>
-              </div>
-            ))}
           </div>
 
           {/* Mintlify-style Hero Product Mockup peeking from the bottom */}
