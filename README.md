@@ -2,6 +2,8 @@
 
 Reka is a Solana-powered asset passport for second-hand student devices. It helps buyers verify a used laptop, phone, or camera before purchase by checking its identity hash, condition, service history, current ownership, and transfer trail.
 
+![Reka landing page: check a used device before you buy](docs/images/preview.png)
+
 ## Problem
 
 Second-hand device markets around Indonesian campuses are active, but trust is still fragile. Buyers often rely on chat screenshots, verbal claims, or one-time store notes. After a device is resold, important context can disappear:
